@@ -14,7 +14,7 @@ import {
 } from './utils';
 import { UserData } from './data/users';
 import { ElectricityData } from './data/electricity';
-import { SmartTableData } from './data/smart-table';
+//import { SmartTableData } from './data/smart-table';
 import { UserActivityData } from './data/user-activity';
 import { OrdersChartData } from './data/orders-chart';
 import { ProfitChartData } from './data/profit-chart';
@@ -34,7 +34,8 @@ import { SecurityCamerasData } from './data/security-cameras';
 
 import { UserService } from './mock/users.service';
 import { ElectricityService } from './mock/electricity.service';
-import { SmartTableService } from './mock/smart-table.service';
+//import { SmartTableService } from './mock/smart-table.service';
+import { ModalidadeService } from './mock/modalidade.service';
 import { UserActivityService } from './mock/user-activity.service';
 import { OrdersChartService } from './mock/orders-chart.service';
 import { ProfitChartService } from './mock/profit-chart.service';
@@ -52,6 +53,7 @@ import { StatsProgressBarService } from './mock/stats-progress-bar.service';
 import { VisitorsAnalyticsService } from './mock/visitors-analytics.service';
 import { SecurityCamerasService } from './mock/security-cameras.service';
 import { MockDataModule } from './mock/mock-data.module';
+import { ModalidadeData } from './data/modalidade';
 
 const socialLinks = [
   {
@@ -74,7 +76,8 @@ const socialLinks = [
 const DATA_SERVICES = [
   { provide: UserData, useClass: UserService },
   { provide: ElectricityData, useClass: ElectricityService },
-  { provide: SmartTableData, useClass: SmartTableService },
+  //{ provide: SmartTableData, useClass: SmartTableService },
+  { provide: ModalidadeData, useClass: ModalidadeService },
   { provide: UserActivityData, useClass: UserActivityService },
   { provide: OrdersChartData, useClass: OrdersChartService },
   { provide: ProfitChartData, useClass: ProfitChartService },

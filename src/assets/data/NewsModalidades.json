@@ -1,0 +1,17 @@
+[
+    {
+        "id":1,
+        "nome": "NATAÇÃO",
+        "DESCRICAO": "Força e resistencia"
+    },
+    {
+        "id":2,
+        "nome": "FUTEBOL",
+        "DESCRICAO": "Habilidade e velocidade"
+    },
+    {
+        "id":3,
+        "nome": "VOLEYBOL",
+        "DESCRICAO": "Por equipes composta por 6 atletas"
+    }
+]

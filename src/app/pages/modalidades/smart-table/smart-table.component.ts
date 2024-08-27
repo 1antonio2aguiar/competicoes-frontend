@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
-import { SmartTableData } from '../../../@core/data/smart-table';
+import { ModalidadeData } from '../../../@core/data/modalidade';
 
 @Component({
   selector: 'ngx-smart-table',
@@ -30,38 +30,26 @@ export class SmartTableComponent {
         title: 'ID',
         type: 'number',
       },
-      firstName: {
-        title: 'First Name',
+      nome: {
+        title: 'Nome',
         type: 'string',
       },
-      lastName: {
-        title: 'Last Name',
+      descricao: {
+        title: 'Descrição',
         type: 'string',
-      },
-      username: {
-        title: 'Username',
-        type: 'string',
-      },
-      email: {
-        title: 'E-mail',
-        type: 'string',
-      },
-      age: {
-        title: 'Age',
-        type: 'number',
       },
     },
   };
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData) {
+  constructor(private service: ModalidadeData) {
     const data = this.service.getData();
     this.source.load(data);
   }
 
   onDeleteConfirm(event): void {
-    if (window.confirm('Are you sure you want to delete?')) {
+    if (window.confirm('Voce deseja deletar este item?')) {
       event.confirm.resolve();
     } else {
       event.confirm.reject();

@@ -4,9 +4,17 @@
   nb-card-body {
     display: flex;
     justify-content: space-between;
+    padding: 5px 5px;
 
     input {
-      width: 100%;
+      text-align: center;
+      border: 0.800;
+      width: 115px;
     }
   }
+
+  nb-card {
+    margin: 0;
+  }
+
 }

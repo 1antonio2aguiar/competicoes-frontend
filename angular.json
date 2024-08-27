@@ -37,6 +37,8 @@
               "node_modules/nebular-icons/scss/nebular-icons.scss",
               "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
               "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/ng-pick-datetime/assets/style/picker.min.css",
+              "src/styles.css",
               "src/app/@theme/styles/styles.scss"
             ],
             "scripts": [
@@ -133,6 +135,8 @@
               "node_modules/socicon/css/socicon.css",
               "node_modules/nebular-icons/scss/nebular-icons.scss",
               "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
+              "node_modules/ng-pick-datetime/assets/style/picker.min.css",
+              "src/styles.css",
               "src/app/@theme/styles/styles.scss"
             ],
             "assets": [
@@ -187,5 +191,8 @@
     "@angular-eslint/schematics:library": {
       "setParserOptionsProject": true
     }
+  },
+  "cli": {
+    "analytics": "8d72fc97-16e2-485b-b85c-dc59fde314ed"
   }
 }

@@ -16,7 +16,6 @@ import { FormsRoutingModule } from './forms-routing.module';
 import { FormsComponent } from './forms.component';
 import { FormInputsComponent } from './form-inputs/form-inputs.component';
 import { FormLayoutsComponent } from './form-layouts/form-layouts.component';
-import { DatepickerComponent } from './datepicker/datepicker.component';
 import { ButtonsComponent } from './buttons/buttons.component';
 import { FormsModule as ngFormsModule } from '@angular/forms';
 
@@ -41,7 +40,7 @@ import { FormsModule as ngFormsModule } from '@angular/forms';
     ButtonsComponent,
     FormInputsComponent,
     FormLayoutsComponent,
-    DatepickerComponent,
   ],
 })
+
 export class FormsModule { }

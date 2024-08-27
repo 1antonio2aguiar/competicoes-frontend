@@ -1,25 +1,55 @@
 import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
-  {
+  /*{
     title: 'E-commerce',
     icon: 'shopping-cart-outline',
     link: '/pages/dashboard',
     home: true,
-  },
-  {
+  },*/
+  /*{
     title: 'IoT Dashboard',
     icon: 'home-outline',
     link: '/pages/iot-dashboard',
-  },
+  },*/
   {
-    title: 'FEATURES',
+    title: 'AÇÕES',
     group: true,
   },
+  /*{
+    title: 'Tables & Data',
+    icon: 'grid-outline',
+    children: [
+      {
+        title: 'Smart Table',
+        link: '/pages/tables/smart-table',
+      },
+      {
+        title: 'Tree Grid',
+        link: '/pages/tables/tree-grid',
+      },
+    ],
+  },*/
   {
-    title: 'Layout',
+    title: 'Cadastros',
     icon: 'layout-outline',
     children: [
+      {
+        title: 'Campeonatos',
+        link: '/pages/campeonatos/campeonato-pesquisa',
+      },
+      {
+        title: 'Etapas',
+        link: '/pages/etapas/etapas-iud',
+      },
+      {
+        title: 'Locais Competições',
+        link: '/pages/locais-competicoes/locais-competicoes-iud',
+      },
+      {
+        title: 'Modalidades',
+        link: '/pages/modalidades/modalidade-pesquisa',
+      },
       {
         title: 'Stepper',
         link: '/pages/layout/stepper',
@@ -44,7 +74,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     ],
   },
   {
-    title: 'Forms',
+    title: 'Atividades',
     icon: 'edit-2-outline',
     children: [
       {
@@ -66,7 +96,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     ],
   },
   {
-    title: 'UI Features',
+    title: 'Consultas',
     icon: 'keypad-outline',
     link: '/pages/ui-features',
     children: [
@@ -89,7 +119,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     ],
   },
   {
-    title: 'Modal & Overlays',
+    title: 'Relatorios',
     icon: 'browser-outline',
     children: [
       {
@@ -114,7 +144,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  {
+  /*{
     title: 'Extra Components',
     icon: 'message-circle-outline',
     children: [
@@ -243,5 +273,5 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/auth/reset-password',
       },
     ],
-  },
+  },*/
 ];

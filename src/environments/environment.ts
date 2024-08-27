@@ -9,5 +9,11 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
+  version: '1.0',
   production: false,
+  //apiUrlKripton: 'https://app3.codiub.com.br/kripton-api/',
+  apiUrl: 'http://localhost:8080/',
+  sistemaId: '1',
+ 
+
 };

@@ -1,17 +1,18 @@
-<div class="row">
-  <div class="col-md-12 col-lg-4 col-xxxl-4">
+<!-- <div class="row"> -->
+  <!-- <div class="col-md-12 col-lg-4 col-xxxl-4"> -->
     <nb-card>
-      <nb-card-header>Common Datepicker</nb-card-header>
+      <!-- <nb-card-header>Common</nb-card-header>  -->
       <nb-card-body>
         <input nbInput
-               placeholder="Form Picker"
-               [nbDatepicker]="formpicker">
-        <nb-datepicker #formpicker></nb-datepicker>
+               placeholder="Informe"
+               [nbDatepicker]="datepicker">
+        <!-- <nb-datepicker #formpicker></nb-datepicker> -->
+        <nb-datepicker #datepicker format="dd/MM/yyyy"></nb-datepicker>
       </nb-card-body>
     </nb-card>
-  </div>
+  <!-- </div> -->
 
-  <div class="col-md-12 col-lg-4 col-xxxl-4">
+  <!-- <div class="col-md-12 col-lg-4 col-xxxl-4">
     <nb-card>
       <nb-card-header>Datepicker With Range</nb-card-header>
       <nb-card-body>
@@ -28,5 +29,6 @@
         <nb-datepicker #picker [min]="min" [max]="max"></nb-datepicker>
       </nb-card-body>
     </nb-card>
-  </div>
-</div>
+  </div> -->
+<!-- </div>  -->
+
