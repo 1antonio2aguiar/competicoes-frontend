@@ -1,0 +1,21 @@
+.model-full {
+    width: 80% !important; 
+}
+
+:host ::ng-deep ng2-smart-table-pager {
+    justify-content: center;
+}
+
+:host ::ng-deep .ng2-smart-filters input[placeholder="Etapa"] {
+    pointer-events: none; /* Impede cliques e interações */
+    background-color: #f2f2f2; /* Cor de fundo cinza para indicar desabilitado */
+    color: #999; /* Cor do texto cinza */
+    cursor: not-allowed; /* Muda o cursor para "não permitido" */
+}
+
+:host ::ng-deep .ng2-smart-filters input[placeholder="Inscrição"] {
+    pointer-events: none; /* Impede cliques e interações */
+    background-color: #f2f2f2; /* Cor de fundo cinza para indicar desabilitado */
+    color: #999; /* Cor do texto cinza */
+    cursor: not-allowed; /* Muda o cursor para "não permitido" */
+}

@@ -26,6 +26,6 @@ export class ModalidadesRoutingModule { }
 
 export const modalidadesRoutedComponents = [
   ModalidadesComponent,
-  ModalidadePesquisaComponent
+  ModalidadePesquisaComponent,
 ];
 

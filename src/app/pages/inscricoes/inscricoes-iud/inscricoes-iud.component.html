@@ -1,0 +1,181 @@
+<div class="full-screen" appFullScreenStyle [style.width.px]="width"> 
+    <form [formGroup]="inscricaoForm">
+        
+        <nb-card [nbSpinner]="isLoadingBalizaSerie" nbSpinnerSize="giant" nbSpinnerStatus="warning">
+            <nb-card-body>
+                <div *ngIf="dadosProva" class="prova-details-container"> <!-- Container geral -->
+        
+                    <!-- Linha 1: PROVA -->
+                    <div class="info-line">
+                         <div class="info-pair">
+                            <span class="titulo-prova_1">PROVA :</span>
+                            <span>{{ dadosProva.id }}</span>
+                        </div>
+                    </div>
+        
+                    <!-- Linha 2: CATEGORIA, NADO, PISCINA, DISTÂNCIA -->
+                    <div class="info-line">
+                        <div class="info-pair">
+                            <span class="titulo-prova_1">CATEGORIA :</span>
+                            <span>{{ dadosProva.categoriaDescricao }}</span>
+                        </div>
+                        <div class="info-pair">
+                            <span class="titulo-prova_2">TIPO NADO :</span>
+                            <span>{{ dadosProva.tipoNadoDescricao }}</span>
+                        </div>
+                        <div class="info-pair">
+                            <span class="titulo-prova_2">PISCINA :</span>
+                            <span>{{ dadosProva.tipoPiscina === 'C' ? 'CURTA' : (dadosProva.tipoPiscina === 'L' ? 'LONGA' : '') }}</span>
+                        </div>
+                         <div class="info-pair">
+                            <span class="titulo-prova_2">DISTÂNCIA :</span>
+                            <span>{{ dadosProva.distancia }} m</span>
+                        </div>
+                    </div>
+        
+                    <!-- Linha 3: MEDLEY, REVEZAMENTO, GÊNERO -->
+                    <div class="info-line">
+                         <div class="info-pair" *ngIf="dadosProva.medley">
+                            <span class="titulo-prova_3">MEDLEY :</span>
+                            <span>{{ dadosProva.medley === 'S' ? 'SIM' : 'NÃO' }}</span>
+                        </div>
+                        <div class="info-pair" *ngIf="dadosProva.revezamento">
+                            <span class="titulo-prova_2">REVEZAMENTO :</span>
+                            <span>{{ dadosProva.revezamento === 'S' ? 'SIM' : 'NÃO' }}</span>
+                        </div>
+                         <div class="info-pair" *ngIf="dadosProva.genero">
+                            <span class="titulo-prova_1">GÊNERO :</span>
+                            <span>
+                                <span>
+                                    {{ dadosProva.genero === 'F' ? 'Mulheres' : (dadosProva.genero === 'H' ? 'Homens' : 'Misto') }}
+                                  </span>
+                            </span>
+                        </div>
+                    </div>
+        
+                </div>
+            </nb-card-body>
+        </nb-card>
+
+        <nb-card>
+            <nb-card-body>
+                <input type="number" nbInput formControlName="id" hidden="true">
+                <input type="number" nbInput formControlName="provaId" hidden="true">
+                <input type="number" nbInput formControlName="empresa" hidden="true">
+
+                <div class="row">
+
+                    <div class="form-group col-md-2">
+                        <label for="serieInput">Série</label> <!-- Mude o 'for' para um ID único -->
+                        <input type="number" nbInput fullWidth id="serieInput" formControlName="serie">
+                         <!-- Adicionar validação -->
+                         <ng-container *ngIf="inscricaoForm.get('serie').invalid && (inscricaoForm.get('serie').dirty || inscricaoForm.get('serie').touched)">
+                            <p class="caption status-danger" *ngIf="inscricaoForm.get('serie').errors?.required">
+                                Série é obrigatória.
+                            </p>
+                         </ng-container>
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label for="balizaSelect">Raia</label> <!-- Mude o 'for' para um ID único -->
+                        <!-- Adicione um ID ao nb-select -->
+                        <nb-select id="balizaSelect" formControlName="baliza" placeholder="Selecione..." appSelectStyle fullWidth>
+                            <nb-option
+                              *ngFor="let raia of balizasDisponiveis"
+                              [value]="raia.value"> <!-- Apenas [value] -->
+                                {{raia.label}}
+                            </nb-option>
+                        </nb-select>
+                         <!-- Adicionar validação -->
+                         <ng-container *ngIf="inscricaoForm.get('baliza').invalid && (inscricaoForm.get('baliza').dirty || inscricaoForm.get('baliza').touched)">
+                            <p class="caption status-danger" *ngIf="inscricaoForm.get('baliza').errors?.required">
+                                Raia é obrigatória.
+                            </p>
+                         </ng-container>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="statusSelect">Fase</label> <!-- Mude o 'for' para um ID único -->
+                         <!-- Adicione um ID ao nb-select -->
+                        <nb-select id="statusTipoInscricaoSelect" formControlName="statusTipoInscricao" placeholder="Selecione..." appSelectStyle fullWidth>
+                            <nb-option
+                                *ngFor="let statusTi of statusTipoInscricaoSelect"
+                                [value]="statusTi.value"> <!-- REMOVA O [selected] -->
+                                {{statusTi.label}}
+                            </nb-option>
+                        </nb-select>
+                         <!-- Adicionar validação -->
+                         <ng-container *ngIf="inscricaoForm.get('statusTipoInscricao').invalid && (inscricaoForm.get('statusTipoInscricao').dirty || inscricaoForm.get('statusTipoInscricao').touched)">
+                            <p class="caption status-danger" *ngIf="inscricaoForm.get('statusTipoInscricao').errors?.required">
+                                Status Tipo Inscrição é obrigatório.
+                            </p>
+                         </ng-container>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="statusSelect">Status</label> <!-- Mude o 'for' para um ID único -->
+                         <!-- Adicione um ID ao nb-select -->
+                        <nb-select id="statusSelect" formControlName="status" placeholder="Selecione..." appSelectStyle fullWidth>
+                            <nb-option
+                                *ngFor="let status of statusSelect"
+                                [value]="status.value"> <!-- REMOVA O [selected] -->
+                                {{status.label}}
+                            </nb-option>
+                        </nb-select>
+                         <!-- Adicionar validação -->
+                         <ng-container *ngIf="inscricaoForm.get('status').invalid && (inscricaoForm.get('status').dirty || inscricaoForm.get('status').touched)">
+                            <p class="caption status-danger" *ngIf="inscricaoForm.get('status').errors?.required">
+                                Status é obrigatório.
+                            </p>
+                         </ng-container>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Grupo de formulário para Atleta -->
+                    <div class="form-group col-md-12" formGroupName="atleta">
+                        <label for="atletaNomeInput">Atleta</label> <!-- Mude o 'for' para um ID único -->
+                        <div class="input-group">
+                            <button type="button" name="btnAtleta" class="btn btn-outline-secondary btn-blue blue-border"
+                                (click)="showAtletasModal('atleta')"
+                                [disabled]="mode === 'edit'"
+                                [class.disabled-button]="mode === 'edit'">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <!-- Input apenas para mostrar o nome, ID está no formControl oculto -->
+                            <input type="text" nbInput fullWidth id="atletaNomeInput" formControlName="nome" readonly
+                                class="readonly-input" placeholder="Selecione um atleta...">
+                            <!-- ID do atleta (oculto ou não, dependendo da necessidade) -->
+                            <input type="number" formControlName="id" hidden="true">
+                        </div>
+                         <!-- Adicionar validação para o ID do atleta -->
+                         <ng-container *ngIf="inscricaoForm.get('atleta.id').invalid && (inscricaoForm.get('atleta.id').dirty || inscricaoForm.get('atleta.id').touched || inscricaoForm.dirty)">
+                             <p class="caption status-danger" *ngIf="inscricaoForm.get('atleta.id').errors?.required">
+                                 Atleta é obrigatório.
+                             </p>
+                         </ng-container>
+                    </div>
+                </div>
+                <div class="row">
+
+                <div class="form-group col-md-12">
+                    <label for="observacaoInput">Observação</label> <!-- Mude o 'for' para um ID único -->
+                    <textarea id="observacaoInput" formControlName="observacao" rows="1" nbInput fullWidth placeholder="Observação"></textarea>
+                </div>
+            </div>
+            </nb-card-body>
+
+            <nb-card-footer>
+                <button nbButton hero status="danger" class="mr-1" (click)="fecharJanelaModal('cancel')">Cancelar</button>
+                <button nbButton hero status="primary" (click)="salvarInscricao()" [disabled]="inscricaoForm.invalid">Salvar</button> <!-- Simplifique a condição de disable -->
+            </nb-card-footer>
+
+        </nb-card>
+
+    </form>
+     <!-- DEBUG: Mostrar valor do formulário -->
+     <!-- <pre>Form Value: {{ inscricaoForm.value | json }}</pre> -->
+     <!-- <pre>Form Status: {{ inscricaoForm.status | json }}</pre> -->
+     <!-- <pre>Baliza Value: {{ inscricaoForm.get('baliza').value }}</pre> -->
+     <!-- <pre>Status Value: {{ inscricaoForm.get('status').value }}</pre> -->
+</div>

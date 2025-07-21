@@ -1,0 +1,108 @@
+<!-- contato-iud.component.html -->
+<nb-card [accent]="modoEdicao ? 'info' : 'success'" class="dialog-card">
+
+    <nb-card-header>
+        {{ modoEdicao ? 'Editar Documento' : 'Novo Documento' }}
+        <button nbButton ghost shape="round" size="small" (click)="cancelar()" class="close-button">
+            <nb-icon icon="close-outline"></nb-icon>
+        </button>
+    </nb-card-header>
+
+    <nb-card-body>
+        <form [formGroup]="documentoForm" (ngSubmit)="salvar()">
+
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <label for="nomeCompleto" class="label">Nome</label>
+                    <input nbInput fullWidth id="nomeCompleto" placeholder="Nome" formControlName="nomePessoa" readonly="true"
+                        tabindex="-1" (focus)="$any($event.target).blur()" style="cursor: default;">
+                </div>
+            </div> 
+
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <label class="label">Tipo Documento:</label>
+                    <nb-radio-group formControlName="tipoDocumento" class="radio-group-flex-container">
+                        <nb-radio value="0" class="radio-flex-item">CTPS</nb-radio>
+                        <nb-radio value="1" class="radio-flex-item">CNH</nb-radio>
+                        <nb-radio value="2" class="radio-flex-item">INSCRIÇÃO MUNICIPAL</nb-radio>
+                        <nb-radio value="3" class="radio-flex-item">PASSAPORTE</nb-radio>
+                        <nb-radio value="4" class="radio-flex-item">RESERVISTA</nb-radio>
+                        <nb-radio value="5" class="radio-flex-item">RG</nb-radio>
+                        <nb-radio value="6" class="radio-flex-item">TÍTULO DE ELEITOR</nb-radio>
+                        <nb-radio value="7" class="radio-flex-item">RG PARA ESTRANGEIRO</nb-radio>
+                    </nb-radio-group>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <label for="numeroDocumento" class="label">Numero documento</label>
+                    <input nbInput fullWidth id="numeroDocumento" 
+                        placeholder="numeroDocumento..." 
+                        formControlName="numeroDocumento"
+                    > 
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="orgaoExpedidor" class="label">Orgão Expedidor</label>
+                    <input nbInput fullWidth id="orgaoExpedidor" placeholder="Orgao Expedidor..."
+                        formControlName="orgaoExpedidor">
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label for="complemento" class="label">Complemento</label>
+                    <input nbInput fullWidth id="complemento" placeholder="Referência..."
+                        formControlName="complemento">
+                </div>
+            </div>
+
+            <div>
+                <!-- <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="dataNascimento" class="label">Data de Expedição</label>
+                        <input nbInput fullWidth id="dataExpedicao" placeholder="dd/MM/yyyy" [nbDatepicker]="pickerExpedicao"
+                        formControlName="dataExpedicao" 
+                        >
+                        <nb-datepicker #pickerExpedicao
+                          format="dd/MM/yyyy"> 
+                        </nb-datepicker>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="dataNascimento" class="label">Data de Validade</label>
+                        <input nbInput fullWidth id="dataValidade" placeholder="dd/MM/yyyy" [nbDatepicker]="pickerValidade"
+                        formControlName="dataValidade" 
+                        >
+                        <nb-datepicker #pickerValidade
+                          format="dd/MM/yyyy"> 
+                        </nb-datepicker>
+                    </div>
+                </div> -->
+
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="dataEtapa">Data Expedição</label>
+                        <input type="date" nbInput formControlName="dataExpedicao" fullWidth id="dataExpedicao">
+                    </div>
+
+                    <div class=" form-group col-md-6">
+                        <label for="nome">Data Validade</label>
+                        <input type="date" nbInput formControlName="dataValidade" fullWidth id="dataValidae">
+                    </div>
+                </div> 
+            </div>
+
+        </form>
+    </nb-card-body>
+
+    <nb-card-footer class="text-right">
+        <button nbButton status="basic" (click)="cancelar()" class="mr-2" [disabled]="isLoadingSalvar">Cancelar</button>
+        <button nbButton status="danger" (click)="salvar()" [disabled]="documentoForm.invalid || isLoadingSalvar">
+            <nb-spinner *ngIf="isLoadingSalvar" size="tiny" class="button-spinner"></nb-spinner>
+            {{ modoEdicao ? 'Salvar Alterações' : 'Enviar' }}
+        </button>
+    </nb-card-footer>
+
+</nb-card>

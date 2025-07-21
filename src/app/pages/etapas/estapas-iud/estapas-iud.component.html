@@ -1,0 +1,89 @@
+<div class="full-screen" appFullScreenStyle [style.width.px]="width">
+    <form [formGroup]="etapaForm">
+        <nb-card>
+            <nb-card-body>
+                <div class="row">
+                    <div class="form-group">
+                        <input type="number" nbInput fullWidth maxlength="10" hidden="true" disabled="true"
+                            style="max-width: 100px;" id="id" formControlName="id">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="nome">Nome</label>
+                        <input type="text" nbInput fullWidth id="nome" formControlName="nome">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label for="nome">Campeonato</label>
+                            <nb-select formControlName="campeonato" placeholder="Selecione..." appSelectStyle
+                            [class.disabled-select]="mode === 'edit'"> 
+                                <nb-option *ngFor="let campeonato of campeonatos" [value]="campeonato.id">{{ campeonato.nome }}</nb-option>
+                            </nb-select>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label for="nome">Local</label>
+                            <nb-select formControlName="localCompeticao" placeholder="Selecione..." appSelectStyle>
+                                <nb-option *ngFor="let locaisCompeticoes of locaisCompeticoes"
+                                    [value]="locaisCompeticoes.id">{{ locaisCompeticoes.nome }}</nb-option>
+                            </nb-select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="dataEtapa">Data Etapa</label>
+                            <input type="date" nbInput formControlName="dataEtapa" fullWidth id="dataEtapa">
+                        </div>
+
+                        <div class=" form-group col-md-6">
+                            <label for="nome">Data Inscrição</label>
+                            <input type="date" nbInput formControlName="dataInscricao" fullWidth id="dataInscricao">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="pontua">Pontua</label>
+                        <nb-radio-group formControlName="pontua" [name]="pontuaName">
+                          <nb-radio value="S">Sim</nb-radio>
+                          <nb-radio value="N">Não</nb-radio>
+                        </nb-radio-group>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="acumula">Acumula</label>
+                        <nb-radio-group formControlName="acumula" [name]="acumulaName">
+                          <nb-radio value="S">Sim</nb-radio>
+                          <nb-radio value="N">Não</nb-radio>
+                        </nb-radio-group>
+                    </div>
+
+                    <!-- <div class="form-group col-md-4">
+                        <label for="nome">Acumula</label>
+                        <nb-button-group  (valueChange)="updateSingleSelectGroupValue($event)">
+                            <button nbButtonToggle value="S">Sim</button>
+                            <button nbButtonToggle value="N">Não</button>
+                        </nb-button-group>
+                    </div> -->
+                </div> 
+
+                <div class="form-group">
+                    <label for="nome">Descrição</label>
+                    <textarea formControlName="descricao" rows="1" nbInput fullWidth placeholder="Descrição"></textarea>
+                </div>
+
+            </nb-card-body>
+
+            <nb-card-footer>
+                <button nbButton hero status="danger" (click)="fecharModal('cancel')">Cancelar</button>
+                <button nbButton hero status="primary" (click)="salvarEtapa()" [disabled]="!etapaForm.valid">Salvar</button>
+            </nb-card-footer>
+        </nb-card>
+    </form>
+</div>

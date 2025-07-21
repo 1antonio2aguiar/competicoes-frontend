@@ -1,0 +1,18 @@
+
+<nb-card>
+  <nb-card-header>
+    Equipes
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="search-container">
+
+      <ng2-smart-table [settings]="settings" [source]="source"
+        (delete)="onDelete($event)"
+        (edit)="onEdit($event)"
+        (create)="onAdd()"
+      >
+      </ng2-smart-table>
+    </div>
+  </nb-card-body>
+</nb-card>

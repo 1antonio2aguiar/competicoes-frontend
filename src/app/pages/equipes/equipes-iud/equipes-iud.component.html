@@ -1,0 +1,79 @@
+<div class="full-screen" appFullScreenStyle [style.width.px]="width">
+    <form [formGroup]="equipeForm">
+        <nb-card>
+            <nb-card-body>
+                <div class="row">
+                    <div class="form-group">
+                        <input type="number" nbInput fullWidth maxlength="10" hidden="true" disabled="true"
+                            style="max-width: 100px;" id="id" formControlName="id">
+                    </div>
+                    <div class="form-group col-md-10">
+                        <label for="nome">Nome</label>
+                        <input type="text" nbInput fullWidth id="nome" formControlName="nome">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="sigla">Sigla</label>
+                        <input type="text" nbInput fullWidth id="sigla" formControlName="sigla">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="nome">Modalidade</label>
+                        <nb-select formControlName="modalidade" placeholder="Selecione..." appSelectStyle 
+                        [class.disabled-select]="mode === 'edit'"
+                        > 
+                            <nb-option *ngFor="let modalidade of modalidades" [value]="modalidade.id">{{ modalidade.nome }}</nb-option>
+                        </nb-select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12" formGroupName="agremiacao">
+                        <label for="nome">Agremiação</label>
+                        <div class="input-group">
+                            <button type="button" name="btnAgremiacao" class="btn btn-outline-secondary btn-blue blue-border" (click)="showPessoasModal('agremiacao')"
+                                [class.disabled-button]="mode === 'edit'">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <input type="text" nbInput fullWidth id="agremiacao" formControlName="nome" readonly
+                                class="readonly-input"> <!-- Adicionado readonly e a classe -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12" formGroupName="tecnico">
+                        <label for="nome">Técnico</label>
+                        <div class="input-group">
+                            <button type="button" name="btnTecnico" class="btn btn-outline-secondary btn-blue blue-border" (click)="showPessoasModal('tecnico')">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <input type="text" nbInput fullWidth id="tecnico" formControlName="nome" readonly
+                                class="readonly-input"> <!-- Adicionado readonly e a classe -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12" formGroupName="assistenteTecnico">
+                        <label for="nome">Assitente Técnico</label>
+                        <div class="input-group">
+                            <button type="button" name="btnAssistenteTecnico" class="btn btn-outline-secondary btn-blue blue-border" (click)="showPessoasModal('assistenteTecnico')">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <input type="text" nbInput fullWidth id="assistenteTecnico" formControlName="nome" readonly
+                                class="readonly-input"> <!-- Adicionado readonly e a classe -->
+                        </div>
+                    </div>
+                </div>
+                
+            </nb-card-body>
+
+            <nb-card-footer>
+                <button nbButton hero status="danger" class="mr-1" (click)="fecharJanelaModal('cancel')">Cancelar</button>
+                <button nbButton hero status="primary" (click)="salvarEquipe()" [disabled]="!equipeForm.valid">Salvar</button>
+            </nb-card-footer>
+        </nb-card>
+    </form>
+</div>

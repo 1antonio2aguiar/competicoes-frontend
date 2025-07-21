@@ -24,7 +24,7 @@ export class CampeonatosSelectService extends BaseResourceService<Campeonato>{
   
   // 1. Listar todos os registros (READ)
   listAll(): Promise<Campeonato[]> {
-    console.log('Chegou no service! ',this.apiPath + '/list' )
+    //console.log('Chegou no service! ',this.apiPath + '/list' )
     return this.http
       .get<Campeonato[]>(this.apiPath + '/list')
       .toPromise();
@@ -32,7 +32,7 @@ export class CampeonatosSelectService extends BaseResourceService<Campeonato>{
 
   onCampeonatoChangeService(event) {
     this.campeonatoEventHendlerId.emit(event); // Emitir o ID da Campeonato selecionada
-    console.log('Campeonato select service:', event);
+    //console.log('Campeonato select service:', event);
   }
 
   onCampeonatoChangeId(callBack:(campeonato: Campeonato) => void){

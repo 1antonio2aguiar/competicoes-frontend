@@ -1,0 +1,12 @@
+.custom-datepicker {
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Cantos arredondados */
+    padding: 6px;
+    transition: border-color 0.3s ease; /* Transição suave para o foco */
+
+    &:focus {
+        border-color: #5bc0de; /* Cor da borda no foco */
+        box-shadow: 0 0 8px rgba(91, 192, 222, 0.5); /* Sombra azul clara no foco */
+        outline: none; /* Remove o contorno padrão no foco */
+    }
+}

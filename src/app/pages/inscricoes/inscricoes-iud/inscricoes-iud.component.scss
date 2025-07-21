@@ -1,0 +1,176 @@
+nb-select[appselectstyle] {
+    /* Usando appselectstyle para maior especificidade */
+    display: block !important;
+    /* !important para garantir a sobrescrita */
+}
+
+nb-select.size-medium:not(.full-width) {
+    max-width: none !important; // Ou o valor que você deseja
+}
+
+nb-radio-group {
+    display: flex; // Ou inline-flex, dependendo do seu layout
+
+    nb-radio {
+        margin-right: 10px; // Espaçamento entre os "botões"
+
+        ::ng-deep {
+
+            // Para estilizar elementos internos do Nebular
+            .native-input {
+                display: none; // Esconde o radio button padrão
+            }
+
+            label {
+                padding: 8px 16px; // Adicione padding como um botão
+                border: 1px solid #ccc; // Adicione uma borda
+                border-radius: 4px; // Arredonde os cantos
+                cursor: pointer;
+
+                &.checked {
+                    // Estilo para o botão selecionado
+                    background-color: #218bff; // Cor de fundo
+                    color: white; // Cor do texto
+                    border-color: #218bff; // Cor da borda
+                }
+            }
+        }
+    }
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group button {
+    margin-right: 5px;
+    /* Adicione uma pequena margem para melhor visualização */
+}
+
+.input-group input {
+    flex: 1;
+    /* Faz com que o input ocupe o espaço restante */
+}
+
+.btn-blue {
+    //background-color: lightblue;
+    background-color: #eef0f2;
+    border: 2px solid #eef0f2;
+    //border: 2px solid #007bff;
+    border-radius: 5px;
+    /* Arredonda todos os cantos */
+}
+
+.blue-border {
+    //border: 2px solid #007bff; /* Ou qualquer outra cor */
+    border: 2px solid #eef0f2;
+    /* Ou qualquer outra cor */
+}
+
+.readonly-input {
+    background-color: #f0f0f0; // Cor de fundo mais clara
+    cursor: not-allowed; // Cursor de não permitido
+    color: #d1cdcd; // Cor do texto mais escura
+}
+
+.disabled-button {
+    //opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #dc3545 !important;
+    /* Vermelho Bootstrap (danger) */
+    border-color: #dc3545 !important;
+    color: white !important;
+    /* Garante que o texto seja legível em vermelho */
+
+    /* Remove os estilos de contorno padrão do Nebular */
+    &:hover {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+
+    /* Remove o estilo padrão do Nebular para botões desabilitados */
+    &[disabled] {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+}
+
+
+
+.info-line {
+    /* Usa Flexbox para alinhar os pares na horizontal */
+    display: flex;
+    /* Permite que os pares quebrem para a próxima linha se não couberem */
+    flex-wrap: wrap;
+    /* Alinha os itens na linha de base do texto */
+    align-items: baseline;
+    /* Espaçamento vertical entre as linhas de informação */
+    margin-bottom: 8px;
+    /* Espaçamento entre os pares na mesma linha */
+    column-gap: 20px;
+    /* Ajuste conforme necessário */
+    /* Espaçamento caso haja quebra de linha interna */
+    row-gap: 5px;
+}
+
+.titulo-prova_1 {
+    display: inline-block;
+    /* Essencial para aplicar width/min-width */
+    font-weight: bold;
+    color: blue;
+    /* Sua cor */
+    /* --- AJUSTE ESTA LARGURA --- */
+    min-width: 100px;
+    /* << TENTE ESTE VALOR E AUMENTE/DIMINUA */
+    /* Tente encontrar a largura do seu rótulo mais longo ("REVEZAMENTO :")
+       e adicione um pouco de espaço. */
+    padding-right: 3px;
+    /* Pequeno espaço antes do valor */
+    text-align: left;
+    /* Ou 'right' se preferir o ':' alinhado à direita */
+}
+
+.titulo-prova_2 {
+    display: inline-block;
+    /* Essencial para aplicar width/min-width */
+    font-weight: bold;
+    color: blue;
+    /* Sua cor */
+    /* --- AJUSTE ESTA LARGURA --- */
+    min-width: 80px;
+    /* << TENTE ESTE VALOR E AUMENTE/DIMINUA */
+    /* Tente encontrar a largura do seu rótulo mais longo ("REVEZAMENTO :")
+       e adicione um pouco de espaço. */
+    padding-right: 3px;
+    /* Pequeno espaço antes do valor */
+    text-align: left;
+    /* Ou 'right' se preferir o ':' alinhado à direita */
+}
+
+.titulo-prova_3 {
+    display: inline-block;
+    /* Essencial para aplicar width/min-width */
+    font-weight: bold;
+    color: blue;
+    /* Sua cor */
+    /* --- AJUSTE ESTA LARGURA --- */
+    min-width: 165px;
+    /* << TENTE ESTE VALOR E AUMENTE/DIMINUA */
+    /* Tente encontrar a largura do seu rótulo mais longo ("REVEZAMENTO :")
+       e adicione um pouco de espaço. */
+    padding-right: 3px;
+    /* Pequeno espaço antes do valor */
+    text-align: left;
+    /* Ou 'right' se preferir o ':' alinhado à direita */
+}
+
+/* Estilo para o valor (opcional) */
+.info-pair>span:not(.titulo-prova) {
+    display: inline-block;
+    /* Garante comportamento consistente */
+    word-break: break-word;
+    /* Permite que valores longos quebrem */
+}
+

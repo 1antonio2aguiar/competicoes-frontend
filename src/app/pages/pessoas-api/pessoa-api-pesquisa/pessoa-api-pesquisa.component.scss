@@ -1,0 +1,8 @@
+:host ::ng-deep .ng2-smart-filters input[placeholder="Situação"] {
+    pointer-events: none; /* Impede cliques e interações */
+    background-color: #f2f2f2; /* Cor de fundo cinza para indicar desabilitado */
+    color: #999; /* Cor do texto cinza */
+    pointer-events: none;
+    user-select: none;
+    cursor: not-allowed;
+}

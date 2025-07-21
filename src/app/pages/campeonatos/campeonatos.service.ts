@@ -5,6 +5,8 @@ import { BaseResourceService } from '../../shared/services/base-resource.service
 import { environment } from '../../../environments/environment';
 import { Campeonato } from '../../shared/models/campeonato';
 import { CampeonatosFiltro } from './campeonatos-filter';
+import { Filters } from '../../shared/filters/filters';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -17,15 +19,22 @@ export class CampeonatosService extends BaseResourceService<Campeonato>{
     super(environment.apiUrl + 'campeonatos', injector, Campeonato.fromJson);
   }
 
-  pesquisar(filtro: CampeonatosFiltro): Promise<any> {
+  pesquisar(filtro: Filters): Promise<any> {
+    let params = new HttpParams();
+
+    if (filtro.params) {
+      filtro.params.keys().forEach(key => {
+        params = params.set(key, filtro.params.get(key));
+      });
+    }
+
     return this.http
-      .get<any>(this.apiPath, {  })
+    .get<any>(this.apiPath +'/filter', { params })
       .toPromise()
       .then((response) => {
         const campeonatos = response.content;
         const resultado = {
-          campeonatos,
-          total: response.totalElements,
+          campeonatos
         };
         console.table('Resultado: ', resultado.campeonatos)
         return resultado;

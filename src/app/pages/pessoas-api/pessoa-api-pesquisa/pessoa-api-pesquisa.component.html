@@ -1,0 +1,23 @@
+<nb-card>
+    <nb-card-header>
+        Pessoas
+    </nb-card-header>
+
+    <nb-card-body>
+        <div class="search-container">
+            <ng2-smart-table [settings]="settings" [source]="source"
+                (delete)="onDelete($event)"
+                (edit)="onEdit($event)"
+                (create)="onAdd()" citoyens
+                (focusin)="onFilterFocus($event)"
+            >
+            </ng2-smart-table>
+
+            <div *ngIf="isLoading" class="text-center mt-3">
+                <nb-spinner status="primary"></nb-spinner>
+                <p>Carregando...</p>
+            </div>
+
+        </div>
+    </nb-card-body>
+</nb-card>

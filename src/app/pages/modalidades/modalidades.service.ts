@@ -25,33 +25,36 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
     }
 
     pesquisar(filtro: ModalidadesFiltro): Promise<any> {
-      /*let params = new HttpParams();
+      let params = filtro.params;
+      
       params = params
-        .append('page', filtro.pagina.toString())
-        .append('size', filtro.itensPorPagina.toString());*/
+      .append('page', filtro.pagina.toString())
+      .append('size', filtro.itensPorPagina.toString());
+      
+      //console.log('PARAMNETRO ', params)
 
       return this.http
-        .get<any>(this.apiPath, {  })
+        .get<any>(this.apiPath +'/filter', { params })
         .toPromise()
         .then((response) => {
           const modalidades = response.content;
+          const total = response.totalElements; 
           const resultado = {
             modalidades,
             total: response.totalElements,
           };
-          //console.table('Resultado: ', resultado.modalidades)
+          console.table('Resultado: ', response,  )
           return resultado;
     });
   }
 
   create(modalidade: Modalidade): Observable<Modalidade> {
-    console.log("Chegou no service create!")
     return from(this.http
       .post<Modalidade>(this.apiPath, modalidade)
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
-        console.log('Modalidade criada com sucesso:', response); // Log para verificar a resposta
+        //console.log('Modalidade criada com sucesso:', response); // Log para verificar a resposta
         return response; // Retorna a resposta para o Observable
     }));
   }
@@ -62,7 +65,7 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
-        console.log('Modalidade atualizada com sucesso:', response);
+        //console.log('Modalidade atualizada com sucesso:', response);
         return response;
     }));
   }
@@ -73,14 +76,14 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
-        console.log('Modalidade deletada com sucesso:', response); // Log para verificar a resposta
+        //console.log('Modalidade deletada com sucesso:', response); // Log para verificar a resposta
         return response;
       }));
   }
   
   // 1. Listar todos os registros (READ)
   listAll(): Promise<Modalidade[]> {
-    console.log('Chegou no service! ',this.apiPath + '/list' )
+    //console.log('Chegou no service! ',this.apiPath + '/list' )
     return this.http
       .get<Modalidade[]>(this.apiPath + '/list')
       .toPromise();

@@ -7,7 +7,7 @@ const routes: Routes = [{
   path: '',
   component: CampeonatosComponent,
   children: [{
-    path: 'campeonato-pesquisa',
+    path: 'campeonatos-pesquisa',
     component: CampeonatosPesquisaComponent,
   },],
 }];

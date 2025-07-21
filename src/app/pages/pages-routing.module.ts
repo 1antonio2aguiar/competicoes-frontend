@@ -5,6 +5,7 @@ import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 
+
 const routes: Routes = [{
   path: '',
   component: PagesComponent,
@@ -13,6 +14,10 @@ const routes: Routes = [{
       path: 'iot-dashboard',
       component: DashboardComponent,
     },
+    {
+      path:  'atletas',
+      loadChildren: () => import('./atletas/atletas.module').then(m => m.AtletasModule),
+    },
     
     {
       path: 'campeonatos',
@@ -20,8 +25,28 @@ const routes: Routes = [{
     },
 
     {
+      path: 'categorias',
+      loadChildren: () => import('./categorias/categorias.module').then(m => m.CategoriasModule),
+    },
+
+    {
+      path: 'apuracoes',
+      loadChildren: () => import('./apuracoes/apuracoes.module').then(m => m.ApuracoesModule),
+    },
+
+    {
+      path: 'equipes',
+      loadChildren: () => import('./equipes/equipes.module').then(m => m.EquipesModule),
+    },
+
+    {
       path: 'etapas',
       loadChildren: () => import('./etapas/etapas.module').then(m => m.EtapasModule),
+    },
+
+    {
+      path: 'inscricoes',
+      loadChildren: () => import('./inscricoes/inscricoes.module').then(m => m.InscricoesModule),
     },
 
     {
@@ -33,7 +58,27 @@ const routes: Routes = [{
       path: 'modalidades',
       loadChildren: () => import('./modalidades/modalidades.module').then(m => m.ModalidadesModule),
     },
+
+    {
+      path: 'pessoas-api',
+      loadChildren: () => import('./pessoas-api/pessoa-api.module').then(m => m.PessoaApiModule),
+    },
+
+    {
+      path: 'pontuacao',
+      loadChildren: () => import('./pontuacao/pontuacao.module').then(m => m.PontuacaoModule),
+    },
+
+
+    {
+      path: 'provas',
+      loadChildren: () => import('./provas/provas.module').then(m => m.ProvasModule),
+    },
     
+    {
+      path: 'tipos-nado',
+      loadChildren: () => import('./tipos-nado/tipos-nado.module').then(m => m.TiposNadoModule),
+    },
 
     {
       path: 'layout',

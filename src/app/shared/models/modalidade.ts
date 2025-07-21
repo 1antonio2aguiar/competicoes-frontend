@@ -13,3 +13,4 @@ export class Modalidade extends BaseResourceModel {
       return Object.assign(new Modalidade(), jsonData);
   }
 }
+

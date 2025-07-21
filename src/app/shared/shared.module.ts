@@ -18,6 +18,7 @@ import { CpfPipe } from './pipes/cpf.pipe';
 import { SexoPipe } from './pipes/sexo.pipe';
 import { SimNaoPipe } from './pipes/sim-nao.pipe';
 import { CepPipe } from './pipes/cep.pipe';
+
 import { ToastModule } from "primeng/toast";
 import { LOCALE_ID } from '@angular/core';
 

@@ -1,10 +1,11 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
 import { environment } from '../../../environments/environment';
 import { Etapa } from '../../shared/models/etapa';
 import { Filters } from '../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
+import EtapaOutput from '../../shared/models/etapaOutput';
 
 @Injectable({
   providedIn: 'root'
@@ -12,29 +13,21 @@ import { HttpParams } from '@angular/common/http';
 
 @Injectable()
 export class EtapasService extends BaseResourceService<Etapa>{
+  // etapa por id.
+  private etapaEventHendlerId: EventEmitter<Etapa>
 
   constructor(protected injector: Injector) {
     super(environment.apiUrl + 'etapas', injector, Etapa.fromJson);
+    this.etapaEventHendlerId = new EventEmitter<Etapa>();
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    //const originalParams = new HttpParams();
-    //let modifiedParams = originalParams;
-
     let params = filtro.params;
 
-    if (filtro.campeonatoId) {
-      params = params 
-      .append('page', filtro.pagina.toString())
-      .append('size', filtro.itensPorPagina.toString())
-      .append('campeonato', filtro.campeonato.toString())
-
-      console.log('Filtro ' , params)
-
-    } else {
-      params = params 
-      .append('page', filtro.pagina.toString())
-      .append('size', filtro.itensPorPagina.toString())
+    if (filtro.params) {
+      filtro.params.keys().forEach(key => {
+        params = params.set(key, filtro.params.get(key));
+      });
     }
 
     return this.http
@@ -43,18 +36,50 @@ export class EtapasService extends BaseResourceService<Etapa>{
       .then((response) => {
         const etapas = response.content;
         const resultado = {
-          etapas,
-          total: response.totalElements,
+          etapas
         };
-        console.table('Resultado: ', resultado.etapas)
+        //console.table('Resultado: ', etapas)
         return resultado;
+        //return etapas
     });
   }
 
+  /*pesquisar(filtro: Filters): Promise<any> {
+    let params = new HttpParams();
+
+    params = params 
+      .append('page', filtro.pagina.toString())
+      .append('size', filtro.itensPorPagina.toString());
+    
+
+    return this.http
+    .get<any>(this.apiPath +'/filter', { })
+      .toPromise()
+      .then((response) => {
+        const etapas = response.content;
+        const resultado = {
+          etapas,
+          total: response.totalElements,
+        };
+        console.table('Resultado: ', etapas)
+        return resultado;
+        //return etapas
+    });
+  }*/
+
   listAll(): Promise<Etapa[]> {
     return this.http
-      .get<Etapa[]>(this.apiPath)
+      .get<Etapa[]>(this.apiPath + '/list')
       .toPromise();
+  }
+
+  getEtapaById(etapaId): Promise<Etapa> { // Retorna Promise<Etapa>
+    return this.http.get<Etapa>(this.apiPath + '/' + etapaId)
+      .toPromise();
+  }
+
+  etapasubscribeId(callBack:(etapa: EtapaOutput) => void){
+    this.etapaEventHendlerId.subscribe(callBack)
   }
 
   create(etapa: Etapa): Observable<Etapa> {

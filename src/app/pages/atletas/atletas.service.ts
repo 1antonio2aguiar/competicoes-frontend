@@ -1,0 +1,97 @@
+import { Injectable, Injector, EventEmitter } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
+import { Observable, from } from 'rxjs';
+
+import { BaseResourceService } from '../../shared/services/base-resource.service';
+import { environment } from '../../../environments/environment';
+import { Filters } from '../../shared/filters/filters';
+
+import { Atleta } from '../../shared/models/atleta';
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export class AtletasService extends BaseResourceService<Atleta>{
+
+  // etapa por id.
+  private atletaEventHendlerId: EventEmitter<Atleta>
+
+  constructor(protected injector: Injector) {
+      super(environment.apiUrl + 'atleta', injector, Atleta.fromJson);
+      this.atletaEventHendlerId = new EventEmitter<Atleta>();
+  }
+
+  pesquisar(filtro: Filters): Promise<any> {
+    let params = new HttpParams();
+
+    if (filtro.params) {
+      filtro.params.keys().forEach(key => {
+        params = params.set(key, filtro.params.get(key));
+      });
+    }
+
+    return this.http
+    .get<any>(this.apiPath +'/filter', { params })
+      .toPromise()
+      .then((response) => {
+        const atletas = response.content;
+        const resultado = {
+          atletas
+        };
+        //console.table('Resultado: ', atletas)
+        return resultado;
+    });
+  }
+
+  listAll(): Promise<Atleta[]> {
+    return this.http
+      .get<Atleta[]>(this.apiPath)
+      .toPromise();
+  }
+  
+  getAtletaById(atletaId): Promise<Atleta> { 
+    return this.http.get<Atleta>(this.apiPath + '/' + atletaId)
+      .toPromise();
+  }
+
+  create(atleta: Atleta): Observable<Atleta> {
+      atleta.empresaId = 1;
+  
+      //console.log('ta no create ', atleta)
+      return from(this.http
+        .post<Atleta>(this.apiPath, atleta)
+        .toPromise()
+        .then(response => {
+          // Lidar com a resposta da API
+          //console.log('Atleta criado com sucesso:', response); // Log para verificar a resposta
+          return response; // Retorna a resposta para o Observable
+      }));
+    }
+  
+    update(atleta: Atleta): Observable<Atleta> {
+      
+      atleta.empresaId = 1;
+  
+      return from(this.http
+        .put<Atleta>(`${this.apiPath}/${atleta.id}`, atleta)
+        .toPromise()
+        .then(response => {
+          // Lidar com a resposta da API
+          //.log('Atleta atualizada com sucesso:', response);
+          return response;
+      }));
+    }
+  
+    delete(id: number): Observable<any> {
+      return from(this.http
+        .delete<any>(`${this.apiPath}/${id}`)
+        .toPromise()
+        .then(response => {
+          // Lidar com a resposta da API
+          console.log('Atleta deletado com sucesso:', response); // Log para verificar a resposta
+          return response;
+        }));
+    }
+
+}

@@ -7,6 +7,10 @@
   }
 }
 
+:host ::ng-deep ng2-smart-table-pager {
+  justify-content: center;
+}
+
 /*.modalidade-column {
   min-width: 200px; 
 }*/
@@ -38,3 +42,17 @@
   visibility: hidden;
 }
 
+// No seu componente .scss ou .css
+:host ::ng-deep .ng2-smart-filters input[placeholder="Descrição"] {
+  pointer-events: none; /* Impede cliques e interações */
+  background-color: #f2f2f2; /* Cor de fundo cinza para indicar desabilitado */
+  color: #999; /* Cor do texto cinza */
+  cursor: not-allowed; /* Muda o cursor para "não permitido" */
+}
+
+:host ::ng-deep .ng2-smart-filters input[placeholder="Modalidade"] {
+  pointer-events: none; /* Impede cliques e interações */
+  background-color: #f2f2f2; /* Cor de fundo cinza para indicar desabilitado */
+  color: #999; /* Cor do texto cinza */
+  cursor: not-allowed; /* Muda o cursor para "não permitido" */
+}

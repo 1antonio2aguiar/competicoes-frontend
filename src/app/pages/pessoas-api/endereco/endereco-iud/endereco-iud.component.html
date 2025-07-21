@@ -1,0 +1,191 @@
+<!-- endereco-iud.component.html -->
+<nb-card [accent]="modoEdicao ? 'info' : 'success'" class="dialog-card">
+
+  <nb-card-header>
+    {{ modoEdicao ? 'Editar Endereço de: ' : 'Novo Endereço para: ' }} {{nomePessoa}}
+    <button nbButton ghost shape="round" size="small" (click)="cancelar()" class="close-button">
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form [formGroup]="enderecoForm" (ngSubmit)="salvar()">
+
+      <!--<div class="row">
+        <div class="col-md-12 form-group">
+          <label for="nomeCompleto" class="label">Nome</label>
+          <input nbInput fullWidth id="nomeCompleto" placeholder="Nome" formControlName="nomePessoa" readonly="true"
+            tabindex="-1" (focus)="$any($event.target).blur()" style="cursor: default;">
+        </div>
+      </div> -->
+
+      <div class="row">
+        <div class="col-md-6 form-group">
+          <label for="cep" class="label">CEP</label>
+          <input nbInput #cepInput fullWidth id="cep" placeholder="00000-000" formControlName="cep" (blur)="buscarCep()"
+            (input)="onCepInput($event)">
+          <nb-spinner *ngIf="isLoadingCep" size="tiny" status="info" class="ml-2"></nb-spinner>
+        </div>
+
+        <div class="col-md-6 form-group">
+          <label for="tipoLogradouroDisplay" class="label">Tipo Logradouro</label>
+
+          <nb-select fullWidth 
+              id="tipoLogradouroId" 
+              placeholder="Selecione..." 
+              formControlName="tipoLogradouro"
+              search-placeholder="Pesquisar tipo..."
+            >
+            <nb-option *ngFor="let tl of tiposLogradouro" [value]="tl.id">{{ tl.descricao }}</nb-option>
+          </nb-select>
+        </div>
+        
+        <!--<input nbInput fullWidth id="tipoLogradouroDisplay" placeholder="Tipo" formControlName="tipoLogradouro"
+            tabindex="-1" readonly="true" (focus)="$any($event.target).blur()" style="cursor: default;">
+        </div> -->
+      </div>
+
+      <div class="row">
+        <div class="col-md-10 form-group">
+          <label for="cidade" class="label">Cidade</label>
+
+          <input nbInput fullWidth id="cidadeIdInput" formControlName="cidadeId" [hidden]="true">
+
+          <input nbInput fullWidth id="cidadeNomeInput" placeholder="Digite para buscar por Nome"
+            formControlName="cidadeNome" [nbAutocomplete]="autoCidade" 
+            #cidadeNomeInputRef
+          >
+
+          <nb-autocomplete #autoCidade (selectedChange)="onCidadeSelecionada($event)">
+            <nb-option *ngFor="let cidade of cidadesPesquisa" [value]="cidade">
+              <!-- Exibir informações úteis para o usuário escolher -->
+              {{ cidade.cidadeNome }} - {{ cidade.uf }}
+            </nb-option>
+            <nb-option *ngIf="isLoadingCidades && (!cidadesPesquisa || cidadesPesquisa.length === 0)"
+              disabled>
+              Buscando...
+            </nb-option>
+            <!-- Condição para "Nenhum resultado" -->
+            <nb-option
+              *ngIf="!isLoadingCidades && (!cidadesPesquisa || cidadesPesquisa.length === 0) && cidadeNomeInputRef.value?.length >= 3 && enderecoForm.get('cidadeNome')?.dirty"
+              disabled>
+              Nenhuma cidade encontrada.
+            </nb-option>
+          </nb-autocomplete>
+          <nb-spinner *ngIf="isLoadingCidades" size="tiny" status="info" class="ml-2"></nb-spinner>
+        </div>
+
+        <div class="col-md-2 form-group">
+          <label for="uf" class="label">UF</label>
+          <input nbInput fullWidth id="uf" placeholder="UF" formControlName="uf" tabindex="-1" readonly="true"
+            (focus)="$any($event.target).blur()" style="cursor: default;">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 form-group">
+          <label for="logradouroNomeInput" class="label">Logradouro</label>
+          <input nbInput fullWidth id="logradouroNomeInput" placeholder="Digite para buscar por Nome"
+            formControlName="logradouroNome" [nbAutocomplete]="autoLogradouro" 
+            #logradouroNomeInputRef
+          >
+
+          <nb-autocomplete #autoLogradouro (selectedChange)="onLogradouroSelecionado($event)">
+            <nb-option *ngFor="let logradouro of logradourosPesquisa" [value]="logradouro">
+              <!-- Exibir informações úteis para o usuário escolher -->
+              {{ logradouro.logradouroNome }} {{ logradouro.cidadeNome }} - {{ logradouro.uf }}
+            </nb-option>
+            <nb-option *ngIf="isLoadingLogradouros && (!logradourosPesquisa || logradourosPesquisa.length === 0)"
+              disabled>
+              Buscando...
+            </nb-option>
+            <!-- Condição para "Nenhum resultado" -->
+            <nb-option
+              *ngIf="!isLoadingLogradouros && (!logradourosPesquisa || logradourosPesquisa.length === 0) && logradouroNomeInputRef.value?.length >= 3 && enderecoForm.get('logradouroNome')?.dirty"
+              disabled>
+              Nenhum logradouro encontrado.
+            </nb-option>
+          </nb-autocomplete>
+          <nb-spinner *ngIf="isLoadingLogradouros" size="tiny" status="info" class="ml-2"></nb-spinner>
+        </div>
+      </div> 
+      
+      <!--
+
+        outra forma de pegar o cep tabem muito eficiente
+      
+         <div class="row">
+        <div class="col-md-12 form-group">
+          <label for="cep" class="label">CEP</label>
+          <input nbInput fullWidth id="cep" placeholder="00000-000" formControlName="cep" mask="00000-000">
+          <nb-spinner *ngIf="isLoadingCep" size="tiny" status="info" class="ml-2"></nb-spinner>
+           <ng-container *ngIf="enderecoForm.get('cep')?.invalid && (enderecoForm.get('cep')?.dirty || enderecoForm.get('cep')?.touched)">
+            <p *ngIf="enderecoForm.get('cep')?.errors?.['required']" class="text-danger caption status-danger">
+              CEP é obrigatório.
+            </p>
+          </ng-container>
+        </div>
+      </div>
+      
+      -->
+
+       <div class="row">
+         <div class="col-md-3 form-group">
+          <label for="numero" class="label">Número</label>
+          <input nbInput fullWidth id="numero" placeholder="Nº" formControlName="numero">
+        </div>
+
+        <div class="col-md-9 form-group">
+          <label for="complemento" class="label">Complemento/Referências</label>
+          <input nbInput fullWidth id="complemento" placeholder="Apto, Bloco, Ponto de Referência..."
+            formControlName="complemento">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 form-group" formGroupName="bairros">
+          <label for="bairroId" class="label">Bairro</label>
+      
+          <nb-select fullWidth id="bairroId" placeholder="Bairro" formControlName="id">
+            <!-- <<<<<<<< ALTERADO PARA 'id' <<<<<<<< -->
+      
+            <nb-option *ngFor="let bairro of bairros" [value]="bairro.id"> <!-- [value] é o ID -->
+              {{ bairro.nome }} <!-- o que é exibido para o usuário é o nome -->
+            </nb-option>
+      
+            <!-- Opcional: Mostrar mensagem se a lista estiver vazia após busca -->
+            <nb-option *ngIf="bairros.length === 0 && enderecoForm.get('cep')?.valid && !isLoadingCep" disabled>
+              Nenhum bairro encontrado para este CEP.
+            </nb-option>
+      
+          </nb-select>
+      
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 form-group">
+          <label class="label">Salvar Como:</label>
+          <nb-radio-group formControlName="tipoEndereco" class="d-flex">
+            <nb-radio value="CASA" class="mr-3">Casa</nb-radio>
+            <nb-radio value="TRABALHO">Trabalho</nb-radio>
+          </nb-radio-group>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-md-12 form-group">
+          <nb-checkbox formControlName="principal">Definir como endereço principal</nb-checkbox>
+        </div>
+      </div>
+
+    </form>
+  </nb-card-body>
+  <nb-card-footer class="text-right">
+    <button nbButton status="basic" (click)="cancelar()" class="mr-2" [disabled]="isLoadingSalvar">Cancelar</button>
+    <button nbButton status="danger" (click)="salvar()" [disabled]="enderecoForm.invalid || isLoadingSalvar">
+      <nb-spinner *ngIf="isLoadingSalvar" size="tiny" class="button-spinner"></nb-spinner>
+      {{ modoEdicao ? 'Salvar Alterações' : 'Enviar' }}
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,65 @@
+<div class="full-screen" appFullScreenStyle [style.width.px]="width"> 
+    <form [formGroup]="atletaForm">
+        <nb-card>
+            <nb-card-body>
+                <div class="row">
+                    <div class="form-group">
+                        <input type="number" nbInput fullWidth maxlength="10" hidden="true" disabled="true"
+                            style="max-width: 100px;" id="id" formControlName="id">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12" formGroupName="pessoa">
+                        <label for="nome">Atleta</label>
+                        <div class="input-group">
+                            <button type="button" name="btnAtleta" class="btn btn-outline-secondary 
+                            btn-blue blue-border" (click)="showPessoasModal('pessoa')" 
+                            [disabled]="mode === 'edit'"
+                            [class.disabled-button]="mode === 'edit'">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <input type="text" nbInput fullWidth id="pessoa" formControlName="nome" readonly
+                                class="readonly-input"> <!-- Adicionado readonly e a classe -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12" formGroupName="equipe">
+                        <label for="nome">Equipe</label>
+                        <div class="input-group">
+                            <button type="button" name="btnEquipe" class="btn btn-outline-secondary 
+                            btn-blue blue-border" (click)="showEquipesModal('equipe')">
+                                <nb-icon icon="search-outline"></nb-icon>
+                            </button>
+                            <input type="text" nbInput fullWidth id="equipe" formControlName="nome" readonly
+                                class="readonly-input"> <!-- Adicionado readonly e a classe -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="nome">Categoria</label>
+                        <nb-select formControlName="categoria" placeholder="Selecione..." appSelectStyle>
+                            <nb-option *ngFor="let categoria of categorias" [value]="categoria.id">{{categoria.descricao}}</nb-option>
+                        </nb-select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome">Observação</label>
+                    <textarea formControlName="observacao" rows="1" nbInput fullWidth placeholder="Observação"></textarea>
+                </div>
+            </nb-card-body>
+
+            <nb-card-footer>
+                <button nbButton hero status="danger" class="mr-1" (click)="fecharJanelaModal('cancel')">Cancelar</button>
+                <button nbButton hero status="primary" (click)="salvarAtleta()" [disabled]="!atletaForm.valid">Salvar</button>
+            </nb-card-footer>
+
+        </nb-card>
+
+    </form>
+</div>

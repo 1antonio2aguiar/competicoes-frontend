@@ -1,0 +1,13 @@
+.search-container {
+    display: flex;
+    flex-direction: column; /* Organiza os elementos verticalmente */
+}
+
+.search-container select {
+    margin-bottom: 5px; /* Ajuste o valor 10px conforme necessário */
+}
+
+.search-container ng2-smart-table {
+    margin-top: 5px; /* Ajuste o valor 10px conforme necessário */
+}
+

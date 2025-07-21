@@ -24,7 +24,7 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
   
   // 1. Listar todos os registros (READ)
   listAll(): Promise<Modalidade[]> {
-    //console.log('Chegou no service! ',this.apiPath + '/list' )
+    //console.log('Chegou no service! ', this.apiPath + '/list')
     return this.http
       .get<Modalidade[]>(this.apiPath + '/list')
       .toPromise();

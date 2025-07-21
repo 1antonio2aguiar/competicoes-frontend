@@ -34,13 +34,27 @@ export const MENU_ITEMS: NbMenuItem[] = [
     title: 'Cadastros',
     icon: 'layout-outline',
     children: [
+
+      {
+        title: 'Atletas',
+        link: '/pages/atletas/atletas-pesquisa',
+      },
+
       {
         title: 'Campeonatos',
-        link: '/pages/campeonatos/campeonato-pesquisa',
+        link: '/pages/campeonatos/campeonatos-pesquisa',
+      },
+      {
+        title: 'Categorias',
+        link: '/pages/categorias/categorias-uid',
+      },
+      {
+        title: 'Equipes',
+        link: '/pages/equipes/equipes-pesquisa',
       },
       {
         title: 'Etapas',
-        link: '/pages/etapas/etapas-iud',
+        link: '/pages/etapas/etapas-pesquisa',
       },
       {
         title: 'Locais Competições',
@@ -50,6 +64,36 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Modalidades',
         link: '/pages/modalidades/modalidade-pesquisa',
       },
+
+      {
+        title: 'Pontuação',
+        link: '/pages/pontuacao/pontuacao-iud',
+      },
+
+      {
+      title: 'Pessoas',
+          link: '/pages/pessoas-api/pessoa-api-pesquisa',
+      },
+      
+      /*{
+        title: 'Pessoas',
+        icon: 'layout-outline',
+        children: [{
+          title: 'Pessoas',
+          link: '/pages/pessoas-api/pessoa-api-pesquisa',
+        }],
+      },*/
+
+      {
+        title: 'Provas',
+        link: '/pages/provas/provas-pesquisa',
+      },
+
+      {
+        title: 'Tipos Nado (Estilos)',
+        link: '/pages/tipos-nado/tipos-nado-iud',
+      },
+      
       {
         title: 'Stepper',
         link: '/pages/layout/stepper',
@@ -78,6 +122,15 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'edit-2-outline',
     children: [
       {
+        title: 'Digitar/Apurar Resultados',
+        link: '/pages/apuracoes/apuracoes-pesquisa',
+      },
+      {
+        title: 'Inscrições',
+        link: '/pages/inscricoes/inscricoes-pesquisa',
+      },
+
+      /*{
         title: 'Form Inputs',
         link: '/pages/forms/inputs',
       },
@@ -92,7 +145,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'Datepicker',
         link: '/pages/forms/datepicker',
-      },
+      },*/
     ],
   },
   {

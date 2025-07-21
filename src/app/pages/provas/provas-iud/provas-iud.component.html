@@ -1,0 +1,133 @@
+<div class="full-screen" appFullScreenStyle [style.width.px]="width">
+    <form [formGroup]="provaForm"> 
+        <nb-card>
+            <nb-card-body>
+                <div class="row">
+                    <div class="form-group">
+                        <input type="number" nbInput fullWidth maxlength="10" hidden="true" disabled="true"
+                            style="max-width: 100px;" id="id" formControlName="id">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="nome">Campeonato</label>
+                        <nb-select formControlName="campeonato" placeholder="Selecione..." 
+                            appSelectStyle  [class.disabled-select]="mode === 'edit'" 
+                            (selectedChange)="onCampeonatoChange($event)">
+                            <nb-option *ngFor="let campeonato of campeonatos" [value]="campeonato.id">{{campeonato.nome}}</nb-option>
+                        </nb-select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="nome">Etapa</label>
+                        <nb-select formControlName="etapa" placeholder="Selecione..." 
+                        appSelectStyle  [class.disabled-select]="mode === 'edit'">
+                            <nb-option *ngFor="let etapa of etapas" [value]="etapa.id">{{etapa.nome}}</nb-option>
+                        </nb-select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="nome">Categoria</label>
+                        <nb-select formControlName="categoria" placeholder="Selecione..." appSelectStyle>
+                            <nb-option *ngFor="let categoria of categorias" [value]="categoria.id">{{categoria.descricao}}</nb-option>
+                        </nb-select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="nome">Tipo Nado</label>
+                        <nb-select formControlName="tipoNado" placeholder="Selecione..." appSelectStyle>
+                            <nb-option *ngFor="let tipoNado of tiposNado" [value]="tipoNado.id">{{tipoNado.descricao}}</nb-option>
+                        </nb-select>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label for="distancia">Distância</label>
+                        <nb-select formControlName="distancia" placeholder="Selecione..." appSelectStyle>
+                            <nb-option 
+                                *ngFor="let distancia of distanciaSelect" [value]="distancia.value"
+                                [selected]="distancia.selected">{{distancia.label}}
+                            </nb-option>
+                        </nb-select>
+                    </div>
+                    
+                    <div class="form-group col-md-4">
+                        <label for="record">Índice Técnico</label>
+                        <div class="input-group">
+                            <input type="text" nbInput placeholder="HH:mm:ss:SSS" formControlName="indiceTecnico" 
+                            (keyup)="formatarTempo($event)" 
+                            data-form-control-name="indiceTecnico" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group col-md-4">
+                        <label for="record">Record</label>
+                        <div class="input-group">
+                            <input type="text" nbInput placeholder="HH:mm:ss:SSS" formControlName="record" 
+                            (keyup)="formatarTempo($event)" 
+                            data-form-control-name="record"/>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="revezamento">Revezamento</label>
+                        <nb-radio-group formControlName="revezamento" [name]="revezamento">
+                          <nb-radio value="S">Sim</nb-radio>
+                          <nb-radio value="N">Não</nb-radio>
+                        </nb-radio-group>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="tipoPiscina">Tipo Piscina</label>
+                        <nb-radio-group formControlName="tipoPiscina" [name]="tipoPiscinaName">
+                          <nb-radio value="L">Longa</nb-radio>
+                          <nb-radio value="C">Curta</nb-radio>
+                        </nb-radio-group>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="medley">Medley</label>
+                        <nb-radio-group formControlName="medley" [name]="medley">
+                          <nb-radio value="S">Sim</nb-radio>
+                          <nb-radio value="N">Não</nb-radio>
+                        </nb-radio-group>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="genero">Gênero</label>
+                        <nb-radio-group formControlName="genero" [name]="genero">
+                            <nb-radio value="H">Homens</nb-radio>
+                            <nb-radio value="F">mulheres</nb-radio>
+                            <nb-radio value="M">Misto</nb-radio>
+                        </nb-radio-group>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="form-group">
+                            <label for="nome">Observação</label>
+                            <textarea formControlName="observacao" rows="1" nbInput fullWidth placeholder="Observação"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </nb-card-body>
+
+            <nb-card-footer>
+                <button nbButton hero status="danger" class="mr-1" (click)="fecharJanelaModal('cancel')">Cancelar</button>
+                <button nbButton hero status="primary" (click)="salvarProva()" [disabled]="!provaForm.valid">Salvar</button>
+            </nb-card-footer>
+
+        </nb-card>
+
+    </form>    
+</div>    

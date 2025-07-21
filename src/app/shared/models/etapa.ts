@@ -13,7 +13,6 @@ export class Etapa extends BaseResourceModel {
 
       public pontua?: string,
 	    public acumula?: string,
-	    public tipo_piscina?: string,
 
       public empresaId?: number,
       public empresa?: Empresa,
@@ -32,7 +31,7 @@ export class Etapa extends BaseResourceModel {
     const etapas = {
       ...jsonData,
       empresaId: jsonData["empresa"]["id"],
-      modalidadeId:  jsonData["campeonato"]["id"],
+      campeonatoId:  jsonData["campeonato"]["id"],
       localCompeticaoId:  jsonData["localCompeticao"]["id"]
     };
     return Object.assign(new Etapa(), etapas);

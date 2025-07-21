@@ -1,0 +1,46 @@
+nb-select[appselectstyle] {
+    /* Usando appselectstyle para maior especificidade */
+    display: block !important;
+    /* !important para garantir a sobrescrita */
+}
+
+nb-select.size-medium:not(.full-width) {
+    max-width: none !important; // Ou o valor que você deseja
+}
+
+nb-radio-group {
+    display: flex; // Ou inline-flex, dependendo do seu layout
+
+    nb-radio {
+        margin-right: 10px; // Espaçamento entre os "botões"
+
+        ::ng-deep {
+
+            // Para estilizar elementos internos do Nebular
+            .native-input {
+                display: none; // Esconde o radio button padrão
+            }
+
+            label {
+                padding: 8px 16px; // Adicione padding como um botão
+                border: 1px solid #ccc; // Adicione uma borda
+                border-radius: 4px; // Arredonde os cantos
+                cursor: pointer;
+
+                &.checked {
+                    // Estilo para o botão selecionado
+                    background-color: #7ab6f3; // Cor de fundo
+                    color: white; // Cor do texto
+                    border-color: #7ab6f3; // Cor da borda
+                }
+            }
+        }
+    }
+}
+
+.disabled-select {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    color: white !important;
+}

@@ -13,6 +13,7 @@ import { ModalidadesService } from '../modalidades.service';
       [fullWidth]="true"
       (selectedChange)="onModalidadeChange($event)"
       #selectComponent
+      [disabled]="readOnly"
     >
       <nb-option *ngFor="let modalidade of modalidades" [value]="modalidade.id">
         {{ modalidade.nome }}
@@ -26,6 +27,7 @@ export class ModalidadeSelectComponent implements OnInit {
   //@Output() modalidadeChanged = new EventEmitter<number>(); // Emite a modalidade selecionada
 
   @Input() cell: any; // Recebe a célula atual do ng2-smart-table
+  @Input() readOnly: boolean = false; // Adiciona uma propriedade para controlar a edição
   
   modalidades: Modalidade[] = [];
   selectedItem: number;
@@ -37,6 +39,16 @@ export class ModalidadeSelectComponent implements OnInit {
     this.modalidades = await this.loadModalidades();
     // Inicializa selectedItem com o valor da célula (se houver)
     this.selectedItem = this.cell.newValue || null;
+
+    // Inicializa selectedItem com o valor da célula (se houver)
+    // Verifica se o valor da célula é um objeto modalidade
+    if (!this.cell.newValue) {
+      this.selectedItem = this.cell.newValue.id; // Se for, pega o id da modalidade
+      this.readOnly = false;
+    } else {
+      this.selectedItem = this.cell.newValue || null; // Se não for, utiliza o valor padrão
+      this.readOnly = true;
+    }
   }
 
   async loadModalidades() {

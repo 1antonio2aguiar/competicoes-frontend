@@ -5,6 +5,8 @@ import { NbSelectModule } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { ModalidadesRoutingModule, modalidadesRoutedComponents } from './modalidades-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   imports: [
@@ -16,6 +18,10 @@ import { ModalidadesRoutingModule, modalidadesRoutedComponents } from './modalid
     ModalidadesRoutingModule,
     Ng2SmartTableModule,
     NbSelectModule,
+
+    CommonModule,
+    ReactiveFormsModule,
+    
   ],
   declarations: [
     ...modalidadesRoutedComponents

@@ -12,7 +12,10 @@ import { LocaisCompeticoesModule } from '../locais-competicoes/locais-competicoe
 import { DataEditorComponent } from './data-editor/data-editor.component';
 import { DataEditorRenderComponent } from './data-editor/data-editor.component';
 
-import {
+import { FullScreenStyleDirective, SelectStyleDirective } from './estapas-iud/full-screen-style.directive';
+
+
+import { 
   NbActionsModule,
   NbButtonModule,
   NbCardModule,
@@ -24,16 +27,18 @@ import {
   NbRadioModule,
   NbSelectModule,
   NbUserModule,
+  NbToastrModule ,
+  NbButtonGroupModule,
 } from '@nebular/theme';
 
 import { FormsRoutingModule } from '../forms/forms-routing.module';
 import { FormsModule as ngFormsModule } from '@angular/forms';
 import { CampeonatosSelectModule } from "../campeonatos/campeonatos-select/campeonatos-select.module";
-//import { DatepickerComponent } from '../forms/datepicker/datepicker.component';
+import { EstapasIudComponent } from './estapas-iud/estapas-iud.component';
 
 
 @NgModule({
-  imports: [
+  imports: [  
     NbCardModule,
     NbTreeGridModule,
     NbIconModule,
@@ -48,6 +53,7 @@ import { CampeonatosSelectModule } from "../campeonatos/campeonatos-select/campe
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     NbButtonModule,
+    NbButtonGroupModule,
     NbActionsModule,
     NbUserModule,
     NbCheckboxModule,
@@ -56,15 +62,18 @@ import { CampeonatosSelectModule } from "../campeonatos/campeonatos-select/campe
     NbSelectModule,
     FormsRoutingModule,
     ngFormsModule,
+    NbToastrModule.forRoot() ,
     CampeonatosSelectModule
 ],
   declarations: [
     ...etapasRoutedComponents,
+    EstapasIudComponent,
+    FullScreenStyleDirective,
+    SelectStyleDirective
   ],
 
-  entryComponents: [ DataEditorComponent, DataEditorRenderComponent/*, DatepickerComponent*/ ],
+  entryComponents: [ DataEditorComponent, DataEditorRenderComponent ],
   
 })
 
 export class EtapasModule { }
-

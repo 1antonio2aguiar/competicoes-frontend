@@ -1,10 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 
 import { CampeonatosService } from '../campeonatos.service';
-import { CampeonatosFiltro } from '../campeonatos-filter';
 import { ModalidadeSelectComponent } from '../../modalidades/modalidade-select/ModalidadesSelectComponent';
+import { Filters } from '../../../shared/filters/filters';
+import { HttpParams } from '@angular/common/http';
+import { ConfirmationDialogComponent } from '../../components/confirm-delete/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'ngx-campeonatos-pesquisa',
@@ -13,11 +15,15 @@ import { ModalidadeSelectComponent } from '../../modalidades/modalidade-select/M
 })
 
 export class CampeonatosPesquisaComponent implements OnInit {
-  
-  //selectedModalidade: number = null;
-  //selectedRows: any;
+  source: LocalDataSource = new LocalDataSource();
+  filtro: Filters = new Filters();
 
   public settings = {
+    pager: {
+      perPage: this.filtro.itensPorPagina, // Define o número de linhas por página
+      display: true, // Exibe o paginador
+    },
+
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -45,6 +51,8 @@ export class CampeonatosPesquisaComponent implements OnInit {
         type: 'number',
         editable: false,
         addable: false,
+        width: '30px',
+        filter: true,
       },
       empresa: {
         title: 'Empresa',
@@ -55,14 +63,18 @@ export class CampeonatosPesquisaComponent implements OnInit {
         },
       },
       modalidade: {
+        filter: true,
         title: 'Modalidade',
         type: 'number',
-        editor:{
+        editor: {
           type: 'custom',
           component: ModalidadeSelectComponent
         },
+        valuePrepareFunction: (value) => {
+          return value.nome ? value.nome : 'Erro';
+        }
       },
-      
+
       nome: {
         title: 'Nome',
         type: 'string',
@@ -70,6 +82,7 @@ export class CampeonatosPesquisaComponent implements OnInit {
       descricao: {
         title: 'Descrição',
         type: 'string',
+        filter: true,
       },
     },
     defaultValues: {
@@ -77,20 +90,22 @@ export class CampeonatosPesquisaComponent implements OnInit {
     },
   };
 
-  source: LocalDataSource = new LocalDataSource();
-  filtro: CampeonatosFiltro = new CampeonatosFiltro();
-
   ngOnInit(): void {
     this.listar();
+
+    this.source.onChanged().subscribe((change) => {
+      if (change.action === 'filter') {
+        this.onTableFilter(change.filter);
+      }
+    });
   }
 
-  constructor(private service: CampeonatosService, 
+  constructor(
+    private service: CampeonatosService,
+    private dialogService: NbDialogService,
+    private toastrService: NbToastrService
+  ) {
 
-    private router: Router,
-    private routeActive: ActivatedRoute) {
-    // Inicializar o filtro com valores padrões
-    this.filtro.pagina = 1;
-    this.filtro.itensPorPagina = 10;
   }
 
   listar() {
@@ -104,16 +119,21 @@ export class CampeonatosPesquisaComponent implements OnInit {
   onCreateConfirm(event) {
     event.newData.empresa = 1;
 
-    console.log('1 ',event.newData )
-
     this.service.create(event.newData)
       .subscribe(
-          () => {
-              this.listar();
-              event.confirm.resolve();
-          },
-          error => console.error('Erro ao criar modalidade:', error)
-    );
+        () => {
+          this.listar();
+          event.confirm.resolve();
+
+          this.toastrService.show(
+            'Novo campeonato cadastrado com sucesso!',
+            'Cadastro Realizado',
+            { status: 'success', icon: 'checkmark-circle-outline' }
+          );
+
+        },
+        error => console.error('Erro ao criar campeonato:', error)
+      );
   }
 
   onSaveConfirm(event) {
@@ -124,30 +144,95 @@ export class CampeonatosPesquisaComponent implements OnInit {
           this.listar();
           event.confirm.resolve();
           // O ng2-smart-table gerencia a atualização do estado de edição
-      },
-      error => console.error('Erro ao editar campeonato:', error)
-    );
+
+          // <<< TOAST DE SUCESSO PARA ATUALIZAÇÃO >>>
+          this.toastrService.show(
+            `Campeonato "${event.newData.nome}" foi atualizado com sucesso!`,
+            'Atualização Realizada',
+            { status: 'success', icon: 'edit-outline' }
+          );
+
+        },
+        error => console.error('Erro ao editar campeonato:', error)
+      );
   }
 
   onDeleteConfirm(event): void {
-    if (window.confirm('Voce deseja deletar este item?')) {
-      const id = event.data.id; // Obter o ID da modalidade a ser deletada
+    const campeonatoParaExcluir = event.data;
 
-      this.service.delete(id)
-        .subscribe(
-          () => {
-            // Atualiza a tabela com os dados mais recentes
-            this.listar();
-            event.confirm.resolve();
-          },
-          error => console.error('Erro ao deletar campeonato:', error)
-        );
-    } else {
-      event.confirm.reject();
-    }
+    // Abre o componente de diálogo reutilizável
+    this.dialogService.open(ConfirmationDialogComponent, {
+      context: {
+        title: 'Confirmar Exclusão',
+        // Mensagem dinâmica para melhorar a experiência do usuário
+        message: `Você tem certeza que deseja excluir o campeonato <strong>"${campeonatoParaExcluir.nome}"</strong>?`,
+        confirmButtonText: 'Sim, Excluir',
+        cancelButtonText: 'Cancelar',
+        status: 'danger',
+        icon: 'trash-2-outline'
+      },
+      closeOnBackdropClick: false // Impede que o diálogo feche ao clicar fora
+    }).onClose.subscribe(confirmado => {
+      // 'confirmado' será true se o usuário clicar em "Sim, Excluir"
+      if (confirmado) {
+        // Se confirmado, executa a lógica de exclusão
+        this.service.delete(campeonatoParaExcluir.id)
+          .subscribe({
+            next: () => {
+              // Atualiza a tabela com os dados mais recentes
+              this.listar();
+              event.confirm.resolve(); // Notifica a ng2-smart-table que a operação foi bem-sucedida
+
+              // Dispara o toast de sucesso
+              this.toastrService.show(
+                `O campeonato "${campeonatoParaExcluir.nome}" foi excluído com sucesso.`,
+                'Exclusão Realizada',
+                { status: 'success', icon: 'trash-2-outline' }
+              );
+            },
+            error: (error) => {
+              console.error('Erro ao deletar campeonato:', error);
+              event.confirm.reject(); // Notifica a ng2-smart-table que a operação falhou
+
+              // Dispara o toast de erro
+              this.toastrService.show(
+                'Não foi possível excluir o campeonato. Verifique se ele não está sendo usado em outras partes do sistema.',
+                'Erro na Exclusão',
+                { status: 'danger', icon: 'alert-circle-outline' }
+              );
+            }
+          });
+      } else {
+        // Se o usuário clicou em "Cancelar" ou fechou o diálogo
+        console.log('Usuário cancelou a exclusão.');
+        event.confirm.reject(); // Notifica a ng2-smart-table que a operação foi cancelada
+      }
+    });
   }
 
-  onCustomAction(event) {
-    console.log('Custon action:', event.selected);
+  // Aqui filtra pelo campo de busca do ng2 smart teble
+  // Nova função para lidar com os filtros da tabela
+  onTableFilter(filters: any) {
+    let params = new HttpParams();
+
+    // Garante que filters seja um array
+    let filtersArray = (filters && filters.filters && Array.isArray(filters.filters)) ? filters.filters : [];
+
+    let idFilter = filtersArray.find(f => f.field === 'id');
+    let nomeFilter = filtersArray.find(f => f.field === 'nome');
+
+    if (idFilter && idFilter.search) {
+      params = params.set('id', idFilter.search);
+    }
+    if (nomeFilter && nomeFilter.search) {
+      params = params.set('nome', nomeFilter.search);
+    }
+    this.filtro.params = params;
+
+    this.service.pesquisar({ ...this.filtro, params: params })
+      .then(response => {
+        const campeonatos = response.campeonatos;
+        this.source.load(campeonatos);
+      });
   }
 }
