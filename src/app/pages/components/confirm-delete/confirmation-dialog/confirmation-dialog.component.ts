@@ -8,7 +8,7 @@ import { NbDialogRef } from '@nebular/theme';
   templateUrl: './confirmation-dialog.component.html',
   styleUrls: ['./confirmation-dialog.component.scss']
 })
-export class ConfirmationDialogComponent implements OnInit {
+export class ConfirmationDialogComponent {
 
   // Dados que o componente receberá de quem o chamou
   @Input() title: string = 'Confirmar Ação';
@@ -19,9 +19,6 @@ export class ConfirmationDialogComponent implements OnInit {
   @Input() icon: string = 'alert-triangle-outline'; // Ícone a ser exibido
 
   constructor(protected dialogRef: NbDialogRef<ConfirmationDialogComponent>) { }
-
-  ngOnInit(): void {
-  }
 
   // Fecha o diálogo retornando false
   onCancel(): void {
