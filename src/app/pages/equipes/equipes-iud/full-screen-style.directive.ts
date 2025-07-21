@@ -1,33 +1,33 @@
-import { Directive, ElementRef, HostBinding, HostListener , Input } from '@angular/core';
+import { Directive, ElementRef, HostBinding, HostListener , Input, AfterViewInit } from '@angular/core';
 
 @Directive({
-    // Use um seletor que corresponda à classe gerada
-    selector: '[appFullScreenStyle][_nghost-omv-c104]'
+    selector: '[ngxFullScreenStyle]'
 })
 
 export class FullScreenStyleDirective {
-    @Input() width: number; // Recebe a largura desejada
+    @Input() ngxFullScreenStyle: number; 
 
     constructor(private el: ElementRef) { }
 
     @HostBinding('style.width') get widthStyle() {
-        return `${this.width}%`; // Define a largura dinamicamente
+        return this.ngxFullScreenStyle ? `${this.ngxFullScreenStyle}%` : null;
     }
 }
 
 @Directive({
-    selector: '[appSelectStyle][_nghost-*-c98]'
-  })
-
-  export class SelectStyleDirective {
+    selector: '[ngxSelectStyle]'
+})
+export class SelectStyleDirective implements AfterViewInit {
     constructor(private el: ElementRef) { }
-  
-    @HostBinding('style.display') get displayStyle() {
-      return 'block';
-    }
-  
-    @HostListener('ngAfterViewInit') ngAfterViewInit() {
-      this.el.nativeElement.style.display = ''; 
-  }
 
+    @HostBinding('style.display') get displayStyle() {
+        return 'block';
+    }
+
+    ngAfterViewInit() {
+        this.el.nativeElement.style.display = '';
+    }
 }
+
+//<algum-elemento [ngxFullScreenStyle]="80">...</algum-elemento>
+//<algum-elemento ngxSelectStyle>...</algum-elemento>

@@ -13,4 +13,4 @@ export class FullScreenStyleDirective {
     @HostBinding('style.width') get widthStyle() {
         return `${this.width}%`; // Define a largura dinamicamente
     }
-}
+} 
