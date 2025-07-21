@@ -8,7 +8,7 @@ import { FiltersPessoa } from '../FiltersPessoas';
 import { TelaOrigemService } from '../../../../../shared/services/tela-origem.service';
 
 @Component({
-  selector: 'app-por-data-nascimento',
+  selector: 'ngx-por-data-nascimento',
   templateUrl: './por-data-nascimento.component.html',
   styleUrls: ['./por-data-nascimento.component.scss']
 })

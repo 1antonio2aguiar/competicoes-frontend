@@ -7,7 +7,7 @@ import { PessoasService } from '../../pessoas.service';
 import { FiltersPessoa } from '../FiltersPessoas';
 
 @Component({
-  selector: 'app-por-data-nascimento',
+  selector: 'ngx-por-data-nascimento',
   templateUrl: './por-data-nascimento.component.html',
   styleUrls: ['./por-data-nascimento.component.scss']
 })

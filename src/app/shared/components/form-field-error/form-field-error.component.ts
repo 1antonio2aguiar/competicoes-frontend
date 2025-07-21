@@ -2,7 +2,7 @@ import { FormControl } from '@angular/forms';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-form-field-error',
+  selector: 'ngx-form-field-error',
   template: `
     <p class="ui-messages-error">
       {{errorMessage}}

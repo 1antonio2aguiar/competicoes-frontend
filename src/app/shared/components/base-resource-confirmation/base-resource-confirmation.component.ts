@@ -2,7 +2,7 @@ import { ConfirmationService } from 'primeng/api';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-base-resource-confirmation',
+  selector: 'ngx-base-resource-confirmation',
   templateUrl: './base-resource-confirmation.component.html',
   styleUrls: ['./base-resource-confirmation.component.css']
 })

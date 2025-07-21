@@ -4,7 +4,7 @@ import { CampeonatosService } from '../campeonatos.service';
 
 
 @Component({
-  selector: 'app-campeonato-select',
+  selector: 'ngx-campeonato-select',
   template: `
     <nb-select 
       placeholder="Campeonatos"

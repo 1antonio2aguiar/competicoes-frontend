@@ -7,7 +7,7 @@ import { PessoasService } from '../../pessoas.service';
 import { FiltersPessoa } from '../FiltersPessoas';
 
 @Component({
-  selector: 'app-por-nome',
+  selector: 'ngx-por-nome',
   templateUrl: './por-nome.component.html',
   styleUrls: ['./por-nome.component.scss']
 })

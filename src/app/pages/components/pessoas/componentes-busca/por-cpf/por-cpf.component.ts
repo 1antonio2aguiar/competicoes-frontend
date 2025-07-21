@@ -8,7 +8,7 @@ import { FiltersPessoa } from '../FiltersPessoas';
 //import { CpfPipe } from '../../../../../shared/pipes/cpf.pipe';
 
 @Component({
-  selector: 'app-por-cpf',
+  selector: 'ngx-por-cpf',
   templateUrl: './por-cpf.component.html',
   styleUrls: ['./por-cpf.component.scss']
 })

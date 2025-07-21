@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-pontua-split',
+  selector: 'ngx-pontua-split',
   template: `
     <div class="btn-group me-3" ngbDropdown role="group" aria-label="Pontuação">
       <button name="nao"

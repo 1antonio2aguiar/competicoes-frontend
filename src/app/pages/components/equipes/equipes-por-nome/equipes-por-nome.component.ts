@@ -7,7 +7,7 @@ import { EquipesService } from '../equipes.service';
 import { FiltersEquipe } from '../FiltersEquipes';
 
 @Component({
-  selector: 'app-equipes-por-nome',
+  selector: 'ngx-equipes-por-nome',
   templateUrl: './equipes-por-nome.component.html',
   styleUrls: ['./equipes-por-nome.component.scss']
 })

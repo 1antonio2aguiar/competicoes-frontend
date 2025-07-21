@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-    selector: 'app-confirm-delete-modal',
+    selector: 'ngx-confirm-delete-modal',
     template: `
          <nb-card>
              <nb-card-header>{{ title }}</nb-card-header>

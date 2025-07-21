@@ -2,7 +2,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
 
 @Component({
-  selector: 'app-pontua-split',
+  selector: 'ngx-pontua-split',
   templateUrl: './drop-down-yesno-pontua.component.html',
   styleUrls: ['./drop-down-yesno.component.scss']
 })
@@ -39,7 +39,7 @@ export class DropDownPontuaComponent implements OnInit, AfterViewInit {
 }
 
 @Component({
-  selector: 'app-acumula-split',
+  selector: 'ngx-acumula-split',
   templateUrl: './drop-down-yesno-acumula.component.html',
   styleUrls: ['./drop-down-yesno.component.scss']
 })

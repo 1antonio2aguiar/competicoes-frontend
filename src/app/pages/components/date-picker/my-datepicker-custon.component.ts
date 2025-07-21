@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-your-datepicker-filter', // Certifique-se que o seletor é único
+  selector: 'ngx-your-datepicker-filter', // Certifique-se que o seletor é único
   template: `
     <input
       #inputField
