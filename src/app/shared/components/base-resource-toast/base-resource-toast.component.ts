@@ -2,10 +2,10 @@ import { MessageService } from 'primeng/api';
 import { OnInit, Directive } from '@angular/core';
 
 @Directive()
-export class BaseResourceToast implements OnInit {
+export class BaseResourceToast {
 
   constructor(private messageService: MessageService) { }
-  ngOnInit() { }
+  
 
   showSuccess(summaryText: string, detailText: string) {
     this.messageService.add({ severity: 'success', summary: summaryText, detail: detailText });

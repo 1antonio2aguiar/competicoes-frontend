@@ -16,7 +16,7 @@ import { Component, OnInit, Input } from '@angular/core';
     }
   `]
 })
-export class FormFieldErrorComponent implements OnInit {
+export class FormFieldErrorComponent {
 
   // tslint:disable-next-line:no-input-rename
   @Input('form-control') formControl: FormControl;
@@ -24,10 +24,6 @@ export class FormFieldErrorComponent implements OnInit {
   @Input() pattern: string;
 
   constructor() { }
-
-  ngOnInit() {
-    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
-  }
 
   public get errorMessage(): string | null {
     if (this.mustShowErrorMessage()) {

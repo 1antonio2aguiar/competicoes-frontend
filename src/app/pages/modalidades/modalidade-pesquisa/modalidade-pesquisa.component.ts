@@ -17,7 +17,7 @@ import { Filters } from '../../../shared/filters/filters';
   styleUrls: ['./modalidade-pesquisa.component.scss'],
 })
 
-export class ModalidadePesquisaComponent implements OnInit {
+export class ModalidadePesquisaComponent {
   selectedRows: any;
 
   filtro: Filters = new Filters();
@@ -74,14 +74,6 @@ export class ModalidadePesquisaComponent implements OnInit {
       },
     },
   };
-
-  /*data = [
-    // ... our data here
-  ];*/
-
-  ngOnInit(): void {
-    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
-  }
 
   constructor(private service: ModalidadesService, private _http: HttpClient, 
       private router: Router,

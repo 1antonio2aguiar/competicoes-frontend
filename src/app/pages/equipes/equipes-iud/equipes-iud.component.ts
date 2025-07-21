@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
@@ -19,7 +19,7 @@ import { EquipesService } from '../equipes.service';
   providers: [NbDialogService]
 })
 
-export class EquipesIudComponent {
+export class EquipesIudComponent implements OnInit{
   equipeId: number = 0;
   width = 700; // Define a largura do modal
   @Input() mode: 'add' | 'edit';

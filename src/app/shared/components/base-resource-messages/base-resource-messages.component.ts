@@ -4,11 +4,10 @@ import { OnInit, Directive } from '@angular/core';
 import { Message } from 'primeng/api';
 
 @Directive()
-export class BaseResourceMessages implements OnInit {
+export class BaseResourceMessages {
 
   constructor(private messageService: MessageService) { }
-  ngOnInit() { }
-
+  
   msgs: Message[] = [];
 
   showSuccess() {

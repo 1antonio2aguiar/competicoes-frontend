@@ -5,7 +5,7 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './page-header.component.html',
   styleUrls: ['./page-header.component.css']
 })
-export class PageHeaderComponent implements OnInit {
+export class PageHeaderComponent {
 
   @Input('page-title') pageTitle: string;
   @Input('show-button') showButton: boolean = true;
@@ -14,9 +14,5 @@ export class PageHeaderComponent implements OnInit {
   @Input('button-link') buttonLink: string;
 
   constructor() { }
-
-  ngOnInit() {
-    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
-  }
 
 }

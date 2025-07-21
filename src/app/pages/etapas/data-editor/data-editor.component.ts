@@ -65,11 +65,11 @@ export class DataEditorComponent extends DefaultEditor implements OnInit {
     template: `{{value | date:'dd/MM/yyyy'}} `, // Formatar para dd/MM/yyyy
 })
 
-export class DataEditorRenderComponent implements ViewCell, OnInit {
+export class DataEditorRenderComponent implements ViewCell {
     @Input() value: string;
     @Input() rowData: any;
   
     constructor() { }
   
-    ngOnInit() { }
+  
 }

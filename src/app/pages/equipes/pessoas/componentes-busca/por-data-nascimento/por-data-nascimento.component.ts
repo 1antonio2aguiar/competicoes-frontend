@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -13,7 +13,7 @@ import { TelaOrigemService } from '../../../../../shared/services/tela-origem.se
   styleUrls: ['./por-data-nascimento.component.scss']
 })
 
-export class PorDataNascimentoComponent implements OnInit {
+export class PorDataNascimentoComponent implements OnInit, OnDestroy {
   @Input() query: string;
   inputControl = new FormControl();
   @Output() filterChange = new EventEmitter<string>();

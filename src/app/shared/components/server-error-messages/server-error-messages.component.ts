@@ -6,15 +6,11 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./server-error-messages.component.css']
 })
 
-export class ServerErrorMessagesComponent implements OnInit {
+export class ServerErrorMessagesComponent {
 
   // tslint:disable-next-line:no-input-rename
   @Input('server-error-messages') serverErrorMessages: string[] = null;
 
   constructor() { }
-
-  ngOnInit() {
-    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
-  }
 
 }

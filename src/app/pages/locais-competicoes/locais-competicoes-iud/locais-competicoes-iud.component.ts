@@ -10,7 +10,7 @@ import { Filters } from '../../../shared/filters/filters';
   styleUrls: ['./locais-competicoes-iud.component.scss']
 })
 
-export class LocaisCompeticoesIudComponent implements OnInit, OnDestroy{
+export class LocaisCompeticoesIudComponent implements OnInit{
   source: LocalDataSource = new LocalDataSource();
   filtro: Filters = new Filters();
 
@@ -73,10 +73,6 @@ export class LocaisCompeticoesIudComponent implements OnInit, OnDestroy{
       }
     });
   };
-
-  ngOnDestroy() {
-   // Só pra dar certo no git hub
-  }
 
   constructor(private service: LocaisCompeticoesService,
     private router: Router,

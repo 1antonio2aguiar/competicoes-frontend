@@ -7,7 +7,7 @@ import { LazyLoadEvent, MessageService } from 'primeng/api';
 
 
 @Directive()
-export abstract class BaseResourceListComponent<T extends BaseResourceModel> implements OnInit {
+export abstract class BaseResourceListComponent<T extends BaseResourceModel> {
 
   resources: T[] = [];
   totalRegistros = 0;
@@ -20,9 +20,6 @@ export abstract class BaseResourceListComponent<T extends BaseResourceModel> imp
   ) {
   }
 
-  ngOnInit() { 
-    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
-  }
 
   delete(resource: T, funcOk: Function, funcFail: Function) {
     const resourceId = resource.id ?? 0; // Se resource.id for undefined, use 0 como valor padrão

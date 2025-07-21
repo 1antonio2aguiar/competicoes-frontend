@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { FullScreenStyleDirective, SelectStyleDirective } from './full-screen-style.directive';
-import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef } from '@nebular/theme';
-import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 import { Campeonato } from '../../../shared/models/campeonato';
 import { CampeonatosSelectService } from '../../campeonatos/campeonatos-select/campeonatos-select.service';
