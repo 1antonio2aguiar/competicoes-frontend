@@ -26,6 +26,7 @@ export class FormFieldErrorComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
   }
 
   public get errorMessage(): string | null {

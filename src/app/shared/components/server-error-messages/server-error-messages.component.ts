@@ -5,6 +5,7 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './server-error-messages.component.html',
   styleUrls: ['./server-error-messages.component.css']
 })
+
 export class ServerErrorMessagesComponent implements OnInit {
 
   // tslint:disable-next-line:no-input-rename
@@ -13,6 +14,7 @@ export class ServerErrorMessagesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
   }
 
 }

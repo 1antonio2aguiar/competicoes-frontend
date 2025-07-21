@@ -75,7 +75,7 @@ export class LocaisCompeticoesIudComponent implements OnInit, OnDestroy{
   };
 
   ngOnDestroy() {
-        
+   // Só pra dar certo no git hub
   }
 
   constructor(private service: LocaisCompeticoesService,

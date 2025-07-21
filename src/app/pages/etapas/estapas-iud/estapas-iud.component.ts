@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FullScreenStyleDirective, SelectStyleDirective } from './full-screen-style.directive';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -22,7 +22,7 @@ import EtapaOutput from '../../../shared/models/etapaOutput';
   encapsulation: ViewEncapsulation.None
 })
 
-export class EstapasIudComponent {
+export class EstapasIudComponent implements OnInit{
   etapaId: number = 0;
   width = 700; // Define a largura do modal
   @Input() mode: 'add' | 'edit';

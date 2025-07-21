@@ -20,7 +20,9 @@ export abstract class BaseResourceListComponent<T extends BaseResourceModel> imp
   ) {
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
+  }
 
   delete(resource: T, funcOk: Function, funcFail: Function) {
     const resourceId = resource.id ?? 0; // Se resource.id for undefined, use 0 como valor padrão

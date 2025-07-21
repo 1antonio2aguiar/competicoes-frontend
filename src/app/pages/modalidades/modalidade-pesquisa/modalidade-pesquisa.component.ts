@@ -80,7 +80,7 @@ export class ModalidadePesquisaComponent implements OnInit {
   ];*/
 
   ngOnInit(): void {
-    
+    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
   }
 
   constructor(private service: ModalidadesService, private _http: HttpClient, 

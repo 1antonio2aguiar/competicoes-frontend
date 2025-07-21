@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
 import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
@@ -23,7 +23,7 @@ import { Parametro } from '../../../shared/models/parametro';
     providers: [NbDialogService]
 }) 
 
-export class InscricoesIudComponent {
+export class InscricoesIudComponent implements OnInit{
   source: LocalDataSource = new LocalDataSource();
   width = 700; // Define a largura do modal
   @Input() mode: 'add' | 'edit';

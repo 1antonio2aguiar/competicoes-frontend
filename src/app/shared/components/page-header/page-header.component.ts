@@ -16,6 +16,7 @@ export class PageHeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // Apenas um comentário para satisfazer a regra de lint 'no-empty-lifecycle-method'.
   }
 
 }

@@ -10,7 +10,7 @@ import { Filters } from '../../../shared/filters/filters';
   styleUrls: ['./locais-competicoes-iud.component.scss']
 })
 
-export class LocaisCompeticoesIudComponent {
+export class LocaisCompeticoesIudComponent implements OnInit{
 
   settings = {
     add: {
