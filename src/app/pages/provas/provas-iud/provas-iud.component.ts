@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
@@ -27,7 +27,7 @@ import { FormatarTempoService } from '../../../shared/services/formatar-tempo.se
   providers: [NbDialogService]
 })
 
-export class ProvasIudComponent {
+export class ProvasIudComponent implements OnInit {
   provaId: number = 0;
   width = 700; // Define a largura do modal
   @Input() mode: 'add' | 'edit';

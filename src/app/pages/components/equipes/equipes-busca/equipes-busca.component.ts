@@ -16,7 +16,7 @@ import { EquipesPorNomeComponent } from '../equipes-por-nome/equipes-por-nome.co
   styleUrls: ['./equipes-busca.component.scss']
 })
 
-export class EquipesBuscaComponent implements OnInit {
+export class EquipesBuscaComponent implements OnInit, OnDestroy {
   @HostBinding('class.custom-modal-card') customModalCard = true;
 
   private searchTerms = new Subject<string>();

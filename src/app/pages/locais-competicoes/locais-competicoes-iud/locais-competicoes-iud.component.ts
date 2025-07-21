@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocaisCompeticoesService } from '../locais-competicoes.service';
@@ -10,7 +10,7 @@ import { Filters } from '../../../shared/filters/filters';
   styleUrls: ['./locais-competicoes-iud.component.scss']
 })
 
-export class LocaisCompeticoesIudComponent {
+export class LocaisCompeticoesIudComponent implements OnInit, OnDestroy{
   source: LocalDataSource = new LocalDataSource();
   filtro: Filters = new Filters();
 
@@ -73,6 +73,10 @@ export class LocaisCompeticoesIudComponent {
       }
     });
   };
+
+  ngOnDestroy() {
+        
+  }
 
   constructor(private service: LocaisCompeticoesService,
     private router: Router,

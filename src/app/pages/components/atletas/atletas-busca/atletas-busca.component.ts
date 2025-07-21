@@ -17,7 +17,7 @@ import { AtletaPorNomeComponent } from './por-nome/atleta-por-nome.component';
     styleUrls: ['./atletas-busca.component.scss']
 })
 
-export class AtletasBuscaComponent implements OnInit {
+export class AtletasBuscaComponent implements OnInit, OnDestroy{
     // talvez nao precise disso
     @HostBinding('class.custom-modal-card') customModalCard = true;
     @Input() telaOrigem;
