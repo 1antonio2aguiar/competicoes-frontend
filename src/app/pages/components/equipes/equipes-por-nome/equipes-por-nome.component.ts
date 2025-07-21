@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 import { LocalDataSource } from 'ng2-smart-table';
@@ -12,7 +12,7 @@ import { FiltersEquipe } from '../FiltersEquipes';
   styleUrls: ['./equipes-por-nome.component.scss']
 })
 
-export class EquipesPorNomeComponent implements OnInit {
+export class EquipesPorNomeComponent implements OnInit, OnDestroy {
     @Input() query:string;
     inputControl = new FormControl();
     @Output() filterChange = new EventEmitter<string>();

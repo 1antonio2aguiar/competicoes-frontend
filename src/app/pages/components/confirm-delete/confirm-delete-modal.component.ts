@@ -18,7 +18,7 @@ import { NbDialogRef } from '@nebular/theme';
    `,
 })
 
-export class ConfirmDeleteComponent implements OnInit {
+export class ConfirmDeleteComponent {
     title: string = '';
     message: string = '';
     data: any
@@ -29,5 +29,4 @@ export class ConfirmDeleteComponent implements OnInit {
         this.ref.close(res);
     }
 
-    ngOnInit() {}
 }

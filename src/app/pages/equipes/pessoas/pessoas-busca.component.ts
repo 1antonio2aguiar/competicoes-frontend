@@ -19,7 +19,7 @@ import { CpfPipe } from '../../../shared/pipes/cpf.pipe';
   styleUrls: ['./pessoas-busca.component.scss']
 })
 
-export class PessoasBuscaComponent implements OnInit {
+export class PessoasBuscaComponent implements OnInit , OnDestroy{
   @HostBinding('class.custom-modal-card') customModalCard = true;
 
   private searchTerms = new Subject<string>();

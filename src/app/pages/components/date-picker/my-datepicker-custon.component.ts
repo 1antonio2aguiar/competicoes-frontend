@@ -121,7 +121,4 @@ export class MyDatepickerCustonComponent extends DefaultFilter implements OnInit
     this.destroy$.complete();
   }
 
-  ngOnChanges(){
-    //console.log('aoggra tem')
-  }
 }

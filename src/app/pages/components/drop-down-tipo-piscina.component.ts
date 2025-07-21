@@ -6,16 +6,12 @@ import { Component, Input, OnInit, Output, EventEmitter, AfterViewInit } from '@
   styleUrls: ['./drop-down-yesno.component.scss']
 })
 
-export class DropDownTipoPiscinaComponent implements OnInit, AfterViewInit {
+export class DropDownTipoPiscinaComponent implements OnInit {
   @Input() cell: any;
   @Output() cellChange = new EventEmitter<any>();
 
   ngOnInit() {
     this.toggleButtonStyles(this.cell.newValue);
-  }
-
-  ngAfterViewInit() {
-    // Adicione a classe aqui após a renderização
   }
 
   onOptionChange(event: string) {

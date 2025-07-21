@@ -20,7 +20,7 @@ import { TelaOrigemService } from '../../../../shared/services/tela-origem.servi
   styleUrls: ['./pessoas.component.scss']
 })
 
-export class PessoasComponent implements OnInit {
+export class PessoasComponent implements OnInit, OnDestroy {
   @HostBinding('class.custom-modal-card') customModalCard = true;
   @Input() telaOrigem;
 

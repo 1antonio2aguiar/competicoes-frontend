@@ -47,12 +47,6 @@ export class DataEditorComponent extends DefaultEditor implements OnInit {
       }
   }
 
-    /*onChange() {
-        if (this.inputModel) {
-            this.cell.newValue = this.inputModel.toISOString();
-        }
-    }*/
-
     onChange() {
         if (this.inputModel) {
             // Use o DatePipe para formatar a data para dd/MM/yyyy
