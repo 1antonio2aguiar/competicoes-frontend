@@ -9,7 +9,7 @@ import { CpfPipe } from '../../../../../shared/pipes/cpf.pipe';
 import { TelaOrigemService } from '../../../../../shared/services/tela-origem.service';
 
 @Component({
-  selector: 'app-por-cpf',
+  selector: 'ngx-por-cpf',
   templateUrl: './por-cpf.component.html',
   styleUrls: ['./por-cpf.component.scss']
 })

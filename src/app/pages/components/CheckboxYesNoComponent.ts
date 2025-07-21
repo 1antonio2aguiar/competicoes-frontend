@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Output } from "@angular/core";
 import * as EventEmitter from "events";
 
 @Component({
-  selector: 'app-pontua-checkbox',
+  selector: 'ngx-pontua-checkbox',
   template: `
     <div class="pontua-options-container">
       <div class="pontua-options">

@@ -9,7 +9,7 @@ import { FiltersPessoa } from '../FiltersPessoas';
 import { TelaOrigemService } from '../../../../../shared/services/tela-origem.service';
 
 @Component({
-  selector: 'app-por-nome',
+  selector: 'ngx-por-nome',
   templateUrl: './por-nome.component.html',
   styleUrls: ['./por-nome.component.scss']
 })

@@ -4,7 +4,7 @@ import { LocaisCompeticoesService } from './locais-competicoes-select.service';
 
 
 @Component({
-  selector: 'app-locais-competicoes-select',
+  selector: 'ngx-locais-competicoes-select',
   template: `
     <nb-select 
       placeholder="Locais competições"

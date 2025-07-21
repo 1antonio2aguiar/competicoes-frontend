@@ -7,7 +7,7 @@ import { AtletasBuscaService } from '../../atletas-busca.service';
 import { FiltersAtleta } from './FiltersAtletas';
 
 @Component({
-  selector: 'app-atleta-por-nome',
+  selector: 'ngx-atleta-por-nome',
   templateUrl: './atleta-por-nome.component.html',
   styleUrls: ['./atleta-por-nome.component.scss']
 })

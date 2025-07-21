@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation,  OnInit } from '@angular/core';
 import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
@@ -25,7 +25,7 @@ import { EquipesBuscaComponent } from '../../components/equipes/equipes-busca/eq
 })
 
 
-export class AtletasIudComponent {
+export class AtletasIudComponent implements OnInit {
   atletaId: number = 0;
   width = 700; // Define a largura do modal
   @Input() mode:       'add' | 'edit';

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
 
 @Component({
-  selector: 'app-tipo-piscina-split',
+  selector: 'ngx-tipo-piscina-split',
   templateUrl: './drop-down-tipo-piscina.component.html',
   styleUrls: ['./drop-down-yesno.component.scss']
 })

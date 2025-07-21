@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component,  OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
-    selector: 'app-confirm-delete-modal',
+    selector: 'ngx-confirm-delete-modal',
     template: `
          <nb-card>
              <nb-card-header>{{ title }}</nb-card-header>
@@ -18,7 +18,7 @@ import { NbDialogRef } from '@nebular/theme';
    `,
 })
 
-export class ConfirmDeleteComponent {
+export class ConfirmDeleteComponent implements OnInit {
     title: string = '';
     message: string = '';
     data: any
@@ -28,4 +28,6 @@ export class ConfirmDeleteComponent {
     close(res) {
         this.ref.close(res);
     }
+
+    ngOnInit() {}
 }
