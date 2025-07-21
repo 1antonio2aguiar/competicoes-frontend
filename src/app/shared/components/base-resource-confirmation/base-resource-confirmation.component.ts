@@ -10,8 +10,8 @@ export class BaseResourceConfirmationComponent implements OnInit {
 
   constructor(public confirmationService: ConfirmationService) { }
 
-  @Input('header') header: string = '';
-  @Input('menssage') menssage: string = '';
+  @Input() header: string = '';
+  @Input() menssage: string = '';
 
   headers: string = '';
   menssages: string = '';

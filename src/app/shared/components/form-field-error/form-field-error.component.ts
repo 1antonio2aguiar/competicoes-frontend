@@ -21,7 +21,7 @@ export class FormFieldErrorComponent implements OnInit {
   // tslint:disable-next-line:no-input-rename
   @Input('form-control') formControl: FormControl;
   @Input('header-colum') headerName: string;
-  @Input('pattern') pattern: string;
+  @Input() pattern: string;
 
   constructor() { }
 
