@@ -3,16 +3,25 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { NbWindowService, NbWindowRef, NbDialogRef } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged  } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 
 import { PessoasService } from '../pessoas.service';
-import { Filters } from '../../../../shared/filters/filters';
 import { CpfPipe } from '../../../../shared/pipes/cpf.pipe';
+import { CnpjPipe } from '../../../../shared/pipes/cnpj.pipe';
 import { PorNomeComponent } from '../../../equipes/pessoas/componentes-busca/por-nome/por-nome.component';
 import { PorCpfComponent } from '../../../equipes/pessoas/componentes-busca/por-cpf/por-cpf.component';
 import { PorDataNascimentoComponent } from '../../../equipes/pessoas/componentes-busca/por-data-nascimento/por-data-nascimento.component';
 import { TelaOrigemService } from '../../../../shared/services/tela-origem.service';
+
+export class Filters {
+  pagina = 0;
+  itensPorPagina = 5;
+  totalRegistros = 0;
+  nome = '';
+  cpf: string | null = null; 
+  params = new HttpParams(); 
+}
 
 @Component({
   selector: 'ngx-pessoas-busca',
@@ -20,14 +29,16 @@ import { TelaOrigemService } from '../../../../shared/services/tela-origem.servi
   styleUrls: ['./pessoas.component.scss']
 })
 
+
 export class PessoasComponent implements OnInit, OnDestroy {
   @HostBinding('class.custom-modal-card') customModalCard = true;
   @Input() telaOrigem;
 
   private searchTerms = new Subject<string>();
+  private searchSubscription: Subscription;
 
   source: LocalDataSource = new LocalDataSource();
-  filtro: Filters = new Filters();
+  filtro = new Filters();
   loading = false;
 
   nameFilterComponent = (cell: any, search: string) => {
@@ -36,6 +47,9 @@ export class PessoasComponent implements OnInit, OnDestroy {
     this.searchTerms.next(search);
     return String(cell).toLowerCase().indexOf(String(search).toLowerCase()) !== -1;
   }
+
+  private cpfPipe = new CpfPipe();
+  private cnpjPipe = new CnpjPipe();
 
   settings = {
     mode: 'external',
@@ -56,24 +70,29 @@ export class PessoasComponent implements OnInit, OnDestroy {
         },
       },
 
-      cpf: {
-        title: 'CPF',
-        type: 'string',
-        width: '150px',
-        filter: {
-          type: 'custom',
-          component: PorCpfComponent,
-        },
-        valuePrepareFunction: (cpf) => {
-          if (cpf) {
-            const cpfPipe = new CpfPipe();
-            return cpfPipe.transform(cpf);
-          }
-          return '';
-        },
+      cpfCnpj: {
+      title: 'CPF/CNPJ',
+      type: 'string',
+      width: '190px',
+      filter: {
+        type: 'custom',
+        component: PorCpfComponent,
       },
+      valuePrepareFunction: (cell: any, row: any) => {
+        // 'row' é o objeto completo da linha (ex: { id: ..., nome: ..., cpf: null, cnpj: "..." })
+        if (row.cpf) {
+          // Se o campo 'cpf' existir e tiver valor, formata como CPF
+          return this.cpfPipe.transform(row.cpf);
+        } else if (row.cnpj) {
+          // Senão, se o campo 'cnpj' existir e tiver valor, formata como CNPJ
+          return this.cnpjPipe.transform(row.cnpj);
+        }
+        // Se nenhum dos dois tiver valor, retorna uma string vazia
+        return '';
+      },
+    },
 
-      dataNascimento: {
+    dataNascimento: {
         title: 'Data Nascimento',
         type: 'date',
         width: '200px',
@@ -100,33 +119,17 @@ export class PessoasComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private windowService: NbWindowService, 
     private pessoasService: PessoasService,
     private telaOrigemService: TelaOrigemService,
-    private ref: NbWindowRef, 
-  ) {
-    this.searchTerms.pipe(debounceTime(3000)).subscribe(term => {
-      this.loading = true; // Mostrar indicador de carregamento
-      this.pesquisar(term, 0) // Buscar dados filtrados
-        .then(() => this.loading = false) // Ocultar indicador após o carregamento
-        .catch(error => {
-          this.loading = false; // Ocultar indicador em caso de erro
-          console.error("Erro na busca:", error);
-          // Tratar o erro adequadamente (exibir mensagem para o usuário)
-        });
-    });
-  }
+    private ref: NbWindowRef,
+  ) {}
 
   ngOnInit(): void {
     this.telaOrigemService.setTelaOrigem(this.telaOrigem);
+
+    //this.setupSearch();
+    this.pesquisar();
     
-    this.loading = true;
-    this.pesquisar('', 0) // Carregamento inicial com termo de busca vazio
-      .then(() => this.loading = false)
-      .catch(error => {
-        this.loading = false; // Lidar com erros adequadamente
-        console.error('Erro ao carregar dados iniciais:', error);
-    });
   }
 
   selectItem(event) {
@@ -136,23 +139,43 @@ export class PessoasComponent implements OnInit, OnDestroy {
     }
   }
 
-  pesquisar(search: string, pagina: number): Promise<any> {
-    
-    this.filtro.params = new HttpParams();
-    this.filtro.params = this.filtro.params.append('nome', search);
-    this.filtro.params = this.filtro.params.append('cpf', search);
-    this.filtro.pagina = pagina;
+  pesquisar(): Promise<any> {
+    this.loading = true;
 
-    return this.pessoasService.pessoaNotInEquipes(this.filtro)
+    // 1. Crie os parâmetros HTTP a partir dos valores do filtro
+    let params = new HttpParams()
+        // Adicione paginação se o seu backend suportar
+        .set('page', this.filtro.pagina.toString()) 
+        .set('size', this.filtro.itensPorPagina.toString());
+
+    // 2. Adicione os filtros de nome e CPF dinamicamente
+    if (this.filtro.nome) {
+      params = params.set('nome', this.filtro.nome);
+    }
+    if (this.filtro.cpf) {
+      params = params.set('cpf', this.filtro.cpf);
+    }
+
+    // 3. Atualize a propriedade 'params' do seu objeto 'filtro'
+    this.filtro.params = params;
+
+    // Agora a chamada para o serviço envia o objeto 'filtro' com os parâmetros corretos
+    return this.pessoasService.pesquisar(this.filtro)
       .then(resultado => {
-        this.filtro.totalRegistros = resultado.total;
         this.source.load(resultado.pessoas);
+        // Se a API retornar paginação, você pode atualizar o total aqui:
+        // this.filtro.totalRegistros = resultado.totalElements; 
       })
       .catch(error => {
         console.error('Erro ao pesquisar pessoas:', error);
-        throw error; // Re-lança o erro para ser tratado pelo chamador (ngOnInit)
+        this.source.load([]); // Limpa a tabela em caso de erro
+        throw error;
+      })
+      .finally(() => {
+        this.loading = false;
       });
   }
+
 
   ngOnDestroy() {
     this.searchTerms.unsubscribe(); // Important to prevent memory leaks!

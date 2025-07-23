@@ -61,7 +61,7 @@ export class PorNomeComponent implements OnInit, OnDestroy {
           this.source.load(resultado.pessoas);
         })
         .catch(error => {
-          console.error('Erro ao pesquisar pessoas:', error);
+          console.error('Erro ao pesquisar pessoas por nome:', error);
           throw error;
     });
   }

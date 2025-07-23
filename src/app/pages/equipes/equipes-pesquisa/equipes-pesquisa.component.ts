@@ -265,29 +265,6 @@ export class EquipesPesquisaComponent implements OnInit {
 
   }
 
-  /*onDelete(event): void {
-
-    this.dialogService.open(ConfirmDeleteComponent, {
-      context: {
-        title: 'Excluir Equipe',
-        message: `Tem certeza que deseja excluir a equipe  ${event.data.nome}?`,
-        data: event.data
-      },
-
-    }).onClose.subscribe(res => {
-      if (res) {
-        this.equipeService.delete(event.data.id).subscribe(() => {
-          this.listar();
-          this.showToast('Equipe excluída com sucesso!', 'success'); 
-        },
-          (error) => {
-            this.showToast('Erro ao excluir equipe!', 'danger');  // Adicionado o toast de erro
-            console.error("Erro ao excluir equipe:", error);
-          });
-      }
-    });
-    
-  }*/
 
   aoMudarPagina(pageIndex) {
     const loadedRecordCount = this.filtro.totalRegistros

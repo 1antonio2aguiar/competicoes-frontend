@@ -7,7 +7,8 @@ import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
 import { Modalidade } from '../../../shared/models/modalidade';
 import { ModalidadesService } from '../../modalidades/modalidade-select/modalidades-select.service';
 import { Equipe } from '../../../shared/models/equipe';
-import { PessoasBuscaComponent } from '../pessoas/pessoas-busca.component';
+//import { PessoasBuscaComponent } from '../pessoas/pessoas-busca.component';
+import { PessoasComponent } from '../../components/pessoas/pessoas-busca/pessoas.component';
 import { EquipesService } from '../equipes.service';
 
 
@@ -145,15 +146,17 @@ export class EquipesIudComponent implements OnInit{
       close: true
     };
 
-    const modalRef = this.windowService.open(PessoasBuscaComponent, { buttons: buttonsConfig, });
+    const modalRef = this.windowService.open(PessoasComponent, { buttons: buttonsConfig, 
+      closeOnBackdropClick: false, // Impede que o dialogo feche ao clicar fora
+    });
+
 
     modalRef.onClose.subscribe(
       (pessoa) => {
         if (pessoa && this.editingField) {
           this.equipeForm.patchValue({ [this.editingField]: { id: pessoa.id, nome: pessoa.nome } });
           this.editingField = null;  // Reseta o campo
-      }
-      },
+      }},
       (error) => {
         console.error('Erro ao abrir ou fechar o modal:', error);
         this.editingField = null;
