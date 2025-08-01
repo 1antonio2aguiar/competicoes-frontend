@@ -6,3 +6,4 @@ export class ModalidadesFiltro {
     totalRegistros = 0;
     params = new HttpParams();
 }
+ 

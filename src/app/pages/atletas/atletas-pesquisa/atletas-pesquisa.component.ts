@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Filters } from '../../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
 import { NbDialogService, NbToastrService, NbWindowControlButtonsConfig, NbWindowService, NbToastrConfig } from '@nebular/theme';
@@ -69,17 +68,17 @@ export class AtletasPesquisaComponent implements OnInit {
       pessoaNome: {
         title: 'Nome',
         type: 'string',
-        /*valuePrepareFunction: (pessoa) => {
-          return pessoa ? pessoa.nome : ''; // Retorna pessoa.nome ou uma string vazia se tecnico for null ou undefined
-        },*/
+        valuePrepareFunction: (cell, row) => {
+          return row.pessoa ? row.pessoa.nome : '';
+        },
       },
 
       equipeNome: {
         title: 'Equipe',
-        type: 'string', 
-        /*valuePrepareFunction: (equipe) => {
-          return equipe ? equipe.nome : ''; // Retorna equipe.nome ou uma string vazia se agremiacao for null ou undefined
-        },*/
+        type: 'string',
+        valuePrepareFunction: (cell, row) => {
+          return row.equipe ? row.equipe.nome : '';
+        },
       },
 
       categoriaDescricao: {
@@ -112,10 +111,10 @@ export class AtletasPesquisaComponent implements OnInit {
 
   listar() {
     this.atletaService.pesquisar(this.filtro)
-      .then(response => {
-        const atletas = response.atletas;
+      .then(atletas => { // A variável 'atletas' agora É o array retornado pelo serviço
         this.source.load(atletas);
-    });
+      })
+      .catch(error => console.error('Erro ao listar atletas', error));
   }
 
   onAdd() {
@@ -133,9 +132,10 @@ export class AtletasPesquisaComponent implements OnInit {
     this.windowService.open(AtletasIudComponent, {
       title: `Cadastrar Atleta`,
       buttons: buttonsConfig,
-      context: { mode: 'add',
-        telaOrigem: 'Atleta'
-      }
+      context: { mode: 'add', telaOrigem: 'Atleta'},
+
+      closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
+
     }).onClose.subscribe((reason: string | undefined) => {
       if (reason === 'atualizado' || reason === 'save') {
         this.listar();
@@ -163,7 +163,10 @@ export class AtletasPesquisaComponent implements OnInit {
       this.windowService.open(AtletasIudComponent, {
         title: `Editar Atleta`,
         buttons: buttonsConfig,
-        context: { atleta: atletaCompleta, mode: 'edit' }
+        context: { atleta: atletaCompleta, mode: 'edit' },
+
+        closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
+        
       }).onClose.subscribe((reason: string | undefined) => {
         if (reason === 'atualizado' || reason === 'save') {
           this.listar();
@@ -212,34 +215,45 @@ export class AtletasPesquisaComponent implements OnInit {
   // Nova função para lidar com os filtros da tabela
   onTableFilter(filters: any) {
     let params = new HttpParams();
-    
-    // Garante que filters seja um array
-    let filtersArray = (filters && filters.filters && Array.isArray(filters.filters)) ? filters.filters : [];
 
-    let idFilter = filtersArray.find(f => f.field === 'id');
-    let nomeFilter = filtersArray.find(f => f.field === 'pessoaNome');
-    let equipeFilter = filtersArray.find(f => f.field === 'equipe');
-    let categoriaFilter = filtersArray.find(f => f.field === 'categoriaDescricao');
-    
-    if (idFilter && idFilter.search) {
-      params = params.set('id', idFilter.search);
-    }
+    // Garante que filters seja um array de filtros, se não, cria um array vazio.
+    const filtersArray = (filters && filters.filters && Array.isArray(filters.filters))
+      ? filters.filters
+      : [];
+
+    // Busca pelos filtros específicos nas colunas da tabela
+    // Os nomes dos campos (field) devem bater EXATAMENTE com as chaves no objeto 'settings.columns'
+    const nomeFilter = filtersArray.find(f => f.field === 'pessoaNome');
+    const equipeFilter = filtersArray.find(f => f.field === 'equipeNome');
+    const categoriaFilter = filtersArray.find(f => f.field === 'categoriaDescricao');
+
+    // Monta os parâmetros da requisição com base nos valores dos filtros
+    // Os nomes dos parâmetros (ex: 'pessoaNome') devem bater EXATAMENTE com os atributos da classe AtletaFilter.java
     if (nomeFilter && nomeFilter.search) {
-      params = params.set('pessoaNome',nomeFilter.search);
+      params = params.set('pessoaNome', nomeFilter.search);
     }
+
     if (equipeFilter && equipeFilter.search) {
-      params = params.set('equipeFilter.nome',equipeFilter.search);
+      // CORREÇÃO: O back-end espera 'equipeNome'
+      params = params.set('equipeNome', equipeFilter.search);
     }
+
     if (categoriaFilter && categoriaFilter.search) {
-      params = params.set('categoria',categoriaFilter.search);
+      // CORREÇÃO: O back-end espera 'categoria'
+      params = params.set('categoria', categoriaFilter.search);
     }
+
+    // Atualiza o objeto de filtro global, se necessário (boa prática)
     this.filtro.params = params;
-    
+
+    // Chama o serviço de pesquisa com os parâmetros corretos
     this.atletaService.pesquisar({...this.filtro, params: params})
-    .then(response => {
-      const atletas = response.atletas;
-      //console.log('Atletas ', atletas)
+    .then(atletas => { // A variável 'atletas' agora É o array
       this.source.load(atletas);
+    })
+    .catch(error => {
+      console.error('Erro ao filtrar atletas:', error);
+      this.showToast('Erro ao buscar dados. Tente novamente.', 'danger');
     });
   }
 }

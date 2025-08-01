@@ -4,7 +4,7 @@ import { ModalidadesService } from '../modalidades.service';
 
 
 @Component({
-  selector: 'ngx-modalidade-select',
+  selector: 'app-modalidade-select',
   template: `
     <nb-select 
       placeholder="Modalidades"

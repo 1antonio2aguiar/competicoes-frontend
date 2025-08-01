@@ -32,16 +32,14 @@ export class AtletasService extends BaseResourceService<Atleta>{
     }
 
     return this.http
-    .get<any>(this.apiPath +'/filter', { params })
+      .get<any>(this.apiPath + '/filter', { params })
       .toPromise()
       .then((response) => {
         const atletas = response.content;
-        const resultado = {
-          atletas
-        };
-        //console.table('Resultado: ', atletas)
-        return resultado;
-    });
+
+        console.table('Atletas recebidos do back-end:', atletas);
+        return atletas;
+      });
   }
 
   listAll(): Promise<Atleta[]> {
@@ -56,42 +54,41 @@ export class AtletasService extends BaseResourceService<Atleta>{
   }
 
   create(atleta: Atleta): Observable<Atleta> {
-      atleta.empresaId = 1;
-  
-      //console.log('ta no create ', atleta)
-      return from(this.http
-        .post<Atleta>(this.apiPath, atleta)
-        .toPromise()
-        .then(response => {
-          // Lidar com a resposta da API
-          //console.log('Atleta criado com sucesso:', response); // Log para verificar a resposta
-          return response; // Retorna a resposta para o Observable
+    atleta.empresaId = 1;
+
+    return from(this.http
+      .post<Atleta>(this.apiPath, atleta)
+      .toPromise()
+      .then(response => {
+        // Lidar com a resposta da API
+        //console.log('Atleta criado com sucesso:', response); // Log para verificar a resposta
+        return response; // Retorna a resposta para o Observable
       }));
-    }
+  }
   
-    update(atleta: Atleta): Observable<Atleta> {
-      
-      atleta.empresaId = 1;
-  
-      return from(this.http
-        .put<Atleta>(`${this.apiPath}/${atleta.id}`, atleta)
-        .toPromise()
-        .then(response => {
-          // Lidar com a resposta da API
-          //.log('Atleta atualizada com sucesso:', response);
-          return response;
+  update(atleta: Atleta): Observable<Atleta> {
+
+    atleta.empresaId = 1;
+
+    return from(this.http
+      .put<Atleta>(`${this.apiPath}/${atleta.id}`, atleta)
+      .toPromise()
+      .then(response => {
+        // Lidar com a resposta da API
+        //.log('Atleta atualizada com sucesso:', response);
+        return response;
       }));
-    }
+  }
   
-    delete(id: number): Observable<any> {
-      return from(this.http
-        .delete<any>(`${this.apiPath}/${id}`)
-        .toPromise()
-        .then(response => {
-          // Lidar com a resposta da API
-          console.log('Atleta deletado com sucesso:', response); // Log para verificar a resposta
-          return response;
-        }));
-    }
+  delete(id: number): Observable<any> {
+    return from(this.http
+      .delete<any>(`${this.apiPath}/${id}`)
+      .toPromise()
+      .then(response => {
+        // Lidar com a resposta da API
+        console.log('Atleta deletado com sucesso:', response); // Log para verificar a resposta
+        return response;
+      }));
+  }
 
 }

@@ -24,10 +24,9 @@ import { EquipesBuscaComponent } from '../../components/equipes/equipes-busca/eq
     providers: [NbDialogService]
 })
 
-
 export class AtletasIudComponent implements OnInit {
   atletaId: number = 0;
-  width = 700; // Define a largura do modal
+  width = 750; // Define a largura do modal
   @Input() mode:       'add' | 'edit';
   @Input() telaOrigem;
 
@@ -55,12 +54,8 @@ export class AtletasIudComponent implements OnInit {
     this.carregarCategorias();
     this.criarFormulario();
 
-    //console.log("CONTEXT:", this.mode, ' ', this.telaOrigem); 
-
     if (this.mode === 'edit' && this.atleta) { // Verifica se a atleta foi passada como input
-      //console.log('Atleta ', this.atleta)
       this.atletaForm.patchValue(this.atleta); // Preenche o formulário com os dados da atleta
-      //console.log('Atleta form', this.atletaForm)
     }
   };
 
@@ -148,9 +143,11 @@ export class AtletasIudComponent implements OnInit {
   
     const modalRef = this.windowService.open(PessoasComponent, { 
       title: `Buscar Atletas`,
+      windowClass: 'modal-de-busca-customizado',
       buttons: buttonsConfig, 
-      context: { telaOrigem: 'Atleta' }
-    });
+      context: { telaOrigem: 'Atleta' },
+      closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
+    }); 
   
     modalRef.onClose.subscribe(
       (pessoa) => {

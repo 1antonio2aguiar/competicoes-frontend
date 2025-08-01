@@ -46,12 +46,13 @@ export class PorNomeComponent implements OnInit, OnDestroy {
       this.filtro.params = new HttpParams();
       this.filtro.params = this.filtro.params.append('nome', search);
       this.filtro.pagina = pagina;
-  
+
       // Chamada condicional usando operador ternário
-      // Isto aqui é o seguinte quando estiver cadastrando um atleta executa o metodo pessoaNotInEquipes que faz um filtro
-      // para não trazar pessoas que já estjam cadastradas por outras equipes. 
+      // Isto aqui é o seguinte quando estiver cadastrando um atleta executa o metodo pessoaDisponiveisParaCadastro 
+      // que faz um filtro para não trazar pessoas que já estjam cadastradas na tabela de atletas. 
+      // this.telaOrigem pode ser 'Atleta' ou 'Equipe'
       const serviceMethod = this.telaOrigem === 'Atleta' ? 
-                          this.pessoasService.pessoaNotInEquipes : 
+                          this.pessoasService.pessoaDisponiveisParaCadastro : 
                           this.pessoasService.pesquisar;
   
   

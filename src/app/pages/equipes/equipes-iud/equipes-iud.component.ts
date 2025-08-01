@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
 import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
@@ -7,7 +6,6 @@ import { NbDialogService, NbWindowControlButtonsConfig} from '@nebular/theme';
 import { Modalidade } from '../../../shared/models/modalidade';
 import { ModalidadesService } from '../../modalidades/modalidade-select/modalidades-select.service';
 import { Equipe } from '../../../shared/models/equipe';
-//import { PessoasBuscaComponent } from '../pessoas/pessoas-busca.component';
 import { PessoasComponent } from '../../components/pessoas/pessoas-busca/pessoas.component';
 import { EquipesService } from '../equipes.service';
 
@@ -24,6 +22,7 @@ export class EquipesIudComponent implements OnInit{
   equipeId: number = 0;
   width = 700; // Define a largura do modal
   @Input() mode: 'add' | 'edit';
+  @Input() telaOrigem;
 	 
   equipeForm: FormGroup;
 
@@ -64,7 +63,7 @@ export class EquipesIudComponent implements OnInit{
         this.formBuilder.group({
           id:[null],
           nome:[null]
-        }),
+        }), 
       
       agremiacao: 
         this.formBuilder.group({
@@ -126,7 +125,6 @@ export class EquipesIudComponent implements OnInit{
           console.error('Erro ao salvar/atualizar equipe:', error);
         }
       );
-  
     }
   }
 
@@ -146,7 +144,9 @@ export class EquipesIudComponent implements OnInit{
       close: true
     };
 
-    const modalRef = this.windowService.open(PessoasComponent, { buttons: buttonsConfig, 
+    const modalRef = this.windowService.open(PessoasComponent, { 
+      buttons: buttonsConfig,
+      context: { telaOrigem: 'Equipe' }, 
       closeOnBackdropClick: false, // Impede que o dialogo feche ao clicar fora
     });
 

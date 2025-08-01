@@ -1,6 +1,5 @@
 import { Injectable, Injector, EventEmitter } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 import { BaseResourceService } from '../../../shared/services/base-resource.service';
@@ -24,10 +23,12 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
   
   // 1. Listar todos os registros (READ)
   listAll(): Promise<Modalidade[]> {
-    //console.log('Chegou no service! ', this.apiPath + '/list')
     return this.http
-      .get<Modalidade[]>(this.apiPath + '/list')
-      .toPromise();
+      .get<any>(this.apiPath) // << 1. Recebe 'any' para aceitar o objeto de paginação
+      .pipe(
+        map(response => response.content as Modalidade[]) // << 2. Extrai apenas o array 'content' da resposta
+    )
+    .toPromise(); // << 3. Converte o resultado (que agora é só o array) para Promise
   }
 
   onModalidadeChangeService(event) {

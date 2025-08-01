@@ -20,8 +20,13 @@ const routes: Routes = [{
     },
 
     {
-      path: 'categorias',
+      path: 'categorias', 
       loadChildren: () => import('./categorias/categorias.module').then(m => m.CategoriasModule),
+    },
+
+     {
+      path: 'modalidades',
+      loadChildren: () => import('./modalidades/modalidades.module').then(m => m.ModalidadesModule),
     },
 
     {
@@ -49,10 +54,7 @@ const routes: Routes = [{
       loadChildren: () => import('./locais-competicoes/locais-competicoes.module').then(m => m.LocaisCompeticoesModule),
     },
 
-    {
-      path: 'modalidades',
-      loadChildren: () => import('./modalidades/modalidades.module').then(m => m.ModalidadesModule),
-    },
+   
 
     {
       path: 'pessoas-api',

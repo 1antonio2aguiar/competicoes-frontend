@@ -48,14 +48,15 @@ export class PorCpfComponent implements OnInit, OnDestroy {
   pesquisarPorCpf(search: string, pagina: number): Promise<any> {
 
     this.filtro.params = new HttpParams();
-    this.filtro.params = this.filtro.params.append('dadosPessoaFisicaFilter.cpf', search);
+    this.filtro.params = this.filtro.params.append('cpf', search);
     this.filtro.pagina = pagina;
 
-   // Chamada condicional usando operador ternário
-      // Isto aqui é o seguinte quando estiver cadastrando um atleta executa o metodo pessoaNotInEquipes que faz um filtro
-      // para não trazar pessoas que já estjam cadastradas por outras equipes. 
-      const serviceMethod = this.telaOrigem === 'Atleta' ? 
-                          this.pessoasService.pessoaNotInEquipes : 
+    // Chamada condicional usando operador ternário
+    // Isto aqui é o seguinte quando estiver cadastrando um atleta executa o metodo pessoaDisponiveisParaCadastro 
+    // que faz um filtro para não trazar pessoas que já estjam cadastradas na tabela de atletas. 
+    // this.telaOrigem pode ser 'Atleta' ou 'Equipe'
+    const serviceMethod = this.telaOrigem === 'Atleta' ? 
+                          this.pessoasService.pessoaDisponiveisParaCadastro : 
                           this.pessoasService.pesquisar;
   
   

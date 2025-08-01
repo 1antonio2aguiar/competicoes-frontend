@@ -17,23 +17,6 @@ export class CategoriasService extends BaseResourceService<Categoria>{
     super(environment.apiUrl + 'categorias', injector, Categoria.fromJson);
   }
 
-  /*pesquisar(filtro: Filters): Promise<any> {
-    let params = new HttpParams();
-
-    return this.http
-    .get<any>(this.apiPath +'/filter', { params })
-      .toPromise()
-      .then((response) => {
-        const categorias = response.content;
-        const resultado = {
-          categorias,
-          total: response.totalElements,
-        };
-        console.log('Resultado: ', resultado.categorias)
-        return resultado;
-    });
-  }*/
-
   pesquisar(filtro: Filters): Promise<any> {
     let params = filtro.params;
 

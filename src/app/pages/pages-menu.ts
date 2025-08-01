@@ -50,7 +50,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
       {
         title: 'Equipes',
-        link: '/pages/equipes/equipes-pesquisa',
+        link: '/pages/equipes/equipes-pesquisa', 
       },
       {
         title: 'Etapas',
@@ -62,7 +62,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
       {
         title: 'Modalidades',
-        link: '/pages/modalidades/modalidade-pesquisa',
+        link: '/pages/modalidades/modalidade-iud',
       },
 
       {

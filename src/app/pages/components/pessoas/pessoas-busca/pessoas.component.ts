@@ -21,7 +21,7 @@ export class Filters {
   nome = '';
   cpf: string | null = null; 
   params = new HttpParams(); 
-}
+} 
 
 @Component({
   selector: 'ngx-pessoas-busca',
@@ -29,9 +29,8 @@ export class Filters {
   styleUrls: ['./pessoas.component.scss']
 })
 
-
 export class PessoasComponent implements OnInit, OnDestroy {
-  @HostBinding('class.custom-modal-card') customModalCard = true;
+  //width = 700;
   @Input() telaOrigem;
 
   private searchTerms = new Subject<string>();

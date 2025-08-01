@@ -48,12 +48,10 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       .set('termo', termoDeBusca)
 
     return this.http
-      .get<any>(this.apiPath + '/pesquisarPorNomeCpfCnpj', { params })
+      .get<any>(this.apiPath = 'http://localhost:8080/pessoas/pesquisarPorNomeCpfCnpj', { params })
       .toPromise()
       .then((response) => {
         const pessoas = response; // A API retorna a lista diretamente
-
-        console.log('Retornou da API:', pessoas);
 
         const resultado = {
           pessoas: pessoas,
@@ -67,9 +65,8 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       }
     );
   }
-
-  // Aqui recupera somente pessoas que não estão em equipes(tabela)
-  pessoaNotInEquipes(filtro: Filters): Promise<any> {
+  
+  pessoaDisponiveisParaCadastro(filtro: Filters): Promise<any> {
     let params = filtro.params
 
     if (filtro.params) {
@@ -79,7 +76,7 @@ export class PessoasService extends BaseResourceService<Pessoa> {
     }
 
     return this.http
-      .get<any>(this.apiPath + '/pessoaNotInEquipes', { params }) // Use the declared params
+      .get<any>(this.apiPath = 'http://localhost:8080/atleta/disponiveis-para-cadastro', { params }) 
       .toPromise()
       .then((response) => {
         // Ajuste conforme a estrutura da sua resposta da API
@@ -88,7 +85,6 @@ export class PessoasService extends BaseResourceService<Pessoa> {
           pessoas,
           total: response.totalElements
         };
-        console.log('Resultado pessoaNotInEquipes ', resultado)
         return resultado;
       })
       .catch(error => {
@@ -97,4 +93,5 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       }
     );
   }
+
 }
