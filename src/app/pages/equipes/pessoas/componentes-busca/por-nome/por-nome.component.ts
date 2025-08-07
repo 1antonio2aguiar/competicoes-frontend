@@ -55,7 +55,6 @@ export class PorNomeComponent implements OnInit, OnDestroy {
                           this.pessoasService.pessoaDisponiveisParaCadastro : 
                           this.pessoasService.pesquisar;
   
-  
       return serviceMethod.call(this.pessoasService, this.filtro) // Chama o método correto
         .then(resultado => {
           this.filtro.totalRegistros = resultado.total;

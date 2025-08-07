@@ -93,5 +93,4 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       }
     );
   }
-
 }

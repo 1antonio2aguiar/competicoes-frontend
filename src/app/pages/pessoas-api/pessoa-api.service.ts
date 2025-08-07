@@ -1,10 +1,20 @@
 import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
 import { environment } from '../../../environments/environment';
-import { Filters } from '../../shared/filters/filters';
+import { HttpParams } from '@angular/common/http';
 import { PessoaApiOut } from '../../shared/models/pessoaApiOut';
 import { PessoaApiIn } from '../../shared/models/pessoaApiIn';
 import { from, Observable } from 'rxjs';
+
+export class Filters {
+  pagina = 0;
+  itensPorPagina = 5;
+  totalRegistros = 0;
+  nome = '';
+  cpf: string | null = null; 
+  cnpj: string | null = null; 
+  params = new HttpParams(); 
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +29,14 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
     this.pessoaEventHendlerId = new EventEmitter<PessoaApiOut>();
   } 
 
-  getPessoaById(pessoaId): Promise<PessoaApiOut> { 
-        return this.http.get<PessoaApiOut>(this.apiPath + '/' + pessoaId)
-          .toPromise();
+  getPessoaById(pessoaId: number): Promise<PessoaApiOut> {
+    const url = `${environment.pessoasApiUrl}pessoa/${pessoaId}`;
+    return this.http.get<PessoaApiOut>(url).toPromise();
+  }
+
+  getPessoaCompletaById(pessoaId: number): Promise<PessoaApiOut> {
+    const url = `${environment.pessoasApiUrl}pessoa/${pessoaId}/completo`;
+    return this.http.get<PessoaApiOut>(url).toPromise();
   }
 
   listar(filtro: Filters): Promise<any> {
@@ -36,11 +51,57 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
           pessoa,
           total: response.totalElements,
         };
-        console.table('Resultado: ', pessoa)
+        console.table('Resultado Geral>>>: ', pessoa)
         return resultado;
     });
   }
 
+  pesquisar(filtro: Filters, completo: boolean = false): Promise<{ pessoas: any[], total: number }> {
+      let termoDeBusca = '';
+  
+      // Monta o termo de busca a partir do filtro.
+      // A lógica de prioridade é: nome > cpf > cnpj
+      if (filtro.nome && filtro.nome.trim() !== '') {
+          termoDeBusca = filtro.nome.trim();
+      } else if (filtro.cpf && filtro.cpf.trim() !== '') {
+          termoDeBusca = filtro.cpf.trim();
+      } else if (filtro.cnpj && filtro.cnpj.trim() !== '') {
+          termoDeBusca = filtro.cnpj.trim();
+      }
+
+       // Se não há termo de busca, não faz a chamada.
+      if (termoDeBusca === '') {
+          return Promise.resolve({ pessoas: [], total: 0 }); // Retorna um resultado vazio
+      }
+  
+      let params = new HttpParams()
+        .set('termo', termoDeBusca)
+        .set('completo', completo.toString());
+
+      const url = `${environment.apiUrl}pessoas/pesquisar`;
+  
+      return this.http
+        .get<any[]>(url, { params }) // A resposta será um array (List<?>)
+        .toPromise()
+        .then((response: any[]) => {
+          const pessoas = response || [];
+          const resultado = {
+            pessoas: pessoas,
+            total: pessoas.length // A busca por termo não é paginada, então o total é o tamanho da lista
+          };
+          console.log(`Retorno da busca por termo '${termoDeBusca}' (completo=${completo}):`, pessoas);
+          return resultado;
+        })
+        .catch(error => {
+          console.error('Erro na requisição de pesquisa:', error);
+          // Retornar um resultado vazio em caso de erro para não quebrar o componente
+          return { pessoas: [], total: 0 };
+        });
+      }
+
+  /*
+    Esse aqui funciona belezinha se precisar pega apenas pessoa fisica.
+  
   pesquisar(filtro: Filters): Promise<any> {
     let params = filtro.params;
 
@@ -56,7 +117,7 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
         console.table('Resultado: ', pessoa)
         return resultado;
     });
-  }
+  }*/
 
   create(pessoaApi: PessoaApiIn): Observable<PessoaApiIn> {
     return from(this.http

@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Filters } from '../../../shared/filters/filters';
 import { PessoaApiService } from '../pessoa-api.service';
 import { HttpParams } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router'; // IMPORTAR Router
@@ -10,6 +9,17 @@ import { PessoaApiOut } from '../../../shared/models/pessoaApiOut';
 import { MyDatepickerCustonComponent } from '../../components/date-picker/my-datepicker-custon.component';
 import { CpfPipe } from '../../../shared/pipes/cpf.pipe';
 import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-delete-modal.component';
+import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
+
+export class Filters {
+  pagina = 0;
+  itensPorPagina = 5;
+  totalRegistros = 0;
+  nome = '';
+  cpf: string | null = null; 
+  cnpj: string | null = null;
+  params = new HttpParams(); 
+}
 
 @Component({
   selector: 'ngx-pessoa-api-pesquisa',
@@ -26,6 +36,8 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
   dadosPessoa: PessoaApiOut | null = null;
 
   private cpfPipeInstance = new CpfPipe();
+  private cnpjPipeInstance = new CnpjPipe();
+
 
   settings = {
     mode: 'external',
@@ -75,6 +87,22 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
         filterFunction: false,
       },
 
+      cpfCnpj: { 
+        width: '170px',
+        title: 'CPF/CNPJ',
+        type: 'object', 
+       valuePrepareFunction: (cell: any, row: any) => {
+          if (row.cpfCnpj) {
+            return this.cpfPipeInstance.transform(row.cpfCnpj);
+          } else if (row.cnpj) {
+            return this.cnpjPipeInstance.transform(row.cpfCnpj);
+          }
+          return '';
+        },
+        filter: true, 
+        filterFunction: false,
+      },
+
       dataNascimento: {
         width: '170px',
         title: 'Data Nascimento',
@@ -107,26 +135,12 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
           }
           return '';
         },
-        filter: {
+        /*filter: {
           type: 'custom', // MUITO IMPORTANTE: tipo 'custom' para filtro
           component: MyDatepickerCustonComponent
-        },
-        filterFunction: false, // A filtragem continua no servidor
-      },
-
-      cpf: { // O DTO 'PessoaApiResponse' que simulamos tinha 'cpf'
-        width: '150px',
-        title: 'CPF',
-        type: 'object', // Se o DTO de resposta tiver 'cpf' como string
-        valuePrepareFunction: (cellValue, row) => {
-          // cellValue será row.cpf
-          if (row.cpf) {
-            return this.cpfPipeInstance.transform(row.cpf);
-          }
-          return '';
-        },
-        filter: true, 
-        filterFunction: false,
+        },*/
+        //filterFunction: false, // A filtragem continua no servidor
+         filter: false, 
       },
 
       situacao: {
@@ -216,7 +230,6 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
   }
 
   onAdd(): void {
-    //console.log('Botão Adicionar (+) clicado');
     this.router.navigate(['cadastrar'], { relativeTo: this.route.parent }); 
   }
 
@@ -231,7 +244,6 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
   }
 
   onDelete(event): void {
-    //console.log('Delete')
 
     this.dialogService.open(ConfirmDeleteComponent, {
       context: {
@@ -243,100 +255,68 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
       if (res) {
         this.pessoaApiService.delete(event.data.id).subscribe(() => {
           this.listarPessoas();
-          //this.showToast('Inscrição excluída com sucesso!', 'success');
         },
           (error) => {
-            //this.showToast('Erro ao excluir Inscrição!', 'danger');  // Adicionado o toast de erro
-            console.error("Erro ao excluir Inscrição:", error);
+            console.error("Erro ao excluir pessoa:", error);
           });
       }
     });
   }
 
   onTableFilter(filterEvent: any): void {
-    // Limpa os parâmetros de filtro anteriores para construir um novo conjunto
-    this.filtro.params = new HttpParams();
-    let deveChamarApi = false; // Flag para controlar se a API será chamada
+    // Resetar o objeto de filtro
+    this.filtro = new Filters();
+    let termoDeBusca = '';
 
-    const activeFiltersArray = (filterEvent && filterEvent.filters && Array.isArray(filterEvent.filters))
-                             ? filterEvent.filters
-                             : [];
+    const activeFilters = filterEvent?.filters || [];
 
-    if (activeFiltersArray.length > 0) {
-      activeFiltersArray.forEach(filter => {
-        const field = filter.field;
-        const search = filter.search;
+    // ng2-smart-table permite múltiplos filtros, mas sua lógica atual
+    // usa um único "termo". Vamos pegar o último filtro aplicado.
+    if (activeFilters.length > 0) {
+        const ultimoFiltro = activeFilters[activeFilters.length - 1];
+        const field = ultimoFiltro.field;
+        const search = ultimoFiltro.search;
 
-        if (search && search.trim() !== '') {
-          switch (field) {
-            case 'id':
-              this.filtro.params = this.filtro.params.set('id', search.trim());
-              deveChamarApi = true; // Filtro de ID sempre chama a API
-              break;
-            case 'nome':
-              if (search.trim().length >= 6) {
-                this.filtro.params = this.filtro.params.set('nome', search.trim());
-                deveChamarApi = true; // Chama a API se 'nome' tiver >= 4 caracteres
-              }
-              break;
-            case 'cpf':
-              if (search.trim().length >= 6) {
-                this.filtro.params = this.filtro.params.set('cpf', search.trim());
-                deveChamarApi = true; // Chama a API se 'nome' tiver >= 4 caracteres
-              }
-              break;
-            case 'dataNascimento': 
-              if (search && search.trim().length === 10) { 
-                this.filtro.params = this.filtro.params.set('dataNascimento', search.trim());
-                deveChamarApi = true;
-              } else if (search && search.trim() !== '') {
-                // Formato inválido ou data parcial (embora DateFilterComponent tente evitar isso)
-                //console.warn("Formato de data inválido recebido do filtro:", search);
-              }
-          }
+        if (search && search.trim().length >= 3) {
+            // Preenche o objeto de filtro
+            if (field === 'nome') {
+                this.filtro.nome = search.trim();
+                termoDeBusca = this.filtro.nome;
+            } else if (field === 'cpfCnpj') { // << Usando o campo combinado
+                // Removemos formatação para enviar apenas números, se houver
+                const valorNumerico = search.trim().replace(/\D/g, '');
+                // O backend pode diferenciar por tamanho, mas o serviço atual combina em 'termo'
+                this.filtro.cpf = valorNumerico;  // Preenche tanto cpf quanto cnpj
+                this.filtro.cnpj = valorNumerico; // com o mesmo valor numérico
+                termoDeBusca = valorNumerico;
+            }
+            // Adicionar outros campos como 'id' ou 'dataNascimento' aqui se necessário
         }
+    }
+
+    // Se não há um termo de busca válido, mas a ação foi limpar os filtros,
+    // a busca será feita com termo vazio, trazendo todos os resultados.
+    if (!termoDeBusca && activeFilters.length > 0) {
+        console.log("Termo de busca muito curto. Não buscando.");
+        return; // Não faz a chamada à API se o termo for muito curto
+    }
+
+    this.isLoading = true;
+
+    // A chamada ao serviço agora usa o `termoDeBusca` montado.
+    // O seu serviço `pesquisar` já lida com a lógica de enviar o `termo`.
+    this.pessoaApiService.pesquisar(this.filtro,true) // Passamos o objeto filtro que contém nome/cpf/cnpj
+      .then(response => {
+        const pessoas = response.pessoas || [];
+        this.source.load(pessoas);
+      })
+      .catch(error => {
+        console.error("Erro ao pesquisar pessoas com filtro:", error);
+        this.source.load([]);
+      })
+      .finally(() => {
+        this.isLoading = false;
       });
-    }
-
-    // Adiciona a ordenação padrão ou a última ordenação aplicada pela tabela
-    this.filtro.params = this.filtro.params.append('sort', 'nome,asc'); // Ou pegue da tabela se ela suportar sort externo
-
-    // Decide se realmente chama a API
-    // A API só é chamada se 'deveChamarApi' foi setado para true por ALGUM filtro válido
-    // OU se não há NENHUM filtro ativo (todos os campos de filtro da tabela estão vazios).
-    if (deveChamarApi || activeFiltersArray.every(f => !f.search || f.search.trim() === '')) {
-        if (activeFiltersArray.every(f => !f.search || f.search.trim() === '')) {
-            //console.log("Nenhum filtro ativo, carregando lista padrão.");
-            // Se todos os filtros foram limpos, this.filtro.params estará vazio (exceto sort)
-        } else {
-            console.log("Aplicando filtros e chamando API com:", this.filtro.params.toString());
-        }
-
-        this.filtro.itensPorPagina = 40; // Mantém o tamanho da página do backend
-
-        // <<< BLOCO DE CONTROLE >>>
-      this.isLoading = true; // Inicia o loading antes da chamada
-      this.pessoaApiService.pesquisar({ ...this.filtro }) // Passa o objeto filtro com os params
-        .then(response => {
-          const pessoas = response.pessoa || [];
-          //console.log('Dados recebidos da API (CPF/Data):', JSON.parse(JSON.stringify(pessoas)));
-          this.source.load([...pessoas]);
-          //console.log("Dados carregados na source após filtro CPF/Data. Count:", this.source.count());
-        })
-        .catch(error => {
-          console.error("Erro ao pesquisar pessoas com filtro:", error);
-          this.source.load([]); // Limpa em caso de erro
-        })
-        .finally(() => {
-          this.isLoading = false; // Finaliza o loading
-        });
-      // <<< FIM DO BLOCO >>>
-
-    } else {
-        //console.log("Nenhum filtro válido ou com comprimento suficiente para acionar a busca na API. Tabela não atualizada pela API.");
-        // Opcional: Limpar a tabela se nenhum filtro válido for encontrado e houver texto parcial
-        // this.source.load([]);
-    }
   }
 
   // Limpa o filtro anterior, só e possivel filtrar por uma coluna.
@@ -356,7 +336,7 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
         //console.log('headerClasses ', headerClasses)
 
         // Define os campos de filtro que você quer monitorar
-        const monitoredFilterFields = ['id','nome', 'cpf', 'dataNascimento'];
+        const monitoredFilterFields = ['id','nome', 'cpfCnpj', 'dataNascimento'];
 
         // Procura por uma classe que corresponda a um dos campos monitorados
         let fieldName: string | null = null;
@@ -374,5 +354,5 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
       }
     }
   }
-
+ 
 }

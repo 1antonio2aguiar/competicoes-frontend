@@ -17,7 +17,7 @@ import { PessoaContextService } from '../../../services/logradouros/pessoa-conte
 interface SituacaoOpcao {
   valor: string | number;
   descricao: string;
-}
+} 
 
 @Component({
   selector: 'ngx-pessoa-perfil-form',
@@ -27,7 +27,8 @@ interface SituacaoOpcao {
 
 export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
-  @ViewChild('cpfInput') cpfInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('cpfInput')  cpfInputRef!:  ElementRef<HTMLInputElement>;
+  @ViewChild('cnpjInput') cnpjInputRef!: ElementRef<HTMLInputElement>;
 
   modoEdicao = false;
   pessoaId: number | null = null;
@@ -41,6 +42,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   tiposPessoas: TipoPessoa[] = [];
+  
   situacoes: SituacaoOpcao[] = [
     { valor: 0, descricao: 'ATIVO' },
     { valor: 1, descricao: 'INATIVO' },
@@ -73,10 +75,13 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
         this.modoEdicao = true;
         this.pessoaId = +parentParams['id'];
         this.cardHeaderTitle = `Editando Perfil (${this.pessoaNome})`;
+        this.pessoaForm.get('fisicaJuridica')?.disable();
+
         // ---- CHAMADA PARA CARREGAR DADOS EM MODO EDIÇÃO ----
         this.carregarDadosPessoaParaEdicao(this.pessoaId);
         // -----------------------------------------------------
       } else {
+        this.pessoaForm.get('fisicaJuridica')?.enable();
         this.modoEdicao = false;
         this.pessoaId = null;
         this.cardHeaderTitle = 'Cadastrar Novo Perfil';
@@ -115,48 +120,72 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       cnpj: [''],
       nomeFantasia: [''],
       objetoSocial: [''],
-      microEmpresa: [false],
+      microEmpresa: ['N'],
       tipoEmpresa: [null]
     });
   }
 
   // --- NOVO MÉTODO PARA CARREGAR DADOS DA PESSOA ---
   carregarDadosPessoaParaEdicao(id: number): void {
-    //this.isLoadingDados = false; 
-    let dataParaFormulario = null;
+    this.isLoadingDados = true;
 
-    this.pessoaApiService.getPessoaById(id)
-      .then((pessoa: PessoaApiOut) => {
+  this.pessoaApiService.getPessoaCompletaById(id)
+    .then((pessoa: PessoaApiOut) => {
+      console.log('Dados da API para edição:', pessoa);
 
-        dataParaFormulario = new Date(pessoa.dataNascimento);
+      const tipoPessoaApi = pessoa.fisicaJuridica;
+      this.pessoaForm.get('fisicaJuridica')?.setValue(tipoPessoaApi);
 
-        let cpfFormatadoParaDisplay = pessoa.cpf; // Assume que pessoa.cpf vem só com dígitos
-        if (pessoa.cpf && pessoa.cpf.length === 11) {
-          cpfFormatadoParaDisplay = this.formatarCpfParaDisplay(pessoa.cpf);
+      let dataParaFormulario: any = { ...pessoa };
+
+      // 1. Converte 'situacao' (number) para string
+      if (pessoa.situacaoId !== undefined && pessoa.situacaoId !== null) {
+        dataParaFormulario.situacao = pessoa.situacaoId.toString();
+      }
+
+      if (tipoPessoaApi === 'F') {
+        if (pessoa.estadoCivilId !== undefined && pessoa.estadoCivilId !== null) {
+          dataParaFormulario.estadoCivil = pessoa.estadoCivilId.toString();
+        }
+
+        // A sua lógica de data de nascimento está correta
+        if (pessoa.dataNascimento) {
+          const parts = pessoa.dataNascimento.split('-');
+          if (parts.length === 3) {
+            dataParaFormulario.dataNascimento = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          }
+        }
+      } else {
+        if (pessoa.tipoEmpresa !== undefined && pessoa.tipoEmpresa !== null) {
+          dataParaFormulario.tipoEmpresa = pessoa.tipoEmpresa.toString();
         }
         
-        this.pessoaForm.patchValue({
-          ...pessoa, // Espalha todas as propriedades que batem com os formControls
-          dataNascimento: dataParaFormulario,
-          estadoCivil: pessoa.estadoCivilId,
-        });
+      }
 
-        if (this.cpfInputRef && this.cpfInputRef.nativeElement && cpfFormatadoParaDisplay) {
-          setTimeout(() => {
-            this.cpfInputRef.nativeElement.value = cpfFormatadoParaDisplay;
-          }, 0);
-        }
+      this.pessoaForm.patchValue(dataParaFormulario);
 
-        // Isso aqui é para pegar o nome nas telas de cadastro de endereços e outros
-        // this.pessoaContextService.setNomePessoaAtual(pessoa.nome); 
-      })
-      .catch(error => {
-        console.error(`Erro ao carregar dados da pessoa com ID ${id}:`, error);
-      })
-      .finally(() => {
-        this.isLoadingDados = false; 
-      });
+      console.log('Estado do formulário após patchValue:', this.pessoaForm.value);
+
+      if (tipoPessoaApi === 'F' && this.cpfInputRef?.nativeElement && pessoa.cpf) {
+        setTimeout(() => {
+          this.cpfInputRef.nativeElement.value = this.formatarCpfParaDisplay(pessoa.cpf);
+        }, 0);
+      } else {
+        setTimeout(() => {
+          this.cnpjInputRef.nativeElement.value = this.formatarCnpjParaDisplay(pessoa.cnpj);
+        }, 0);
+      }
+
+    })
+    .catch(error => {
+      console.error(`Erro ao carregar dados da pessoa com ID ${id}:`, error);
+      this.showToast('Erro ao carregar dados do perfil.', 'Erro', 'danger');
+    })
+    .finally(() => {
+      this.isLoadingDados = false;
+    });
   }
+
   // -------------------------------------------------
 
   carregarTiposPessoas() {
@@ -203,12 +232,18 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
              if (parts.length === 3) {
                  dataNascimentoFormatada = new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1, parseInt(parts[2],10));
              }
-           }
+          }
 
           let cpfFormatadoParaDisplay = pessoaAtualizada.cpf; // Assume que pessoa.cpf vem só com dígitos
-          if (pessoaAtualizada.cpf && pessoaAtualizada.cpf.length === 11) {
+          if (pessoaAtualizada.cpf && pessoaAtualizada.cpf.length <= 11) {
             cpfFormatadoParaDisplay = this.formatarCpfParaDisplay(pessoaAtualizada.cpf);
+          } else {
+
+            let cnpjFormatadoParaDisplay = pessoaAtualizada.cnpj;
+            cnpjFormatadoParaDisplay = this.formatarCnpjParaDisplay(cnpjFormatadoParaDisplay);
           }
+
+          
 
           this.pessoaForm.patchValue({
             ...pessoaAtualizada,
@@ -264,6 +299,14 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       return cpfNumeros; // Retorna original se não for um CPF válido para formatação
     }
     return `${cpfNumeros.substring(0, 3)}.${cpfNumeros.substring(3, 6)}.${cpfNumeros.substring(6, 9)}-${cpfNumeros.substring(9, 11)}`;
+  }
+
+  formatarCnpjParaDisplay(cnpjNumeros: string): string {
+    if (!cnpjNumeros || cnpjNumeros.length !== 14) {
+      return cnpjNumeros; // Retorna original se não for um CNPJ válido para formatação
+    }
+    const cnpjFormtado = `${cnpjNumeros.substring(0, 2)}.${cnpjNumeros.substring(2, 5)}.${cnpjNumeros.substring(5, 8)}/${cnpjNumeros.substring(8, 12)}-${cnpjNumeros.substring(12, 14)}`;
+    return cnpjFormtado;
   }
 
   onCpfInput(event: Event): void {

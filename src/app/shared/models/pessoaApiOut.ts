@@ -5,21 +5,27 @@ export class PessoaApiOut extends BaseResourceModel {
       public override id?: number,
       public nome?: string,
       public fisicaJuridica?: string,
+      
+      public situacaoId?: number,
       public situacao?: number,
 
       public tipoPessoaId?: number,
       public tipoPessoaNome?: string,
 
       public cpf?: string,
+      public cnpj?: string,
       public sexo?: string ,
 
       public estadoCivilId?: number ,
-      public estadoCivilDesc?: string ,
+      public estadoCivil?: string ,
 
       public dataNascimento?: string ,
       public nomeMae?: string ,
       public nomePai?: string,
       public observacao?: string ,
+
+      public tipoEmpresa?: number,
+      public microEmpresa?: string,
 
     ) {
       super();
