@@ -92,10 +92,10 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
         title: 'CPF/CNPJ',
         type: 'object', 
        valuePrepareFunction: (cell: any, row: any) => {
-          if (row.cpfCnpj) {
-            return this.cpfPipeInstance.transform(row.cpfCnpj);
+          if (row.cpf) {
+            return this.cpfPipeInstance.transform(row.cpf);
           } else if (row.cnpj) {
-            return this.cnpjPipeInstance.transform(row.cpfCnpj);
+            return this.cnpjPipeInstance.transform(row.cnpj);
           }
           return '';
         },
@@ -162,7 +162,6 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
         }
       },
     },
-
     }
   }
   
@@ -171,6 +170,7 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
       private router: Router,
       private route: ActivatedRoute,
       private dialogService: NbDialogService,
+      private toastrService: NbToastrService
     ) {
       // Inicializar o filtro com valores padrões
       this.filtro.pagina = 0;    // Se o backend for 0-based para 'page'
@@ -244,21 +244,33 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
   }
 
   onDelete(event): void {
-
     this.dialogService.open(ConfirmDeleteComponent, {
       context: {
         title: 'Excluir Pessoa',
-        message: `Tem certeza que deseja excluir a Pessoa  ${event.data.id} ${event.data.nome}?`,
+        message: `Tem certeza que deseja excluir a Pessoa ${event.data.nome}?`,
         data: event.data
       },
     }).onClose.subscribe(res => {
       if (res) {
-        this.pessoaApiService.delete(event.data.id).subscribe(() => {
-          this.listarPessoas();
-        },
-          (error) => {
-            console.error("Erro ao excluir pessoa:", error);
-          });
+        // A mágica acontece aqui, no 'subscribe'
+        this.pessoaApiService.delete(event.data.id).subscribe({
+          
+          // ---- SUCESSO ----
+          next: () => {
+            this.toastrService.success('Pessoa excluída com sucesso!', 'Sucesso');
+            this.listarPessoas(); // Atualiza a lista após o sucesso
+          },
+
+          // ---- ERRO ----
+          error: (erro) => {
+            // Extrai a mensagem de erro específica do corpo da resposta do backend
+            const mensagemErro = erro.error?.message || 'Não foi possível excluir. Verifique as dependências.';
+            
+            this.toastrService.danger(mensagemErro, 'Falha na Exclusão');
+            
+            console.error("Erro ao excluir pessoa:", erro); // Mantém o log para debug
+          }
+        });
       }
     });
   }

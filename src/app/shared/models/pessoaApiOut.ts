@@ -12,20 +12,24 @@ export class PessoaApiOut extends BaseResourceModel {
       public tipoPessoaId?: number,
       public tipoPessoaNome?: string,
 
+      // PF
       public cpf?: string,
-      public cnpj?: string,
-      public sexo?: string ,
-
+      public sexo?: string,
       public estadoCivilId?: number ,
       public estadoCivil?: string ,
-
       public dataNascimento?: string ,
       public nomeMae?: string ,
       public nomePai?: string,
       public observacao?: string ,
 
+      // PJ
+      public cnpj?: string,
+      public nomeFantasia?: string,
+      public objetoSocial?: string,
+      public microEmpresa?: 'S' | 'N',
       public tipoEmpresa?: number,
-      public microEmpresa?: string,
+
+      public cnpjCpf?: string,
 
     ) {
       super();

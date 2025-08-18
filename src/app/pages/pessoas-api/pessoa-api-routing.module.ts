@@ -9,6 +9,7 @@ import { ContatoPesquisaComponent } from './contato/contato-pesquisa/contato-pes
 import { ContatoIudComponent } from './contato/contato-iud/contato-iud.component';
 import { DocumentoPesquisaComponent } from './documento/documento-pesquisa/documento-pesquisa.component';
 import { DocumentoIudComponent } from './documento/documento-iud/documento-iud.component';
+import { EnderecoIudComponent } from './endereco/endereco-iud/endereco-iud.component';
 
 const routes: Routes = [{
   path: '',
@@ -69,5 +70,6 @@ export const PessoaApiRoutedComponents = [
   ContatoPesquisaComponent,
   ContatoIudComponent,
   DocumentoPesquisaComponent,
-  DocumentoIudComponent
+  DocumentoIudComponent,
+  EnderecoIudComponent
 ];

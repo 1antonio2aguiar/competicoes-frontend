@@ -6,70 +6,47 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TelefonePipe implements PipeTransform {
 
     /**
-     * Mostra o telefone com a máscara
+     * Formata um número de telefone se o tipo de contato for telefônico.
+     * Caso contrário, retorna o valor original (ex: para e-mail, site).
      *
-     * Parâmetros:
-     * @any value: somente números
-     * @string type: 'F' fixo ou 'C' celular
+     * @param value O valor do contato (o número, e-mail, etc.).
+     * @param tipoContato O código numérico do tipo de contato (0, 1, 2, 3, 4, 5).
      */
-    transform(value: any, type: string): string {
-        let telefone = '';
-        let valueOf = '';
-        let lenghtVal: number;
-
-        if (typeof value !== 'string') {
-            if (typeof value === 'number') {
-                valueOf = value.toString();
-            } else {
-                return null;
-            }
-        } else {
-            valueOf = value;
+    transform(value: string | number | null | undefined, tipoContato: number | null | undefined): string {
+        // Se não houver valor, retorna uma string vazia.
+        if (value === null || value === undefined) {
+            return '';
         }
 
-        lenghtVal = valueOf.length;
+        // Converte o valor para string para garantir a manipulação.
+        const valorComoString = String(value);
 
-        if (lenghtVal < 10 && type === 'F') {
-            let aux = '';
-            for (let i = 0; i < 10 - valueOf.length; i++) {
-                aux += '0';
-            }
-            valueOf = aux + valueOf;
-            lenghtVal = valueOf.length;
+        // Lista dos códigos que representam um telefone e devem ser formatados.
+        const tiposDeTelefone = [0, 1, 2, 5]; // TELEFONE_FIXO, CELULAR, WHATSUP, RECADO
+
+        // VERIFICAÇÃO PRINCIPAL: Se o tipo não é um telefone, retorna o valor original.
+        if (tipoContato === null || tipoContato === undefined || !tiposDeTelefone.includes(tipoContato)) {
+            return valorComoString;
         }
 
-        if (lenghtVal < 11 && type === 'C') {
-            let aux = '';
-            for (let i = 0; i < 11 - valueOf.length; i++) {
-                aux += '0';
-            }
-            valueOf = aux + valueOf;
-            lenghtVal = valueOf.length;
+        // Se chegou aqui, é um telefone. Vamos formatar.
+        const apenasDigitos = valorComoString.replace(/\D/g, '');
+
+        // Define se é Celular ('C') ou Fixo ('F') com base no código do enum.
+        // Celular/WhatsApp (11 dígitos) vs Fixo/Recado (10 dígitos).
+        const tipoMascara = (tipoContato === 1 || tipoContato === 2) ? 'C' : 'F';
+
+        if (tipoMascara === 'C' && apenasDigitos.length === 11) {
+            // Formato: (99) 99999-9999
+            return `(${apenasDigitos.slice(0, 2)}) ${apenasDigitos.slice(2, 7)}-${apenasDigitos.slice(7)}`;
+        }
+        
+        if (tipoMascara === 'F' && apenasDigitos.length === 10) {
+            // Formato: (99) 9999-9999
+            return `(${apenasDigitos.slice(0, 2)}) ${apenasDigitos.slice(2, 6)}-${apenasDigitos.slice(6)}`;
         }
 
-        for (let i = lenghtVal - 1; i >= 0; i--) {
-            telefone = valueOf[i] + telefone;
-
-            if (i === lenghtVal - 4) {
-                telefone = '-' + telefone;
-            }
-
-            if (
-                type === 'F' && i === lenghtVal - 8 ||
-                type === 'C' && i === lenghtVal - 9
-            ) {
-                telefone = ') ' + telefone;
-            }
-
-            if (
-                type === 'F' && i === lenghtVal - 10 ||
-                type === 'C' && i === lenghtVal - 11
-            ) {
-                telefone = '(' + telefone;
-            }
-        }
-
-        return telefone;
+        // Se o número de dígitos não corresponder, retorna apenas os dígitos para não quebrar.
+        return apenasDigitos;
     }
-
 }

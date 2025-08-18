@@ -33,11 +33,14 @@
 
             <div class="detalhes-contato small">
               <p class="mb-1">
-                <span *ngIf="contato.tipoContato && contato.contato!== 'N/I'"></span>
-                  {{ contato.tipoContatoDescricao }} {{ contato.contato | telefone }}
-                  {{ contato.complemento ? ' - ' + contato.complemento : '' }}
+                <span *ngIf="contato.tipoContato !== null && contato.contato !== 'N/I'"></span>
+                {{ contato.tipoContatoDescricao }}: 
+                <strong>{{ contato.contato | telefone:contato.tipoContato }}</strong>
+                
+                {{ contato.complemento ? ' - ' + contato.complemento : '' }}
               </p>
             </div>
+
             
             <div class="contato-conteudo-inferior d-flex justify-content-between align-items-center mt-2">
               <div class="acoes-contato">

@@ -51,6 +51,7 @@ export class EnderecoService extends BaseResourceService<EnderecoOut>{
             throw new Error("ID do endereço é necessário para atualização.");
         }
         const url = `${this.apiPath}/${enderecoData.id}`;
+
         return this.http.put<EnderecoOut>(url, enderecoData).pipe(
             map(response => {
                 console.log('Endereço atualizado com sucesso (API retornou EnderecoOut):', response);

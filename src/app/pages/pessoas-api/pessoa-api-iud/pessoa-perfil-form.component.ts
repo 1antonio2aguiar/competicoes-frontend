@@ -129,9 +129,9 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   carregarDadosPessoaParaEdicao(id: number): void {
     this.isLoadingDados = true;
 
-  this.pessoaApiService.getPessoaCompletaById(id)
+    this.pessoaApiService.getPessoaCompletaById(id)
     .then((pessoa: PessoaApiOut) => {
-      console.log('Dados da API para edição:', pessoa);
+      //console.log('Dados da API para edição:', pessoa);
 
       const tipoPessoaApi = pessoa.fisicaJuridica;
       this.pessoaForm.get('fisicaJuridica')?.setValue(tipoPessoaApi);
@@ -164,14 +164,15 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
       this.pessoaForm.patchValue(dataParaFormulario);
 
-      console.log('Estado do formulário após patchValue:', this.pessoaForm.value);
+      console.log('Estado do formulário após patchValue:', tipoPessoaApi,' ',pessoa.cpf);
 
-      if (tipoPessoaApi === 'F' && this.cpfInputRef?.nativeElement && pessoa.cpf) {
+      if (tipoPessoaApi === 'F' && pessoa.cpf) {
         setTimeout(() => {
           this.cpfInputRef.nativeElement.value = this.formatarCpfParaDisplay(pessoa.cpf);
         }, 0);
       } else {
         setTimeout(() => {
+          console.log('ENTROU NO ELSE :', tipoPessoaApi,' ',pessoa.cnpj);
           this.cnpjInputRef.nativeElement.value = this.formatarCnpjParaDisplay(pessoa.cnpj);
         }, 0);
       }
@@ -202,12 +203,20 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   isPessoaJuridica(): boolean { return this.pessoaForm.get('fisicaJuridica')?.value === 'J'; }
 
   onSubmit(): void {
-    //this.isLoading = false;
     const dadosFormulario = this.pessoaForm.value;
-    
-    const pessoaParaSalvar: PessoaApiIn = { /* ... lógica de mapeamento ... */
+
+    const pessoaParaSalvar: PessoaApiIn = {
+      // 1. Base do formulário
       ...dadosFormulario,
-      
+
+      // 2. CORREÇÕES ESSENCIAIS
+      id: this.modoEdicao ? this.pessoaId : null,
+      fisicaJuridica: this.isPessoaFisica() ? 'F' : 'J', // <<< RESOLVE O ERRO PRINCIPAL
+      situacao: +dadosFormulario.situacao,
+      tipoPessoaId: +dadosFormulario.tipoPessoaId,
+      estadoCivil: dadosFormulario.estadoCivil ? +dadosFormulario.estadoCivil : null, // <<< EVITA O PRÓXIMO ERRO
+
+      // 3. Sua lógica original
       ...(this.isPessoaFisica() && {
         cnpj: null, nomeFantasia: null, objetoSocial: null, microEmpresa: null, tipoEmpresa: null,
       }),
@@ -216,45 +225,50 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       }),
     };
 
+    //console.log('OBJETO FINAL CORRIGIDO SENDO ENVIADO PARA A API:', pessoaParaSalvar);
+
     if (this.modoEdicao && this.pessoaId) {
       // ATUALIZAR
-      this.pessoaApiService.update(pessoaParaSalvar).pipe( // Passa o objeto completo com o ID
+      this.pessoaApiService.updatePessoa(pessoaParaSalvar).pipe(
         takeUntil(this.destroy$),
         finalize(() => this.isLoading = false)
       ).subscribe({
-        next: (pessoaAtualizada: PessoaApiOut) => { // Espera um PessoaApiOut
+        next: (pessoaAtualizada: PessoaApiOut) => {
           this.pessoaContextService.setPessoaNome(pessoaAtualizada.nome);
           
-          //  Recarrega os dados no formulário
           let dataNascimentoFormatada: Date | null = null;
           if (pessoaAtualizada.dataNascimento) {
              const parts = pessoaAtualizada.dataNascimento.split('-');
              if (parts.length === 3) {
-                 dataNascimentoFormatada = new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1, parseInt(parts[2],10));
+                 dataNascimentoFormatada = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
              }
           }
 
-          let cpfFormatadoParaDisplay = pessoaAtualizada.cpf; // Assume que pessoa.cpf vem só com dígitos
+          console.log('COMO ESTA AQUI >>>>>>>>>>>>>>>>:', pessoaAtualizada);
+
+          let cpfFormatadoParaDisplay = pessoaAtualizada.cpf;
           if (pessoaAtualizada.cpf && pessoaAtualizada.cpf.length <= 11) {
             cpfFormatadoParaDisplay = this.formatarCpfParaDisplay(pessoaAtualizada.cpf);
           } else {
-
             let cnpjFormatadoParaDisplay = pessoaAtualizada.cnpj;
             cnpjFormatadoParaDisplay = this.formatarCnpjParaDisplay(cnpjFormatadoParaDisplay);
           }
 
-          
-
           this.pessoaForm.patchValue({
-            ...pessoaAtualizada,
+            //...pessoaAtualizada,
             dataNascimento: dataNascimentoFormatada
           });
 
-          if (this.cpfInputRef && this.cpfInputRef.nativeElement && cpfFormatadoParaDisplay) {
+
+          if (cpfFormatadoParaDisplay) {
             setTimeout(() => {
-              this.cpfInputRef.nativeElement.value = cpfFormatadoParaDisplay;
+              // Adiciona a verificação AQUI DENTRO, no momento exato da execução.
+              if (this.cpfInputRef && this.cpfInputRef.nativeElement) {
+                this.cpfInputRef.nativeElement.value = cpfFormatadoParaDisplay;
+              }
             }, 0);
           }
+
 
           this.showToast('Pessoa atualizada com sucesso!', 'Sucesso', 'success');
         },
@@ -264,35 +278,30 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
           this.toastrService.danger(mensagemErro, 'Falha na Atualização');
         }
       });
-      // --- FIM DA IMPLEMENTAÇÃO DA ATUALIZAÇÃO ---
     } else {
-
-        this.pessoaApiService.create(pessoaParaSalvar).pipe(
+      // CRIAR
+      this.pessoaApiService.createPessoa(pessoaParaSalvar).pipe(
         takeUntil(this.destroy$),
         finalize(() => this.isLoading = false) 
       ).subscribe({
-        next: (pessoaCadastrada: PessoaApiOut) => { // Espera um PessoaApiOut
+        next: (pessoaCadastrada: PessoaApiOut) => {
           this.pessoaId = pessoaCadastrada.id;
-          console.log('Pessoa cadastrada com ID:', this.pessoaId);
+          //console.log('Pessoa cadastrada com ID:', this.pessoaId);
           this.showToast('Pessoa inserida com sucesso!', 'Sucesso', 'success');
 
-          // Atualizar o contexto com os dados da nova pessoa
-          if (pessoaCadastrada.id) { // Verifica se o ID foi retornado
+          if (pessoaCadastrada.id) {
             this.pessoaContextService.setPessoaId(pessoaCadastrada.id);
           }
           this.pessoaContextService.setPessoaNome(pessoaCadastrada.nome);
         },
         error: (erro) => {
           console.error('Erro ao cadastrar pessoa:', erro);
-          // Tratar erros específicos do backend se necessário
           const mensagemErro = erro.error?.message || erro.message || 'Erro desconhecido ao cadastrar pessoa.';
           this.toastrService.danger(mensagemErro, 'Falha no Cadastro');
         }
       });
-      // --- FIM DA IMPLEMENTAÇÃO DO CADASTRO ---
-
     }
-  } 
+  }
 
   formatarCpfParaDisplay(cpfNumeros: string): string {
     if (!cpfNumeros || cpfNumeros.length !== 11) {
@@ -302,83 +311,14 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   }
 
   formatarCnpjParaDisplay(cnpjNumeros: string): string {
-    if (!cnpjNumeros || cnpjNumeros.length !== 14) {
+    console.log('chegou na função ', cnpjNumeros);
+    if (!cnpjNumeros || cnpjNumeros.length !== 14) { 
       return cnpjNumeros; // Retorna original se não for um CNPJ válido para formatação
     }
     const cnpjFormtado = `${cnpjNumeros.substring(0, 2)}.${cnpjNumeros.substring(2, 5)}.${cnpjNumeros.substring(5, 8)}/${cnpjNumeros.substring(8, 12)}-${cnpjNumeros.substring(12, 14)}`;
+    console.log('Retuen  ', cnpjFormtado);
     return cnpjFormtado;
   }
-
-  onCpfInput(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    let value = inputElement.value;
-    let originalCursorPos = inputElement.selectionStart;
-
-    // 1. Remove tudo que não for dígito
-    let rawValue = value.replace(/\D/g, '');
-
-    // 2. Limita a 11 dígitos
-    if (rawValue.length > 11) {
-      rawValue = rawValue.substring(0, 11);
-    }
-
-    // 3. Aplica a formatação
-    let formattedValue = '';
-    if (rawValue.length > 0) {
-      formattedValue = rawValue.substring(0, 3);
-    }
-    if (rawValue.length > 3) {
-      formattedValue += '.' + rawValue.substring(3, 6);
-    }
-    if (rawValue.length > 6) {
-      formattedValue += '.' + rawValue.substring(6, 9);
-    }
-    if (rawValue.length > 9) {
-      formattedValue += '-' + rawValue.substring(9, 11);
-    }
-
-    if (this.pessoaForm.get('cpf')?.value !== rawValue) {
-        this.pessoaForm.get('cpf')?.setValue(rawValue, { emitEvent: false });
-    }
-
-    // 5. Atualiza o valor no elemento input (o que o usuário vê)
-    inputElement.value = formattedValue;
-
-    if (originalCursorPos !== null) {
-        let newCursorPos = originalCursorPos;
-        // Conta quantos caracteres de formatação foram adicionados ANTES da posição original do cursor
-        let oldCharsBeforeCursor = (value.substring(0, originalCursorPos).match(/[\.\-]/g) || []).length;
-        let newCharsBeforeCursor = (formattedValue.substring(0, originalCursorPos + (formattedValue.length - value.length) + 1 ).match(/[\.\-]/g) || []).length;
-
-        // Ajuste simples: se o comprimento mudou, tenta ajustar
-        if (value.length !== formattedValue.length) {
-            // Se o caractere digitado não foi um ponto ou traço (caso o usuário tente digitar)
-            // e resultou em um dígito sendo adicionado ao rawValue
-            if (value.charAt(originalCursorPos -1) !== '.' && value.charAt(originalCursorPos -1) !== '-') {
-                 newCursorPos = originalCursorPos + (newCharsBeforeCursor - oldCharsBeforeCursor) ;
-            }
-
-            // Se um caractere de formatação foi adicionado exatamente onde o cursor estava ou antes
-             if ((rawValue.length === 3 || rawValue.length === 6 || rawValue.length === 9) &&
-                 (formattedValue.length > value.length) ) { // Adicionou . ou -
-                 // Se o último caractere digitado resultou na adição de um formatador
-                 if (originalCursorPos === formattedValue.lastIndexOf('.') || originalCursorPos === formattedValue.lastIndexOf('-') ) {
-                    newCursorPos++;
-                 }
-             }
-        }
-         // Garante que o cursor não ultrapasse o limite
-        newCursorPos = Math.min(newCursorPos, formattedValue.length);
-        // Evita que o cursor vá para uma posição negativa caso a deleção remova o primeiro char.
-        newCursorPos = Math.max(newCursorPos, 0);
-
-        try {
-          inputElement.setSelectionRange(newCursorPos, newCursorPos);
-        } catch (e) {
-          // Ignora erros em browsers que não suportam ou em inputs 'number' (embora o seu seja text)
-        }
-    }
-  }    
 
   onCancelar(): void {
     // Volta para a pesquisa geral de pessoas

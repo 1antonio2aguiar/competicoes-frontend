@@ -16,7 +16,7 @@ import { LogradouroPesquisaOut } from '../../../../shared/models/logradouroPesqu
 import BairroOut from '../../../../shared/models/bairroOut';
 import { CidadePesquisaOut } from '../../../../shared/models/cidadePesquisaOut';
 import { CidadeService } from '../../../../services/cidades/CidadeService';
-
+ 
 @Component({
   selector: 'ngx-endereco-iud',
   templateUrl: './endereco-iud.component.html',

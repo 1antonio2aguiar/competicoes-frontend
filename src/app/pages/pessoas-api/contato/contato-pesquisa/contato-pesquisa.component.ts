@@ -12,7 +12,6 @@ import { ContatoIudComponent } from '../contato-iud/contato-iud.component';
 import { ConfirmDeleteComponent } from '../../../components/confirm-delete/confirm-delete-modal.component';
 import { formatarTelefoneUtil } from '../../../../shared/utils/formatar-telefone.util';
 
-
 interface ContatoDisplay {
   id: number;
   tipoContato?: number; 
@@ -162,7 +161,7 @@ export class ContatoPesquisaComponent implements OnInit, OnDestroy {
         
         const tipoContatoComoString = contato.tipoContato?.toString() || '';
         this.tipoContatoStr = tipoContatoComoString;
-        const valorFormatado =formatarTelefoneUtil(contato.contato, this.tipoContatoStr);
+        const valorFormatado = formatarTelefoneUtil(contato.contato, this.tipoContatoStr);
 
         let contatoDescricao = `${valorFormatado || ''}`;
         if (contato.complemento && contato.complemento !== 'S/N') {

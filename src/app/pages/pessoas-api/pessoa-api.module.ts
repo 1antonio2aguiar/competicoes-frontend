@@ -6,8 +6,6 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NbSidebarModule, } from '@nebular/theme';
 
 import { PessoaApiRoutedComponents, PessoaApiRoutingModule } from './pessoa-api-routing.module';
-import { Cep } from '../../shared/pipes/cep.pipe';
-import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { FormsRoutingModule } from '../forms/forms-routing.module';
@@ -32,15 +30,17 @@ import {
   NbUserModule,
   NbButtonGroupModule, 
   NbDialogModule ,
-  NbThemeModule
 } from '@nebular/theme';
 
 import { MyDatepickerCustonComponent } from '../components/date-picker/my-datepicker-custon.component';
-import { EnderecoIudComponent } from './endereco/endereco-iud/endereco-iud.component';
+import { MaskFormatterDirective } from '../../shared/directives/mask-formatter.directive';
+import { MeuSharedModule } from '../../shared/meu-shared.module';
 
 @NgModule({
   declarations: [
-    ...PessoaApiRoutedComponents, MyDatepickerCustonComponent, EnderecoIudComponent, Cep, TelefonePipe
+    ...PessoaApiRoutedComponents, 
+    MyDatepickerCustonComponent, 
+    MaskFormatterDirective
   ],
 
     imports: [
@@ -78,7 +78,8 @@ import { EnderecoIudComponent } from './endereco/endereco-iud/endereco-iud.compo
     NbMenuModule,
     NbAutocompleteModule,
 
-    PessoaApiRoutingModule
+    PessoaApiRoutingModule,
+    MeuSharedModule
   ],
 
 })

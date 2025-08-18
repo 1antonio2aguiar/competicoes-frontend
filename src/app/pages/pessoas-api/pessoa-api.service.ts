@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 import { HttpParams } from '@angular/common/http';
 import { PessoaApiOut } from '../../shared/models/pessoaApiOut';
 import { PessoaApiIn } from '../../shared/models/pessoaApiIn';
-import { from, Observable } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 
 export class Filters {
   pagina = 0;
@@ -25,9 +25,8 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
   private pessoaEventHendlerId: EventEmitter<PessoaApiOut>
 
   constructor(protected injector: Injector) {
-    super(environment.pessoasApiUrl + 'pessoaFisica', injector, PessoaApiOut.fromJson);
-    this.pessoaEventHendlerId = new EventEmitter<PessoaApiOut>();
-  } 
+    super(environment.apiUrl, injector, PessoaApiOut.fromJson);
+  }
 
   getPessoaById(pessoaId: number): Promise<PessoaApiOut> {
     const url = `${environment.pessoasApiUrl}pessoa/${pessoaId}`;
@@ -42,8 +41,10 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
   listar(filtro: Filters): Promise<any> {
     let params = filtro.params;
 
+    const url = `${environment.apiUrl}pessoas/filtrarPessoas`;
+
     return this.http
-      .get<any>(this.apiPath , { params })
+      .get<any>(url , { params })
       .toPromise()
       .then((response) => {
         const pessoa = response.content;
@@ -51,110 +52,91 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
           pessoa,
           total: response.totalElements,
         };
-        console.table('Resultado Geral>>>: ', pessoa)
+        //console.table('Resultado Geral>>>: ', pessoa)
         return resultado;
     });
   }
 
   pesquisar(filtro: Filters, completo: boolean = false): Promise<{ pessoas: any[], total: number }> {
-      let termoDeBusca = '';
-  
-      // Monta o termo de busca a partir do filtro.
-      // A lógica de prioridade é: nome > cpf > cnpj
-      if (filtro.nome && filtro.nome.trim() !== '') {
-          termoDeBusca = filtro.nome.trim();
-      } else if (filtro.cpf && filtro.cpf.trim() !== '') {
-          termoDeBusca = filtro.cpf.trim();
-      } else if (filtro.cnpj && filtro.cnpj.trim() !== '') {
-          termoDeBusca = filtro.cnpj.trim();
-      }
+    let termoDeBusca = '';
 
-       // Se não há termo de busca, não faz a chamada.
-      if (termoDeBusca === '') {
-          return Promise.resolve({ pessoas: [], total: 0 }); // Retorna um resultado vazio
-      }
-  
-      let params = new HttpParams()
-        .set('termo', termoDeBusca)
-        .set('completo', completo.toString());
+    // Monta o termo de busca a partir do filtro.
+    // A lógica de prioridade é: nome > cpf > cnpj
+    if (filtro.nome && filtro.nome.trim() !== '') {
+        termoDeBusca = filtro.nome.trim();
+    } else if (filtro.cpf && filtro.cpf.trim() !== '') {
+        termoDeBusca = filtro.cpf.trim();
+    } else if (filtro.cnpj && filtro.cnpj.trim() !== '') {
+        termoDeBusca = filtro.cnpj.trim();
+    }
 
-      const url = `${environment.apiUrl}pessoas/pesquisar`;
-  
-      return this.http
-        .get<any[]>(url, { params }) // A resposta será um array (List<?>)
-        .toPromise()
-        .then((response: any[]) => {
-          const pessoas = response || [];
-          const resultado = {
-            pessoas: pessoas,
-            total: pessoas.length // A busca por termo não é paginada, então o total é o tamanho da lista
-          };
-          console.log(`Retorno da busca por termo '${termoDeBusca}' (completo=${completo}):`, pessoas);
-          return resultado;
-        })
-        .catch(error => {
-          console.error('Erro na requisição de pesquisa:', error);
-          // Retornar um resultado vazio em caso de erro para não quebrar o componente
-          return { pessoas: [], total: 0 };
-        });
-      }
+    // Se não há termo de busca, não faz a chamada.
+    if (termoDeBusca === '') {
+        return Promise.resolve({ pessoas: [], total: 0 }); // Retorna um resultado vazio
+    }
 
-  /*
-    Esse aqui funciona belezinha se precisar pega apenas pessoa fisica.
-  
-  pesquisar(filtro: Filters): Promise<any> {
-    let params = filtro.params;
+    let params = new HttpParams()
+      .set('termo', termoDeBusca)
+      .set('completo', completo.toString());
+
+    const url = `${environment.apiUrl}pessoas/pesquisar`;
 
     return this.http
-      .get<any>(this.apiPath + '/filter?', { params })
+      .get<any[]>(url, { params }) // A resposta será um array (List<?>)
       .toPromise()
-      .then((response) => {
-        const pessoa = response.content;
+      .then((response: any[]) => {
+        const pessoas = response || [];
         const resultado = {
-          pessoa,
-          total: response.totalElements,
+          pessoas: pessoas,
+          total: pessoas.length // A busca por termo não é paginada, então o total é o tamanho da lista
         };
-        console.table('Resultado: ', pessoa)
+        console.log(`Retorno da busca por termo '${termoDeBusca}' (completo=${completo}):`, pessoas);
         return resultado;
-    });
-  }*/
-
-  create(pessoaApi: PessoaApiIn): Observable<PessoaApiIn> {
-    return from(this.http
-      .post<PessoaApiOut>(this.apiPath, pessoaApi)
-      .toPromise()
-      .then(response => {
-        // Lidar com a resposta da API
-        console.log('Pessoa criada com sucesso:', response);
-        return response; // Retorna a resposta para o Observable
-      }));
-  }
-
-  update(pessoaApi: PessoaApiIn): Observable<PessoaApiIn> { 
-      return from(this.http
-        .put<PessoaApiOut>(`${this.apiPath}/${pessoaApi.id}`, pessoaApi)
-        .toPromise()
-        .then(response => { 
-          console.log('Pessoa atualizada com sucesso (via API):', response);
-          return response; 
-        })
-        .catch(error => {
-          // É bom tratar o erro aqui também ou relançá-lo para ser pego pelo subscribe no componente
-          console.error('Erro na API ao atualizar pessoa:', error);
-          throw error; // Relança o erro para o .catch() do .toPromise() ou o 'error' do subscribe
       })
-    );
+      .catch(error => {
+        console.error('Erro na requisição de pesquisa:', error);
+        // Retornar um resultado vazio em caso de erro para não quebrar o componente
+        return { pessoas: [], total: 0 };
+    });
   }
 
-  delete(id: number): Observable<any> {
-    return from(this.http
-      .delete<any>(`${this.apiPath}/${id}`)
-      .toPromise()
-      .then(response => {
-        // Lidar com a resposta da API
-        console.log('Pessoa deletada com sucesso:', response); // Log para verificar a resposta
-        return response;
-    }));
+  public createPessoa(pessoa: PessoaApiIn): Observable<PessoaApiOut> {
+    const targetPath = this.getTargetPath(pessoa.fisicaJuridica);
+    if (!targetPath) {
+      return throwError(() => new Error('Tipo de pessoa inválido. Deve ser "F" ou "J".'));
+    }
+    // Retorna o tipo PessoaApiOut, que é o que a API responde.
+    return this.http.post<PessoaApiOut>(targetPath, pessoa);
+  }
+
+  public updatePessoa(pessoa: PessoaApiIn): Observable<PessoaApiOut> {
+
+    //console.log('Chegou no upd com o objeto:', pessoa);
+
+    const targetPath = this.getTargetPath(pessoa.fisicaJuridica);
+    if (!targetPath || !pessoa.id) {
+      return throwError(() => new Error('Dados inválidos para atualização (tipo ou ID ausente).'));
+    }
+    const url = `${targetPath}/${pessoa.id}`;
+    // Retorna o tipo PessoaApiOut, que é o que a API responde.
+    return this.http.put<PessoaApiOut>(url, pessoa);
+  }
+
+  private getTargetPath(tipoPessoa?: 'F' | 'J'): string {
+    if (tipoPessoa === 'F') {
+      return `${environment.apiUrl}pessoaFisica`;
+    }
+    if (tipoPessoa === 'J') {
+      return `${environment.apiUrl}pessoaJuridica`;
+    }
+    return '';
+  }
+
+  delete(id: number): Observable<void> { // O tipo de retorno é 'void' pois um DELETE 204 não tem corpo
+    const url = `${environment.apiUrl}pessoas/${id}`; // Use a URL base da sua API de competições
+    
+    // Simples, direto e retorna um Observable, como o Angular prefere.
+    return this.http.delete<void>(url);
   }
   
 }
