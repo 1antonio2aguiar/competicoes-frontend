@@ -22,6 +22,7 @@ export class Etapa extends BaseResourceModel {
 
       public localCompeticaoId?: number,
       public localCompeticao?: LocaisCompeticoes,
+      public qtdBalizas?: number,
 
     ) {
       super();

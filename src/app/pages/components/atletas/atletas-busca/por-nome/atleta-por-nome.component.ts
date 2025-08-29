@@ -13,33 +13,42 @@ import { FiltersAtleta } from './FiltersAtletas';
 })
 
 export class AtletaPorNomeComponent implements OnInit, OnDestroy {
-    @Input() query:string;
-    inputControl = new FormControl();
-    @Output() filterChange = new EventEmitter<string>();
-    filtro: FiltersAtleta = new FiltersAtleta();
-    source: LocalDataSource = new LocalDataSource();
 
-    constructor(
-        private atletasBuscaService: AtletasBuscaService,
-      ) {
-    }
+  @Input() query:string;
+  @Input() cell: any;
+  inputControl = new FormControl();
+  @Output() filterChange = new EventEmitter<string>();
+  filtro: FiltersAtleta = new FiltersAtleta();
+  source: LocalDataSource = new LocalDataSource();
 
-    ngOnInit(): void {
-        this.inputControl.valueChanges.subscribe(value => {
-            this.filterChange.emit(value);
-        })
-        if(this.query){
-            this.inputControl.setValue(this.query)
-        }
+  private provaId: number;
+
+  constructor(
+      private atletasBuscaService: AtletasBuscaService,
+    ) {
+  }
+
+  ngOnInit(): void {
+    this.provaId = this.atletasBuscaService.provaId;
+
+    this.inputControl.valueChanges.subscribe(value => {
+      this.filterChange.emit(value);
+    })
+    if(this.query){
+      this.inputControl.setValue(this.query)
     }
-    ngOnDestroy(){
-        this.inputControl.reset();
-    }
+  }
+
+  ngOnDestroy(){
+      this.inputControl.reset();
+  }
 
   pesquisar(search: string, pagina: number): Promise<any> {
 
     this.filtro.params = new HttpParams();
+    this.filtro.params = this.filtro.params.append('provaId', this.provaId);
     this.filtro.params = this.filtro.params.append('pessoaNome', search);
+
     this.filtro.pagina = pagina;
 
     //console.log('Parametro ', this.filtro.params)

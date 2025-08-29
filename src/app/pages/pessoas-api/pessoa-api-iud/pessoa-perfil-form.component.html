@@ -5,14 +5,19 @@
       <button nbButton status="basic" type="button" (click)="onCancelar()" [disabled]="isLoading" size="small" ghost>
         <nb-icon icon="close-outline" pack="eva"></nb-icon> CANCELAR
       </button>
+
       <button nbButton status="primary" type="submit" size="small" (click)="$event.preventDefault(); onSubmit()"
-        style="margin-left: 10px;">
+        style="margin-left: 10px;"
+        [disabled]="pessoaForm.invalid || isLoading">  <!-- << LINHA MODIFICADA -->
+        
         <nb-icon icon="save-outline" pack="eva" *ngIf="!isLoading"></nb-icon>
         {{ modoEdicao ? 'SALVAR ALTERAÇÕES' : 'SALVAR PERFIL' }}
       </button>
+      
     </div>
   </nb-card-header>
   <nb-card-body>
+
     <form [formGroup]="pessoaForm" (ngSubmit)="onSubmit()">
       <!-- TODO: Cole aqui todo o conteúdo do seu formulário de perfil -->
       <!-- Linha 1: Nome -->
@@ -48,7 +53,7 @@
             <nb-option value="0">ATIVO</nb-option>
             <nb-option value="1">INATIVO</nb-option>
             <nb-option value="2">BLOQUEADO</nb-option>
-            <nb-option value="2">OUTRO</nb-option>
+            <nb-option value="3">OUTRO</nb-option> 
           </nb-select>
         </div>
       </div>
@@ -71,8 +76,9 @@
           <div class="col-md-3 form-group">
             <label for="dataNascimento" class="label">Data de Nascimento</label>
 
-            <input nbInput fullWidth id="dataNascimento" placeholder="dd/MM/yyyy" [nbDatepicker]="pickerFisica"
-              formControlName="dataNascimento">
+            <input #dataNascimentoInput nbInput fullWidth id="dataNascimento" placeholder="dd/MM/yyyy" 
+              [nbDatepicker]="pickerFisica">
+
             <nb-datepicker #pickerFisica format="dd/MM/yyyy">
             </nb-datepicker>
           </div>
@@ -173,7 +179,7 @@
               formControlName="observacao"></textarea>
           </div>
         </div>
-
       </div>
-
     </form>
+  </nb-card-body>
+</nb-card>  

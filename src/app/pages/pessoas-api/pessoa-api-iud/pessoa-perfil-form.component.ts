@@ -29,6 +29,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
   @ViewChild('cpfInput')  cpfInputRef!:  ElementRef<HTMLInputElement>;
   @ViewChild('cnpjInput') cnpjInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('dataNascimentoInput') dataNascimentoInputRef!: ElementRef<HTMLInputElement>;
 
   modoEdicao = false;
   pessoaId: number | null = null;
@@ -72,20 +73,28 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
     this.route.parent?.params.pipe(takeUntil(this.destroy$)).subscribe(parentParams => {
       
       if (parentParams['id']) {
-        this.modoEdicao = true;
-        this.pessoaId = +parentParams['id'];
-        this.cardHeaderTitle = `Editando Perfil (${this.pessoaNome})`;
-        this.pessoaForm.get('fisicaJuridica')?.disable();
+      this.modoEdicao = true;
+      this.pessoaId = +parentParams['id'];
+      this.cardHeaderTitle = `Editando Perfil (${this.pessoaNome})`;
+      this.pessoaForm.get('fisicaJuridica')?.disable();
+      this.carregarDadosPessoaParaEdicao(this.pessoaId);
 
-        // ---- CHAMADA PARA CARREGAR DADOS EM MODO EDIÇÃO ----
-        this.carregarDadosPessoaParaEdicao(this.pessoaId);
-        // -----------------------------------------------------
-      } else {
-        this.pessoaForm.get('fisicaJuridica')?.enable();
-        this.modoEdicao = false;
-        this.pessoaId = null;
-        this.cardHeaderTitle = 'Cadastrar Novo Perfil';
-      }
+    } else {
+      // MODO CRIAÇÃO
+      this.modoEdicao = false;
+      this.pessoaId = null;
+      this.cardHeaderTitle = 'Cadastrar Novo Perfil';
+      this.pessoaForm.get('fisicaJuridica')?.enable();
+
+      this.configurarValidadoresDinamicos(); 
+    }
+    });
+
+    // Listener de mudanças no tipo de pessoa
+    this.pessoaForm.get('fisicaJuridica')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.configurarValidadoresDinamicos(); 
     });
 
     this.pessoaForm.get('cpf')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
@@ -98,32 +107,40 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   
   }
 
-  initForm(): void { 
+  initForm(): void {
+  this.pessoaForm = this.fb.group({
+    // --- CAMPOS COMUNS E OBRIGATÓRIOS ---
+    id: [null],
+    nome: ['', Validators.required], // Já começa como obrigatório
+    
+    // VALOR PADRÃO para "Criação": 'F' (Física)
+    fisicaJuridica: ['F', Validators.required], 
+    
+    // VALOR PADRÃO para "Criação": 0 (ATIVO), convertido para string para o nb-select
+    // Estamos assumindo que '0' é o valor para 'ATIVO' no seu HTML
+    situacao: ['0', Validators.required],
+    
+    // VALOR PADRÃO para "Criação": 1 (Pessoa Física), se for o ID correto no seu DB
+    // Se o ID for 0, ajuste aqui. Começa como obrigatório.
+    tipoPessoaId: [1, Validators.required], // <<<<<< AJUSTE O VALOR '1' SE NECESSÁRIO
 
-    this.pessoaForm = this.fb.group({
-      id: [null],
-      nome: ['', Validators.required],
-      fisicaJuridica: ['F', Validators.required],
-      situacao: [this.situacoes[0].valor, Validators.required],
-      tipoPessoaId: [null, Validators.required], // Corrigido de tipoPessoa para tipoPessoaId
+    // --- CAMPOS ESPECÍFICOS (INICIAM SEM VALIDADOR) ---
+    // Os validadores para estes campos serão adicionados dinamicamente
+    cpf: [''], 
+    sexo: [null],
+    estadoCivil: [null],
+    //dataNascimento: [null], // Removido o [] vazio para ser explícito
+    nomeMae: [''],
+    nomePai: [''],
+    observacao: [''],
 
-      // Campos Pessoa Física
-      cpf: [''], 
-      sexo: [null],
-      estadoCivil: [null],
-      dataNascimento: [],
-      nomeMae: [''],
-      nomePai: [''],
-      observacao: [''],
-
-      // Campos Pessoa Jurídica
-      cnpj: [''],
-      nomeFantasia: [''],
-      objetoSocial: [''],
-      microEmpresa: ['N'],
-      tipoEmpresa: [null]
-    });
-  }
+    cnpj: [''],
+    nomeFantasia: [''],
+    objetoSocial: [''],
+    microEmpresa: ['N'],
+    tipoEmpresa: [null]
+  });
+}
 
   // --- NOVO MÉTODO PARA CARREGAR DADOS DA PESSOA ---
   carregarDadosPessoaParaEdicao(id: number): void {
@@ -150,12 +167,19 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
         // A sua lógica de data de nascimento está correta
         if (pessoa.dataNascimento) {
-          const parts = pessoa.dataNascimento.split('-');
+          const parts = pessoa.dataNascimento.split('-'); // API envia "YYYY-MM-DD"
           if (parts.length === 3) {
-            dataParaFormulario.dataNascimento = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            const dataFormatadaParaTela = `${parts[2]}/${parts[1]}/${parts[0]}`; // Formato "DD/MM/YYYY"
+            
+            // Usa o @ViewChild para setar o valor diretamente no elemento
+            setTimeout(() => {
+              if (this.dataNascimentoInputRef && this.dataNascimentoInputRef.nativeElement) {
+                this.dataNascimentoInputRef.nativeElement.value = dataFormatadaParaTela;
+              }
+            }, 0);
           }
         }
-      } else {
+        } else {
         if (pessoa.tipoEmpresa !== undefined && pessoa.tipoEmpresa !== null) {
           dataParaFormulario.tipoEmpresa = pessoa.tipoEmpresa.toString();
         }
@@ -205,6 +229,20 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     const dadosFormulario = this.pessoaForm.value;
 
+    // --- CAPTURA E FORMATAÇÃO MANUAL DA DATA ---
+    let dataNascimentoParaApi: string | null = null;
+    
+    // 1. Pega o valor em string diretamente do input (ex: "13/05/1973")
+    const dataStringDaTela = this.dataNascimentoInputRef.nativeElement.value;
+
+    // 2. Verifica se a string tem o formato esperado e a converte para o formato da API (YYYY-MM-DD)
+    if (dataStringDaTela && dataStringDaTela.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+      const parts = dataStringDaTela.split('/'); // ["13", "05", "1973"]
+      // Remonta a data no formato que a API espera
+      dataNascimentoParaApi = `${parts[2]}-${parts[1]}-${parts[0]}`; // "1973-05-13"
+    }
+    // ---------------------------------------------
+
     const pessoaParaSalvar: PessoaApiIn = {
       // 1. Base do formulário
       ...dadosFormulario,
@@ -215,6 +253,9 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       situacao: +dadosFormulario.situacao,
       tipoPessoaId: +dadosFormulario.tipoPessoaId,
       estadoCivil: dadosFormulario.estadoCivil ? +dadosFormulario.estadoCivil : null, // <<< EVITA O PRÓXIMO ERRO
+
+      // 3. SOBRESCREVE a data do formulário com a nossa data formatada manualmente
+      dataNascimento: dataNascimentoParaApi,
 
       // 3. Sua lógica original
       ...(this.isPessoaFisica() && {
@@ -243,8 +284,6 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
                  dataNascimentoFormatada = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
              }
           }
-
-          console.log('COMO ESTA AQUI >>>>>>>>>>>>>>>>:', pessoaAtualizada);
 
           let cpfFormatadoParaDisplay = pessoaAtualizada.cpf;
           if (pessoaAtualizada.cpf && pessoaAtualizada.cpf.length <= 11) {
@@ -339,4 +378,95 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       duration: 3000
     });
   }
+
+  private configurarValidadoresDinamicos(): void {
+    // --- DEFINIÇÃO DOS CAMPOS ---
+    const camposPF = ['cpf', 'sexo', 'estadoCivil'];
+    const camposPJ = ['cnpj', 'tipoEmpresa'];
+
+    if (this.isPessoaFisica()) {
+      // --- LÓGICA PARA PESSOA FÍSICA ---
+
+      // 1. Define valores padrão ao mudar para PF (se estiver em modo de criação)
+      if (!this.modoEdicao) {
+        this.pessoaForm.get('tipoPessoaId')?.setValue(1); // Supondo que 1 é "Pessoa Física"
+      }
+      
+      // 2. Limpa e remove validadores de PJ
+      camposPJ.forEach(campo => {
+        this.pessoaForm.get(campo)?.clearValidators();
+        this.pessoaForm.get(campo)?.setValue(null);
+      });
+
+      // 3. Aplica validadores para PF
+      camposPF.forEach(campo => {
+        this.pessoaForm.get(campo)?.setValidators(Validators.required);
+      });
+
+    } else if (this.isPessoaJuridica()) {
+      // --- LÓGICA PARA PESSOA JURÍDICA ---
+      
+      // 1. Define valores padrão ao mudar para PJ (se estiver em modo de criação)
+      if (!this.modoEdicao) {
+        this.pessoaForm.get('tipoPessoaId')?.setValue(2); // <<<< AJUSTE: Supondo que 2 é "Empresa Privada"
+        this.pessoaForm.get('microEmpresa')?.setValue('N');
+      }
+
+      // 2. Limpa e remove validadores de PF
+      camposPF.forEach(campo => {
+        this.pessoaForm.get(campo)?.clearValidators();
+        this.pessoaForm.get(campo)?.setValue(null);
+      });
+      // Limpa também o valor do input de data manualmente
+      if (this.dataNascimentoInputRef) {
+        this.dataNascimentoInputRef.nativeElement.value = '';
+      }
+
+      // 3. Aplica validadores para PJ
+      camposPJ.forEach(campo => {
+        this.pessoaForm.get(campo)?.setValidators(Validators.required);
+      });
+    }
+
+    // Atualiza o estado de validação de todos os campos afetados
+    this.pessoaForm.updateValueAndValidity({ emitEvent: false });
+  }
+
+  /*private configurarValidadoresParaPessoaFisica(): void {
+    // Lista de campos que são obrigatórios para Pessoa Física
+    const camposObrigatoriosPF = ['nome', 'cpf', 'sexo', 'estadoCivil'];
+
+    // Lista de campos que pertencem apenas à Pessoa Jurídica (para limpar)
+    const camposPJ = ['cnpj', 'nomeFantasia', 'objetoSocial', 'microEmpresa', 'tipoEmpresa'];
+
+    if (this.isPessoaFisica()) {
+      // APLICA validadores para os campos de Pessoa Física
+      camposObrigatoriosPF.forEach(campo => {
+        this.pessoaForm.get(campo)?.setValidators([Validators.required]);
+      });
+
+      // REMOVE validadores e ZERA os valores dos campos de Pessoa Jurídica
+      camposPJ.forEach(campo => {
+        this.pessoaForm.get(campo)?.clearValidators();
+        this.pessoaForm.get(campo)?.setValue(null); // Limpa o valor para evitar dados sujos
+      });
+
+    } else { // Se não for Física (ou seja, for Jurídica)
+      // REMOVE validadores dos campos de Pessoa Física
+      camposObrigatoriosPF.forEach(campo => {
+        this.pessoaForm.get(campo)?.clearValidators();
+        this.pessoaForm.get(campo)?.setValue(null);
+      });
+      
+      // Aqui você adicionaria a lógica para os validadores de Pessoa Jurídica no futuro
+      // Por enquanto, apenas limpamos os de PF.
+    }
+
+    // Atualiza o estado de validação de todos os campos alterados
+    Object.keys(this.pessoaForm.controls).forEach(key => {
+      this.pessoaForm.get(key)?.updateValueAndValidity({ emitEvent: false });
+    });
+  }*/
+
+  
 }

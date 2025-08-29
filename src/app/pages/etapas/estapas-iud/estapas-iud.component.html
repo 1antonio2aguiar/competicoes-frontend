@@ -48,7 +48,12 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
+                        <label for="pontua">Quantidade Ráias</label>
+                        <input type="number" nbInput fullWidth maxlength="2" id="id" formControlName="qtdBalizas">
+                    </div>
+
+                    <div class="form-group col-md-4">
                         <label for="pontua">Pontua</label>
                         <nb-radio-group formControlName="pontua" [name]="pontuaName">
                           <nb-radio value="S">Sim</nb-radio>
@@ -56,7 +61,7 @@
                         </nb-radio-group>
                     </div>
 
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="acumula">Acumula</label>
                         <nb-radio-group formControlName="acumula" [name]="acumulaName">
                           <nb-radio value="S">Sim</nb-radio>

@@ -34,10 +34,12 @@
                     <nb-icon icon="printer-outline"></nb-icon> Gerar Relatório
                 </button>
 
-            </div> <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
+            </div> 
+            <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
                 (edit)="onEdit($event)" (create)="onAdd()"
                 (focusin)="onFilterFocus($event)"
-                > </ng2-smart-table>
+            > </ng2-smart-table>
+            
         </div>
     </nb-card-body>
 </nb-card>

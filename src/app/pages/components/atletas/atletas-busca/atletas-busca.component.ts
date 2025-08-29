@@ -15,14 +15,17 @@ import { AtletaPorNomeComponent } from './por-nome/atleta-por-nome.component';
     selector: 'ngx-atletas-busca',
     templateUrl: './atletas-busca.component.html',
     styleUrls: ['./atletas-busca.component.scss']
-})
+}) 
 
 export class AtletasBuscaComponent implements OnInit, OnDestroy{
     // talvez nao precise disso
     @HostBinding('class.custom-modal-card') customModalCard = true;
     @Input() telaOrigem;
+    @Input() provaId;
 
-    private searchTerms = new Subject<string>();
+      width = 700; // Define a largura do modal
+
+    private searchTerms = new Subject<string>(); 
 
     source: LocalDataSource = new LocalDataSource();
     filtro: Filters = new Filters();
@@ -53,6 +56,10 @@ export class AtletasBuscaComponent implements OnInit, OnDestroy{
                 filter: {
                     type: 'custom',
                     component: AtletaPorNomeComponent,
+                    // A MÁGICA: 'this.provaId' é lido no momento certo.
+                    config: {
+                        provaId: 23
+                    },
                 },
             },
 
@@ -82,6 +89,8 @@ export class AtletasBuscaComponent implements OnInit, OnDestroy{
     }
     
     ngOnInit(): void {
+        this.atletasBuscaService.provaId = this.provaId;
+
         this.telaOrigemService.setTelaOrigem(this.telaOrigem);
         
         this.loading = true;
@@ -102,7 +111,7 @@ export class AtletasBuscaComponent implements OnInit, OnDestroy{
     pesquisar(search: string, pagina: number): Promise<any> {
     
         this.filtro.params = new HttpParams();
-        this.filtro.params = this.filtro.params.append('nome', search);
+        this.filtro.params = this.filtro.params.append('provaId', this.provaId);
         this.filtro.pagina = pagina;
     
         return this.atletasBuscaService.atletaNotInInscricoes(this.filtro)

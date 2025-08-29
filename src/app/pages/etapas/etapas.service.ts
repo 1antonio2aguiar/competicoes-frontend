@@ -83,6 +83,7 @@ export class EtapasService extends BaseResourceService<Etapa>{
   }
 
   create(etapa: Etapa): Observable<Etapa> {
+    console.log('chegou n service :', etapa);
     return from(this.http
       .post<Etapa>(this.apiPath, etapa)
       .toPromise()
@@ -99,7 +100,7 @@ export class EtapasService extends BaseResourceService<Etapa>{
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
-        console.log('Etapa atualizada com sucesso:', response);
+        //console.log('Etapa atualizada com sucesso:', response);
         return response;
     }));
   }

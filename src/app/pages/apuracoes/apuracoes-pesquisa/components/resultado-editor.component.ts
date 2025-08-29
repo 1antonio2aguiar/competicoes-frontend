@@ -155,6 +155,6 @@ export class ResultadoEditorComponent implements OnInit {
         // Não fazemos nada, o this.valueCommit NÃO é emitido.
         // O valor no input já deve ser o original por causa da lógica do onFocus.
     }
-}
+  }
 
 }

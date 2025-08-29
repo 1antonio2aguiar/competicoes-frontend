@@ -13,7 +13,6 @@ import { InscricoesService } from '../inscricoes.service';
 import { FormatarTempoService } from '../../../shared/services/formatar-tempo.service';
 import { AtletasBuscaComponent } from '../../components/atletas/atletas-busca/atletas-busca.component';
 import { HttpParams } from '@angular/common/http';
-import { Parametro } from '../../../shared/models/parametro';
 
 @Component({
   selector: 'ngx-inscricoes-iud',
@@ -30,7 +29,6 @@ export class InscricoesIudComponent implements OnInit{
   @Input() telaOrigem;
   @Input() prova;
   @Input() dadosProva;
-  @Input() parametro;
 
   serie  = 'serie'  + Math.random(); 
   baliza = 'baliza' + Math.random(); 
@@ -66,16 +64,15 @@ export class InscricoesIudComponent implements OnInit{
   ];
 
   statusTipoInscricaoSelect = [
-    { value:  0 ,  selected: false, label: 'Classificatória'},
-    { value:  1,  selected: false, label: 'Semifinal'},
-    { value:  2,  selected: false, label: 'Final'}
+    { value:  0, selected: false, label: 'Classificatória'},
+    { value:  1, selected: false, label: 'Semifinal'},
+    { value:  2, selected: false, label: 'Final'}
   ];
   
   constructor(
       private inscricaoService: InscricoesService,
       private formBuilder: FormBuilder,
       private ref1: NbWindowRef,
-      private formatarTempoService: FormatarTempoService,
       private windowService: NbWindowService,
     ) { 
       this.filtro.pagina = 1;
@@ -83,6 +80,13 @@ export class InscricoesIudComponent implements OnInit{
   }
 
   ngOnInit() {
+
+    if (this.dadosProva && this.dadosProva.etapa && this.dadosProva.etapa.qtdBalizas) {
+        this.numeroTotalBalizas = this.dadosProva.etapa.qtdBalizas;
+    } else {
+        this.numeroTotalBalizas = 8; // Um valor padrão seguro
+    }
+
     // 1. Crie o formulário ANTES de qualquer lógica de dados
     this.criarFormulario();
 
@@ -90,12 +94,15 @@ export class InscricoesIudComponent implements OnInit{
     // Faça isso para ambos os modos, pois o select precisa das opções
     this.balizasDisponiveis = [];
     const balizasIniciais: { value: number; label: number }[] = []; // Variável local temporária
-    this.numeroTotalBalizas = this.parametro[0].numero;
+    this.numeroTotalBalizas = this.numeroTotalBalizas;
+
+    //this.numeroTotalBalizas = this.dadosProva.prova.qtdBalizas;
     for (let i = 1; i <= this.numeroTotalBalizas; i++) {
       balizasIniciais.push({ value: i, label: i });
     }
     this.balizasDisponiveis = [...balizasIniciais];
 
+    
     // 3. Lógica específica para cada modo
     if (this.mode === 'add') {
       //console.log('Modo Add ', this.dadosProva);
@@ -161,11 +168,20 @@ export class InscricoesIudComponent implements OnInit{
       }
 
     } else if (this.mode === 'edit' && this.inscricao) {
+      
+      const dadosParaFormulario = {
+        ...this.inscricao, // Copia todos os campos planos (id, baliza, serie, status, etc.)
+
+        // 2. Crie o objeto 'atleta' aninhado que o formulário espera.
+        atleta: {
+          id: this.inscricao.atletaId,
+          nome: this.inscricao.atletaNome
+        }
+      };
+
       // No modo de edição, não precisamos calcular a próxima vaga.
       // Apenas populamos o form e garantimos que a baliza selecionada esteja na lista completa.
-      this.inscricaoForm.patchValue(this.inscricao);
-      // A lista this.balizasDisponiveis já contém todas as opções do passo 2.
-      console.log('Modo Edit: Formulário populado. Lista de balizas contém todas as opções.');
+      this.inscricaoForm.patchValue(dadosParaFormulario);
 
     } else if (this.mode === 'edit' && !this.inscricao) {
       console.error("Modo de edição, mas sem dados de inscrição.");
@@ -187,7 +203,7 @@ export class InscricoesIudComponent implements OnInit{
       // Inicializa com 1 (Inscrito) para 'add', será sobrescrito por patchValue em 'edit'
       status: [0, Validators.required], // Simplificado - o patchValue cuidará do 'edit'
 
-      statusTipoInscricao: [1, Validators.required],
+      statusTipoInscricao: [0, Validators.required],
 
       atleta: this.formBuilder.group({
           id:[null, Validators.required],
@@ -231,7 +247,7 @@ export class InscricoesIudComponent implements OnInit{
   
   fecharJanelaModal(reason: string = '') { 
     this.ref1.close(reason); 
-  }
+  } 
 
   showAtletasModal(botao: 'atleta') {
       this.editingField = botao; // Define qual campo está sendo editado
@@ -242,11 +258,15 @@ export class InscricoesIudComponent implements OnInit{
         fullScreen: true,
         close: true
       };
-    
+
       const modalRef = this.windowService.open(AtletasBuscaComponent, { 
         title: `Buscar Atletas`,
         buttons: buttonsConfig, 
-        context: { telaOrigem: 'Inscricoes' }
+        context: { 
+          telaOrigem: 'Inscricoes',
+          provaId: this.dadosProva.id
+        },
+        closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
       });
     
       modalRef.onClose.subscribe(
@@ -266,21 +286,19 @@ export class InscricoesIudComponent implements OnInit{
 
   showEquipesModal(botao: 'equipe') {
       this.editingField = botao; // Define qual campo está sendo editado
-  
   }
 
   showPessoasModal(botao: 'pessoa') {
    // this.editingField = botao; // Define qual campo está sendo editado
 
-  }
+  } 
   
-
   private _calcularProximaSerieBaliza(
     inscricoesExistentes: Inscricao[],
     balizasIniciais: { value: number; label: number }[]
   ): { proximaSerie: number; balizasDisponiveis: { value: number; label: number }[] } {
 
-    console.log('Calculando próxima série/baliza com:', inscricoesExistentes, balizasIniciais);
+    //console.log('Calculando próxima série/baliza com:', inscricoesExistentes, balizasIniciais);
     let proximaSerie = 1;
     // Começa assumindo que todas as balizas iniciais estão disponíveis para a série 1
     let balizasDisponiveisCalculadas = [...balizasIniciais];
@@ -303,7 +321,7 @@ export class InscricoesIudComponent implements OnInit{
             .filter(insc => insc.serie === proximaSerie)
             .map(insc => insc.baliza);
 
-        console.log(`Última série encontrada no cálculo: ${proximaSerie}, Balizas ocupadas:`, balizasOcupadasUltimaSerie);
+        //console.log(`Última série encontrada no cálculo: ${proximaSerie}, Balizas ocupadas:`, balizasOcupadasUltimaSerie);
 
         // Calcula as balizas livres NESSA série específica
         balizasDisponiveisCalculadas = balizasIniciais.filter(

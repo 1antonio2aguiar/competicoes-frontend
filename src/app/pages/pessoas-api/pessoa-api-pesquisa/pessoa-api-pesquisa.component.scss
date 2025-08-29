@@ -6,3 +6,11 @@
     user-select: none;
     cursor: not-allowed;
 }
+
+.model-full {
+    width: 80% !important; 
+}
+
+:host ::ng-deep ng2-smart-table-pager {
+    justify-content: center;
+}

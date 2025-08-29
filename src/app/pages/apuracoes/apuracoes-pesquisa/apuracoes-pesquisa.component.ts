@@ -384,8 +384,13 @@ export class ApuracoesPesquisaComponent implements OnInit{
         console.log(`Tentando atualizar apuração ID: ${idApuracao}...`);
         const updApuracao: Apuracao = {
           id: idApuracao,
-          resultado: value, // Envia o novo resultado em milissegundos
-          tipoInscricao: rowData.tipoInscricao 
+          resultado: value, 
+          tipoInscricao: rowData.tipoInscricao ,
+          inscricaoId: rowData.inscricaoId,
+          provaId: rowData.provaId,
+          atletaId: rowData.atletaId, 
+          pontuacaoId: 1,
+          status: 3,
         };
 
         await this.apuracaoService.updateResultado(updApuracao).toPromise();

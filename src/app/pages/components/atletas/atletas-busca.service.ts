@@ -13,19 +13,21 @@ import { Atleta } from '../../../shared/models/atleta';
 })
 
 export class AtletasBuscaService extends BaseResourceService<Atleta> {
-    private atletaEventHendlerId: EventEmitter<Atleta>
+  public provaId: number;
 
-    constructor(protected injector: Injector) {
-        super(environment.apiUrl + 'atleta', injector, Atleta.fromJson);
-        this.atletaEventHendlerId = new EventEmitter<Atleta>();
-    }
+  private atletaEventHendlerId: EventEmitter<Atleta>
 
-    getPessoas(): Observable<Atleta[]> {
-        return this.http.get<Atleta[]>(this.apiPath + '/filter');
-    }
+  constructor(protected injector: Injector) {
+    super(environment.apiUrl + 'atleta', injector, Atleta.fromJson);
+    this.atletaEventHendlerId = new EventEmitter<Atleta>();
+  }
 
-    pesquisar(filtro: Filters): Promise<any> {
-        let params = filtro.params
+  getPessoas(): Observable<Atleta[]> {
+    return this.http.get<Atleta[]>(this.apiPath + '/filter');
+  }
+
+  pesquisar(filtro: Filters): Promise<any> {
+      let params = filtro.params
     
         if (filtro.params) {
           filtro.params.keys().forEach(key => {
@@ -50,7 +52,7 @@ export class AtletasBuscaService extends BaseResourceService<Atleta> {
             throw error; // Re-lance o erro para ser tratado em outro lugar
           }
       );
-    }
+  }
 
 
     // Aqui recupera somente pessoas que não estão em inscricoes(tabela)
@@ -64,7 +66,7 @@ export class AtletasBuscaService extends BaseResourceService<Atleta> {
     }
 
     return this.http
-      .get<any>(this.apiPath + '/atletaNotInInscricoes', { params }) // Use the declared params
+      .get<any>(this.apiPath + '/disponiveis-para-inscricao', { params }) // Use the declared params
       .toPromise()
       .then((response) => {
         // Ajuste conforme a estrutura da sua resposta da API
@@ -73,7 +75,7 @@ export class AtletasBuscaService extends BaseResourceService<Atleta> {
           atletas,
           total: response.totalElements
         };
-        console.log('Resultado atletaNotInInscricoes ', resultado)
+        console.log('Resultado disponiveis-para-inscricao ', resultado)
         return resultado;
       })
       .catch(error => {

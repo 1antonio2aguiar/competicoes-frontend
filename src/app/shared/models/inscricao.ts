@@ -25,7 +25,9 @@ export class Inscricao extends BaseResourceModel {
 
       public atletaId?: number,
       public atleta?: Atleta,
-      public atletaNome?: string
+      public atletaNome?: string,
+
+      public resultado?: string
       
     ) {
       super();

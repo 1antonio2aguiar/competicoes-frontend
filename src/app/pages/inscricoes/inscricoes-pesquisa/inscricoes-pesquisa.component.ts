@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Renderer2, ElementRef } from '@angular/core';
+import { Component, OnInit, Renderer2, ElementRef } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { HttpParams } from '@angular/common/http';
 
@@ -15,9 +15,6 @@ import { Prova } from '../../../shared/models/prova';
 import { InscricoesIudComponent } from '../inscricoes-iud/inscricoes-iud.component';
 import { Inscricao } from '../../../shared/models/inscricao';
 import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-delete-modal.component';
-import { ParametrosService } from '../../parametros/parametros.service';
-import { Parametro } from '../../../shared/models/parametro';
-import { filter } from 'rxjs-compat/operator/filter';
 
 @Component({
   selector: 'ngx-inscricoes-pesquisa',
@@ -26,6 +23,7 @@ import { filter } from 'rxjs-compat/operator/filter';
 })
 
 export class InscricoesPesquisaComponent implements OnInit{
+  
   source: LocalDataSource = new LocalDataSource();
   filtro: Filters = new Filters();
   inscricoes: any[] = [];
@@ -34,9 +32,9 @@ export class InscricoesPesquisaComponent implements OnInit{
   campeonatos: Campeonato[] = [];
   etapas: Etapa[] = [];
   provas: Prova[] = [];
-  parametros: Parametro[] = [];
+  //parametros: Parametro[] = [];
 
-  // Este obj é para passar para o modal add/edit
+  // Este obj é para passar para o modal add/edit 
   dadosProva: Prova | null = null;
 
   selectedCampeonatoId: number;
@@ -53,14 +51,16 @@ export class InscricoesPesquisaComponent implements OnInit{
       display: true, // Exibe o paginador
     },
 
+   
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
       confirmCreate: true,
       //width: '40px',
-      addMode: 'edit'
+      addMode: 'edit',
     },
+
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
@@ -68,6 +68,7 @@ export class InscricoesPesquisaComponent implements OnInit{
       confirmSave: true,
       addMode: 'edit'
     },
+
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
@@ -118,7 +119,6 @@ export class InscricoesPesquisaComponent implements OnInit{
       equipeNome: {
         title: 'Equipe',
         type: 'string',
-        //filter: false
       },
 
       statusTipoInscricao: {
@@ -154,7 +154,6 @@ export class InscricoesPesquisaComponent implements OnInit{
         title: 'Raia',
         type: 'number',
         width: '40px',
-        //filter: false
       },
 
       
@@ -165,7 +164,6 @@ export class InscricoesPesquisaComponent implements OnInit{
       private provaService: ProvasService, 
       private campeonatoService: CampeonatosService, 
       private etapaService: EtapasService,
-      private parametroService: ParametrosService,
       private windowService: NbWindowService,
       private dialogService: NbDialogService,
       private toastrService: NbToastrService,
@@ -200,7 +198,13 @@ export class InscricoesPesquisaComponent implements OnInit{
   }
 
   onAdd() {
-    //console.log('Add')
+    if (!this.selectedProvaId) {
+      // 2. Se não foram, mostramos um toast de aviso.
+      this.showToast('Por favor, selecione um Campeonato, Etapa e Prova antes de adicionar uma inscrição.', 'warning');
+      // 3. Paramos a execução do método aqui.
+      return;
+    }
+
     this.abrirModalAddIncricao();
   }
 
@@ -212,15 +216,24 @@ export class InscricoesPesquisaComponent implements OnInit{
         close: true
       };
 
+      // Setar quantidade de balizas em dados provas
+      const etapaEncontrada = this.etapas.find(etapa => etapa.id === this.selectedEtapaId);
+
+      // Inicializa 'etapa' como um objeto vazio se ele ainda não existir
+      this.dadosProva.etapa = this.dadosProva.etapa || {}; 
+
+      // Agora atribui o valor de 'qtdBalizas' de forma segura
+      this.dadosProva.etapa.qtdBalizas = etapaEncontrada ? etapaEncontrada.qtdBalizas : null;
+
       this.windowService.open(InscricoesIudComponent, {
         title: `Cadastrar Inscrição`,
         buttons: buttonsConfig,
         context: { mode: 'add',
           telaOrigem: 'Inscricao',
           prova: this.selectedProvaId,
-          dadosProva: this.dadosProva,
-          parametro: this.parametros 
-        }
+          dadosProva: this.dadosProva  
+        },
+        closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
       }).onClose.subscribe((reason: string | undefined) => {
         if (reason === 'atualizado' || reason === 'save') {
           this.listar();
@@ -230,12 +243,11 @@ export class InscricoesPesquisaComponent implements OnInit{
   }
 
   onEdit(event) {
-    console.log('Edit')
     this.abrirModalEditarIncricao(event.data.id); 
   }
 
   async abrirModalEditarIncricao(id: number) {
-  
+    
     try {
       const inscricaoCompleta: Inscricao = await this.inscricaoService.getInscricaoById(id);
 
@@ -253,14 +265,16 @@ export class InscricoesPesquisaComponent implements OnInit{
           mode: 'edit' ,
           telaOrigem: 'Inscricao',
           prova: this.selectedProvaId,
-          dadosProva: this.dadosProva,
-          parametro: this.parametros
-        }
+          dadosProva: this.dadosProva 
+        },
+        closeOnBackdropClick: false, // Impede que o diálogo feche ao clicar fora
+        
       }).onClose.subscribe((reason: string | undefined) => {
         if (reason === 'atualizado' || reason === 'save') {
           this.listar();
           this.showToast('Inscrição alterada com sucesso!', 'success');
         }
+
       });
     } catch (error) {
       this.showToast('ERRO ao tentar alterar inscrição!', 'danger');
@@ -360,11 +374,6 @@ export class InscricoesPesquisaComponent implements OnInit{
             this.provas = response.provas;
       });
 
-      // Aqui busca o parametro da quantidade de balizas/raias etapaId
-      this.parametroService.pesquisar({...this.filtro})
-          .then(response => {
-            this.parametros = response.parametros;
-      });
     }
   }
 
@@ -609,6 +618,7 @@ export class InscricoesPesquisaComponent implements OnInit{
                 <th>Baliza</th>
                 <th>Fase</th>
                 <th>Status</th>
+                <th>Resultado</th>
               </tr>
             </thead>
             <tbody>
@@ -624,6 +634,7 @@ export class InscricoesPesquisaComponent implements OnInit{
                 <td>${insc.baliza || ''}</td>
                 <td>${insc.statusTipoInscricaoDescricao || ''}</td>
                 <td>${insc.statusDescricao || ''}</td>
+                <td>${insc.resultado || ''}</td>
               </tr>
         `;
       });

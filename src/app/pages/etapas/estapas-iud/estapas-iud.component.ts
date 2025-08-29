@@ -10,8 +10,6 @@ import { EtapasService } from '../etapas.service';
 import { Etapa } from '../../../shared/models/etapa';
 import EtapaOutput from '../../../shared/models/etapaOutput';
 
-//EtapasPesquisaComponent 
-
 @Component({
   selector: 'ngx-estapas-iud',
   templateUrl: './estapas-iud.component.html',
@@ -52,7 +50,8 @@ export class EstapasIudComponent implements OnInit{
       dataInscricao: [null, Validators.required],
       pontua: ['S'], 
       acumula: ['S'], 
-      descricao: [null]
+      descricao: [null],
+      qtdBalizas:[6, Validators.required]
     });
   }
 
@@ -127,13 +126,8 @@ export class EstapasIudComponent implements OnInit{
     }
   }
 
-  /*updateSingleSelectGroupValue(value: any) {
-    // lógica para atualizar o valor (ex: this.valorSelecionado = value;)
-    console.log('Valor selecionado:', value, ' ',this.etapaForm); // Adicione este console.log para depuração
-  }*/
-
   fecharModal(reason: string = '') { // 'reason' é opcional
-    console.log('Valor selecionado:', this.etapaForm);
+    //console.log('Valor selecionado:', this.etapaForm);
     this.windowRef.close(reason); // Fecha o modal e passa o motivo
   }
 

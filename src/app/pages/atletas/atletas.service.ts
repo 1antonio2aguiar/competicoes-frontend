@@ -39,7 +39,7 @@ export class AtletasService extends BaseResourceService<Atleta>{
 
         console.table('Atletas recebidos do back-end:', atletas);
         return atletas;
-      });
+    });
   }
 
   listAll(): Promise<Atleta[]> {

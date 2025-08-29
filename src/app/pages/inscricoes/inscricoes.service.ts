@@ -9,7 +9,7 @@ import { Filters } from '../../shared/filters/filters';
 
 @Injectable({
   providedIn: 'root'
-})
+}) 
 
 export class InscricoesService extends BaseResourceService<Inscricao>{
   // prova por id.
@@ -21,8 +21,8 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
   }
 
   getInscricaoById(inscricaoId): Promise<Inscricao> { 
-        return this.http.get<Inscricao>(this.apiPath + '/' + inscricaoId)
-          .toPromise();
+    return this.http.get<Inscricao>(this.apiPath + '/' + inscricaoId)
+    .toPromise();
   }
 
   pesquisar(filtro: Filters): Promise<any> {
@@ -37,7 +37,7 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
           inscricoes,
           total: response.totalElements,
         };
-        console.table('Resultado: ', inscricoes)
+        //console.table('Resultado Inscricoes: ', inscricoes)
         return resultado;
     });
   }

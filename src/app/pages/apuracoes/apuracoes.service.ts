@@ -9,7 +9,7 @@ import { Filters } from '../../shared/filters/filters';
 
 @Injectable({
   providedIn: 'root'
-})
+}) 
 
 export class ApuracoesService extends BaseResourceService<Apuracao>{
   // prova por id.
@@ -72,7 +72,7 @@ export class ApuracoesService extends BaseResourceService<Apuracao>{
       }
     ));
   }
-
+ 
   updateResultado(apuracao: Apuracao): Observable<Apuracao> {
     apuracao.empresaId = 1;
 
@@ -84,6 +84,29 @@ export class ApuracoesService extends BaseResourceService<Apuracao>{
         //.log('prova atualizada com sucesso:', response);
         return response;
       }));
+  }
+
+  
+
+  updateResultadoApenas(id: number, resultado: string | null): Observable<Apuracao> {
+    const payload = {
+      resultado: resultado
+    };
+
+    //console.log(`ENVIANDO PARA O BACKEND (UPDATE APENAS RESULTADO) para ID ${id}:`, payload);
+
+    return from(this.http
+      .put<Apuracao>(`${this.apiPath}/${id}`, payload)
+      .toPromise()
+      .then(response => {
+        //console.log('RESPOSTA DO BACKEND (UPDATE APENAS RESULTADO):', response);
+        return response;
+      })
+      .catch(error => {
+        console.error('ERRO NA REQUISIÇÃO PUT (UPDATE APENAS RESULTADO):', error);
+        throw error;
+      })
+    );
   }
 
 }
