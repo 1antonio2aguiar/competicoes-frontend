@@ -3,12 +3,29 @@ import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
+import { AuthGuard } from '../shared/guards/auth.guard'; // << IMPORTE O GUARD
+
+import { DashboardShowComponent } from './dashboard/show/dashboard-show.component';
 
 
 const routes: Routes = [{
   path: '',
   component: PagesComponent,
+  canActivate: [AuthGuard], // <<< APLIQUE O GUARD AQUI
   children: [
+
+    {
+      path: 'dashboard',
+      component: DashboardShowComponent,
+    },
+    
+    // ROTA PADRÃO - Se o usuário acessar /pages, redireciona para o dashboard
+    {
+      path: '',
+      redirectTo: 'dashboard',
+      pathMatch: 'full',
+    },
+
     {
       path:  'atletas',
       loadChildren: () => import('./atletas/atletas.module').then(m => m.AtletasModule),

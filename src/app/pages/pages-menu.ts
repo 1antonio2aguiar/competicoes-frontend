@@ -75,15 +75,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
           link: '/pages/pessoas-api/pessoa-api-pesquisa',
       },
       
-      /*{
-        title: 'Pessoas',
-        icon: 'layout-outline',
-        children: [{
-          title: 'Pessoas',
-          link: '/pages/pessoas-api/pessoa-api-pesquisa',
-        }],
-      },*/
-
       {
         title: 'Provas',
         link: '/pages/provas/provas-pesquisa',
@@ -94,7 +85,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/tipos-nado/tipos-nado-iud',
       },
       
-      {
+      /*{
         title: 'Stepper',
         link: '/pages/layout/stepper',
       },
@@ -114,7 +105,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Tabs',
         pathMatch: 'prefix',
         link: '/pages/layout/tabs',
-      },
+      },*/
     ],
   },
   {
