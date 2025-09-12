@@ -25,7 +25,7 @@ import { FormatarTempoService } from '../../../shared/services/formatar-tempo.se
   styleUrls: ['./provas-iud.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [NbDialogService]
-})
+}) 
 
 export class ProvasIudComponent implements OnInit {
   provaId: number = 0;

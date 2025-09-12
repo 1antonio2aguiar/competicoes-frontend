@@ -57,7 +57,7 @@ export class AuthService {
       }
     }
     return null;
-  }
+  } 
 
   /**
    * A FUNÇÃO QUE VOCÊ PRECISA: Verifica se o usuário tem um determinado perfil.
@@ -97,6 +97,11 @@ export class AuthService {
     return null;
   }
 
+  getCompanyName(): string | null {
+    const decodedToken = this.getDecodedToken();
+    return decodedToken ? decodedToken.empresaRazaoSocial : null;
+  }
+
   public getUserName(): string | null {
     const decodedToken = this.getDecodedToken();
     // O backend precisa adicionar o nome do usuário como uma "claim" no token.
@@ -107,6 +112,4 @@ export class AuthService {
     }
     return null;
   }
-
-  
 }

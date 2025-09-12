@@ -230,8 +230,8 @@ export class ProvasPesquisaComponent implements OnInit{
         this.showToast('ERRO ao tentar alterar prova!', 'danger');
         console.error("Erro ao buscar prova por ID:", error);
         // Trate o erro adequadamente
-      }
     }
+  }
 
   onDelete(event): void {
     console.log('ja vai');
@@ -251,8 +251,8 @@ export class ProvasPesquisaComponent implements OnInit{
               this.showToast('Erro ao excluir prova!', 'danger');  // Adicionado o toast de erro
               console.error("Erro ao excluir prova:", error);
             });
-        }
-      });
+      }
+    });
   }
 
   showToast(message: string, status: string) {

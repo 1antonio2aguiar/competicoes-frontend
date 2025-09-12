@@ -41,9 +41,24 @@ const routes: Routes = [{
       loadChildren: () => import('./categorias/categorias.module').then(m => m.CategoriasModule),
     },
 
-     {
+    {
       path: 'modalidades',
       loadChildren: () => import('./modalidades/modalidades.module').then(m => m.ModalidadesModule),
+    },
+
+    {
+      path: 'empresas',
+      loadChildren: () => import('./empresas/empresas.module').then(m => m.EmpresasModule),
+    },
+
+    {
+      path: 'perfis',
+      loadChildren: () => import('./perfis/perfis.module').then(m => m.PerfisModule),
+    },
+
+    {
+      path: 'usuarios',
+      loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule),
     },
 
     {

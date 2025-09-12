@@ -1,0 +1,77 @@
+<!-- src/app/pages/usuarios/usuarios-iud/usuarios-iud.component.html -->
+<nb-card class="usuario-iud-card">
+  <nb-card-body>
+    <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+
+      <!-- Campo ID (apenas para edição e leitura) -->
+      <div class="form-group" *ngIf="mode === 'edit'">
+        <input nbInput fullWidth type="text" id="id" formControlName="id" readonly hidden="true">
+      </div>
+
+       <!-- Campo Empresa -->
+      <div class="form-group">
+        <label for="empresaId">Empresa:</label>
+        <nb-select fullWidth id="empresaId" formControlName="empresaId" placeholder="Selecione a Empresa">
+          <nb-option *ngFor="let emp of empresas" [value]="emp.id">{{ emp.razaoSocial }}</nb-option>
+        </nb-select>
+      </div>
+
+      <!-- Campo Nome -->
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input nbInput fullWidth type="text" id="nome" formControlName="nome" placeholder="Nome Completo">
+        <nb-alert *ngIf="usuarioForm.get('nome')?.invalid && usuarioForm.get('nome')?.touched" status="danger" class="mt-2">
+          Nome é obrigatório.
+        </nb-alert>
+      </div>
+
+      <!-- Campo Email -->
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input nbInput fullWidth type="email" id="email" formControlName="email" placeholder="email@empresa.com">
+        <nb-alert *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched" status="danger" class="mt-2">
+          E-mail é obrigatório e deve ser um e-mail válido.
+        </nb-alert>
+      </div>
+
+      <!-- Campo Senha (obrigatório no cadastro, opcional na edição) -->
+      <div class="form-group" *ngIf="mode === 'add'">
+        <label for="senha">Senha:</label>
+        <input nbInput fullWidth type="password" id="senha" formControlName="senha" placeholder="Nova senha (deixe em branco para não alterar)">
+        <nb-alert *ngIf="usuarioForm.get('senha')?.invalid && usuarioForm.get('senha')?.touched && usuarioForm.get('senha')?.errors?.['required'] && mode === 'add'" status="danger" class="mt-2">
+          Senha é obrigatória no cadastro.
+        </nb-alert>
+        <nb-alert *ngIf="usuarioForm.get('senha')?.invalid && usuarioForm.get('senha')?.touched && usuarioForm.get('senha')?.errors?.['minlength']" status="danger" class="mt-2">
+          A senha deve ter no mínimo 6 caracteres.
+        </nb-alert>
+      </div>
+
+      <!-- Campo Perfis -->
+      <div class="form-group">
+        <label>Perfis:</label>
+        <div class="row">
+          <div *ngFor="let perfil of perfis" class="col-6 col-md-4">
+            <nb-checkbox
+              [checked]="selectedPerfis.includes(perfil.id)"
+              (change)="onPerfilChange($event, perfil.id)">
+              {{ perfil.nome }}
+            </nb-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campo Ativo -->
+      <div class="form-group">
+        <nb-checkbox formControlName="ativo">Usuário Ativo</nb-checkbox>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="form-actions mt-4">
+        <button nbButton status="primary" [disabled]="usuarioForm.invalid && (mode === 'add' || (mode === 'edit' && usuarioForm.get('senha')?.value))" type="submit" class="mr-2">
+          {{ mode === 'add' ? 'Cadastrar' : 'Salvar' }}
+        </button>
+        <button nbButton status="danger" type="button" (click)="fecharJanelaModal()">Cancelar</button>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

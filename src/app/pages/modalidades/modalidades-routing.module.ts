@@ -3,8 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { ModalidadesComponent } from './modalidades.component';
 import { ModalidadesIudComponent } from './modalidade-iud/modalidade-iud.component';
-//import { ModalidadePesquisaComponent } from './modalidade-pesquisa/modalidade-pesquisa.component';
-
 
 const routes: Routes = [{
   path: '',
@@ -12,7 +10,6 @@ const routes: Routes = [{
   children: [
 	  {
       path: 'modalidade-iud',
-      //component: ModalidadePesquisaComponent,
       component: ModalidadesIudComponent,
     },
   ],
@@ -27,7 +24,6 @@ export class ModalidadesRoutingModule { }
 
 export const modalidadesRoutedComponents = [
   ModalidadesComponent,
-  //ModalidadePesquisaComponent,
   ModalidadesIudComponent
 ];
 

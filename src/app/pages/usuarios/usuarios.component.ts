@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'ngx-modalidade-pesquisa',
+  selector: 'ngx-usuarios',
   template: `<router-outlet></router-outlet>`,
 })
 
-export class ModalidadesComponent {
-} 
+export class UsuariosComponent {
+
+}

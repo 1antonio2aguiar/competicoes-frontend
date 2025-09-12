@@ -3,23 +3,20 @@ import { Observable, from } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
-import { Modalidade } from '../../shared/models/modalidade';
 import { Filters } from '../../shared/filters/filters';
-
+import { Perfil } from '../../shared/models/perfil';
 
 @Injectable({
   providedIn: 'root'
 })
 
-@Injectable()
-export class ModalidadesService extends BaseResourceService<Modalidade>{
-
-  private modalidadeEventHendlerId: EventEmitter<Modalidade>;
-
-  constructor(protected injector: Injector) {
-      super(environment.apiUrl + 'tiposModalidades', injector, Modalidade.fromJson);
-      this.modalidadeEventHendlerId = new EventEmitter<Modalidade>;
-  } 
+export class PerfisService extends BaseResourceService<Perfil>{
+  private perfilEventHendlerId: EventEmitter<Perfil>;
+  
+    constructor(protected injector: Injector) {
+      super(environment.apiUrl + 'perfis', injector, Perfil.fromJson);
+      this.perfilEventHendlerId = new EventEmitter<Perfil>;
+  }
 
   pesquisar(filtro: Filters): Promise<any> {
     let params = filtro.params;
@@ -31,30 +28,29 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
     }
 
     return this.http
-      .get<any>(this.apiPath + '/filter', { params })
+      .get<any>(this.apiPath +'/filter', { params })
       .toPromise()
       .then((response) => {
-        const modalidades = response.content;
+        const perfis = response.content;
         const resultado = {
-          modalidades,
+          perfis,
         };
-        console.log('Resultado: ', resultado.modalidades)
+        console.log('Resultado: ', resultado.perfis)
         return resultado;
       }
     );
   }
 
-  // 1. Listar todos os registros (READ)
-  listAll(): Promise<Modalidade[]> {
+  listAll(): Promise<Perfil[]> {
     //console.log('Chegou no service! ',this.apiPath + '/list' )
     return this.http
-      .get<Modalidade[]>(this.apiPath + '/list')
+      .get<Perfil[]>(this.apiPath + '/list')
       .toPromise();
   }
 
-  create(modalidade: Modalidade): Observable<Modalidade> {
+  create(perfil: Perfil): Observable<Perfil> {
     return from(this.http
-      .post<Modalidade>(this.apiPath, modalidade)
+      .post<Perfil>(this.apiPath, perfil)
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
@@ -63,9 +59,9 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
     }));
   }
 
-  update(modalidade: Modalidade): Observable<Modalidade> {
+  update(perfil: Perfil): Observable<Perfil> {
     return from(this.http
-      .put<Modalidade>(`${this.apiPath}/${modalidade.id}`, modalidade)
+      .put<Perfil>(`${this.apiPath}/${perfil.id}`, perfil)
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API
@@ -84,5 +80,4 @@ export class ModalidadesService extends BaseResourceService<Modalidade>{
         return response;
     }));
   }
-
 }
