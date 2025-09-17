@@ -8,6 +8,7 @@ import { ModalidadesService } from '../../modalidades/modalidade-select/modalida
 import { Equipe } from '../../../shared/models/equipe';
 import { PessoasComponent } from '../../components/pessoas/pessoas-busca/pessoas.component';
 import { EquipesService } from '../equipes.service';
+import { AuthService } from '../../../shared/services/auth.service';
 
 
 @Component({
@@ -30,6 +31,8 @@ export class EquipesIudComponent implements OnInit{
 
   @Output() equipeSalvaOuAtualizada = new EventEmitter<any>();
   @Input() equipe: Equipe | undefined;
+  empresaId = 0;
+
   editingField: 'agremiacao' | 'tecnico' | 'assistenteTecnico' | null = null; // Adicionado
 
   constructor(
@@ -39,9 +42,13 @@ export class EquipesIudComponent implements OnInit{
     private windowService: NbWindowService,
     private dialogService: NbDialogService,
     private ref1: NbWindowRef,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
+    // Obter o ID da empresa do usuário logado
+    this.empresaId = this.authService.getEmpresaId();
+
     this.carregarModalidades();
     this.criarFormulario();
 
@@ -53,7 +60,7 @@ export class EquipesIudComponent implements OnInit{
   criarFormulario() {
     this.equipeForm = this.formBuilder.group({
       id: [null],
-      empresa: [1],
+      empresa: [this.empresaId],
       nome: [null, [Validators.required, Validators.minLength(5)]],
       sigla: [null, [Validators.required, Validators.minLength(3)]],
       
@@ -102,11 +109,14 @@ export class EquipesIudComponent implements OnInit{
     if (this.equipeForm.valid) {
       const equipeData = this.equipeForm.getRawValue();
 
+      console.log('equipeData ', equipeData)
+
       equipeData.modalidadeId = equipeData.modalidade; // Aqui extraímos o valor da modalidade selecionada
       delete equipeData.modalidade; // Removemos a propriedade modalidade, pois é um objeto desnecessário na requisição
       equipeData.agremiacaoId = equipeData.agremiacao.id;
       equipeData.tecnicoId = equipeData.tecnico.id;
       equipeData.assistenteTecnicoId = equipeData.assistenteTecnico.id;
+      equipeData.empresaId = this.empresaId;
 
       // Se tiver ID, atualiza, senão salva
       const equipeObservable = equipeData.id

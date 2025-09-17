@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Filters } from '../../../shared/filters/filters';
@@ -9,8 +9,8 @@ import { EquipesService } from '../equipes.service';
 import { Equipe } from '../../../shared/models/equipe';
 import { EquipesIudComponent } from '../equipes-iud/equipes-iud.component';
 import { CampeonatosService } from '../../campeonatos/campeonatos.service';
-import { ConfirmDeleteComponent } from '../confirm-delete/confirm-delete-modal.component';
 import { ConfirmationDialogComponent } from '../../components/confirm-delete/confirmation-dialog/confirmation-dialog.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-equipes-pesquisa',
@@ -111,7 +111,8 @@ export class EquipesPesquisaComponent implements OnInit {
     private router: Router,
     private routeActive: ActivatedRoute,
     private dialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private authService: AuthService,
     ) {
     // Inicializar o filtro com valores padrões
     this.filtro.pagina = 1;
@@ -131,11 +132,16 @@ export class EquipesPesquisaComponent implements OnInit {
   }
 
   listar() {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    // Passa o codigo da empresa como parametro
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+
     this.equipeService.pesquisar(this.filtro)
       .then(response => {
         const equipes = response.equipes;
         this.source.load(equipes);
-      });
+    });
   }
 
   onAdd() {

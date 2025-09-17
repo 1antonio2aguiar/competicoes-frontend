@@ -52,12 +52,16 @@
         <div class="row">
           <div *ngFor="let perfil of perfis" class="col-6 col-md-4">
             <nb-checkbox
-              [checked]="selectedPerfis.includes(perfil.id)"
+              [checked]="usuarioForm.get('perfisIds')?.value?.includes(perfil.id)"
               (change)="onPerfilChange($event, perfil.id)">
               {{ perfil.nome }}
             </nb-checkbox>
           </div>
         </div>
+        <!-- Adicione uma mensagem de erro se você adicionou Validators.required ao perfisIds -->
+        <nb-alert *ngIf="usuarioForm.get('perfisIds')?.invalid && usuarioForm.get('perfisIds')?.touched" status="danger" class="mt-2">
+          Selecione pelo menos um perfil.
+        </nb-alert>
       </div>
 
       <!-- Campo Ativo -->

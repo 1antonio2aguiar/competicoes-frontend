@@ -1,6 +1,7 @@
 import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HttpParams } from '@angular/common/http';
 
 import { environment } from '../../../environments/environment';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
@@ -23,7 +24,7 @@ export class UsuariosService extends BaseResourceService<Usuario>{
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let params = filtro.params;
+    let params = filtro.params || new HttpParams(); // Inicialize se não existir
 
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
@@ -31,12 +32,11 @@ export class UsuariosService extends BaseResourceService<Usuario>{
       });
     }
 
-    // Supondo que o backend agora retorna a empresa e os perfis
     return this.http
       .get<any>(this.apiPath +'/filter', { params })
       .toPromise()
       .then((response) => {
-        const usuarios = response.content.map(Usuario.fromJson); // Mapear para o modelo Usuario
+        const usuarios = response.content.map(Usuario.fromJson);
         const resultado = {
           usuarios,
         };
@@ -45,29 +45,6 @@ export class UsuariosService extends BaseResourceService<Usuario>{
       }
     );
   }
-
-  /*pesquisar(filtro: Filters): Promise<any> {
-    let params = filtro.params;
-
-    if (filtro.params) {
-      filtro.params.keys().forEach(key => {
-        params = params.set(key, filtro.params.get(key));
-      });
-    }
-
-    return this.http
-      .get<any>(this.apiPath +'/filter', { params })
-      .toPromise()
-      .then((response) => {
-        const usuarios = response.content;
-        const resultado = {
-          usuarios,
-        };
-        console.log('Resultado: ', resultado.usuarios)
-        return resultado;
-      }
-    );
-  }*/
 
   getUsuarioById(usuarioId): Promise<Usuario> {
     return this.http.get<Usuario>(this.apiPath + '/' + usuarioId)

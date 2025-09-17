@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Filters } from '../../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
+
 import { NbDialogService, NbToastrService, NbWindowControlButtonsConfig, NbWindowService, NbToastrConfig } from '@nebular/theme';
 import { AtletasService } from '../atletas.service';
 import { Atleta } from '../../../shared/models/atleta';
 import { AtletasIudComponent } from '../atletas-iud/atletas-iud.component';
 import { ConfirmDeleteComponent } from '../../equipes/confirm-delete/confirm-delete-modal.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-atletas-pesquisa',
@@ -93,7 +95,8 @@ export class AtletasPesquisaComponent implements OnInit {
   constructor(private atletaService: AtletasService, 
     private windowService: NbWindowService,
     private dialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private authService: AuthService,
     ) {
 
   }
@@ -110,6 +113,11 @@ export class AtletasPesquisaComponent implements OnInit {
   }
 
   listar() {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    // Passa o codigo da empresa como parametro
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+
     this.atletaService.pesquisar(this.filtro)
       .then(atletas => { // A variável 'atletas' agora É o array retornado pelo serviço
         this.source.load(atletas);

@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode"; // << INSTALE ESTA BIBLIOTECA
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
 
   constructor(private router: Router) { }
@@ -72,14 +73,14 @@ export class AuthService {
     // IMPORTANTE: O nome do campo que contém os perfis no seu token
     // depende do seu backend. Pode ser 'roles', 'authorities', 'scope', etc.
     // Verifique o payload do seu token JWT!
-    const userRoles: string[] = decodedToken.roles || decodedToken.authorities || [];
+    const userRoles: string[] = decodedToken.perfis;
 
     if (typeof requiredRole === 'string') {
       return userRoles.includes(requiredRole);
     } else { // Se for um array de perfis
       return requiredRole.some(role => userRoles.includes(role));
     }
-  }
+  } 
 
   /**
    * Faz o logout do usuário.
@@ -99,7 +100,7 @@ export class AuthService {
 
   getCompanyName(): string | null {
     const decodedToken = this.getDecodedToken();
-    return decodedToken ? decodedToken.empresaRazaoSocial : null;
+    return decodedToken ? decodedToken.razaoSocial : null;
   }
 
   public getUserName(): string | null {

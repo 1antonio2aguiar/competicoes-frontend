@@ -24,7 +24,7 @@ export class EquipesService extends BaseResourceService<Equipe>{
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let params = new HttpParams();
+    let params = new HttpParams(); 
 
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
@@ -33,7 +33,7 @@ export class EquipesService extends BaseResourceService<Equipe>{
     }
 
     return this.http
-    .get<any>(this.apiPath +'/filter', { })
+    .get<any>(this.apiPath +'/filter', { params })
       .toPromise()
       .then((response) => {
         const equipes = response.content;

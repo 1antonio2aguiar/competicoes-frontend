@@ -27,8 +27,31 @@ const routes: Routes = [{
     },
 
     {
+      path: 'empresas',
+      loadChildren: () => import('./empresas/empresas.module').then(m => m.EmpresasModule),
+      canActivate: [AuthGuard],
+      data: { roles: ['MASTER'] },
+    },
+    {
+      path: 'perfis',
+      loadChildren: () => import('./perfis/perfis.module').then(m => m.PerfisModule),
+      canActivate: [AuthGuard],
+      data: { roles: ['MASTER'] },
+    },
+
+    {
+      path: 'usuarios',
+      loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule),
+      canActivate: [AuthGuard], // Aplica o guard
+      data: { roles: ['ADMINISTRADOR','MASTER'] }, // <--- AQUI: Define que só administradores podem acessar
+    },
+
+
+    {
       path:  'atletas',
       loadChildren: () => import('./atletas/atletas.module').then(m => m.AtletasModule),
+      canActivate: [AuthGuard], // Aplica o guard
+      data: { roles: ['MASTER','ADMINISTRADOR', 'CADASTRAR'] }, // <--- AQUI: Define que só usuarios que podem acessar
     },
     
     {
@@ -45,22 +68,7 @@ const routes: Routes = [{
       path: 'modalidades',
       loadChildren: () => import('./modalidades/modalidades.module').then(m => m.ModalidadesModule),
     },
-
-    {
-      path: 'empresas',
-      loadChildren: () => import('./empresas/empresas.module').then(m => m.EmpresasModule),
-    },
-
-    {
-      path: 'perfis',
-      loadChildren: () => import('./perfis/perfis.module').then(m => m.PerfisModule),
-    },
-
-    {
-      path: 'usuarios',
-      loadChildren: () => import('./usuarios/usuarios.module').then(m => m.UsuariosModule),
-    },
-
+    
     {
       path: 'apuracoes',
       loadChildren: () => import('./apuracoes/apuracoes.module').then(m => m.ApuracoesModule),

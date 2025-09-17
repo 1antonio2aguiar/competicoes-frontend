@@ -1,16 +1,30 @@
 @import 'bootstrap/scss/mixins/breakpoints';
 @import '@nebular/theme/styles/global/breakpoints';
-@import '../../styles/themes';
+@import '../../styles/themes'; // Ajuste o caminho se necessário para o seu arquivo de temas
 
 @include nb-install-component() {
-  display: flex;
-  justify-content: space-between;
+  display: flex; // Mantém o flexbox no componente principal
+  justify-content: space-between; // Espaça os dois 'header-container'
   width: 100%;
+  align-items: center;
+
+  // Estilos para a seção da esquerda (logo e empresa)
+  .left-section {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; // Permite que a seção da esquerda ocupe o espaço restante
+  }
+
+  // Estilos para a seção da direita (usuário)
+  .right-section {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; // Impede que esta seção encolha
+  }
 
   .logo-container {
     display: flex;
     align-items: center;
-    width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
   }
 
   nb-action {
@@ -21,37 +35,50 @@
 
   nb-user {
     cursor: pointer;
+    ::ng-deep .user-name {
+      font-weight: nb-theme(font-weight-bolder);
+      color: nb-theme(text-basic-color);
+      font-size: 1rem;
+    }
+    .user-picture {
+      background-color: nb-theme(background-basic-color-2);
+    }
   }
 
   ::ng-deep nb-search button {
     padding: 0!important;
   }
 
-  .header-container {
-    display: flex;
-    align-items: center;
-    width: auto;
-
-    .sidebar-toggle {
-      @include nb-ltr(padding-right, 1.25rem);
-      @include nb-rtl(padding-left, 1.25rem);
-      text-decoration: none;
-      color: nb-theme(text-hint-color);
-      nb-icon {
-        font-size: 1.75rem;
-      }
-    }
-
-    .logo {
-      padding: 0 1.25rem;
+  // Removido o estilo .header-container geral para o layout principal,
+  // pois agora temos .left-section e .right-section.
+  // No entanto, os estilos internos do .header-container original para
+  // .sidebar-toggle e .logo precisam ser aplicados em .left-section
+  .sidebar-toggle {
+    @include nb-ltr(padding-right, 1.25rem);
+    @include nb-rtl(padding-left, 1.25rem);
+    text-decoration: none;
+    color: nb-theme(text-hint-color);
+    nb-icon {
       font-size: 1.75rem;
-      @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
-      @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
-      white-space: nowrap;
-      text-decoration: none;
     }
   }
 
+  .logo {
+    padding: 0 1.25rem;
+    font-size: 1.5rem;
+    font-weight: nb-theme(font-weight-bolder);
+    color: nb-theme(text-basic-color);
+    @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
+    @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
+    white-space: nowrap;
+    text-decoration: none;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    flex-shrink: 0;
+  }
+
+  // Ajustes de responsividade
   @include media-breakpoint-down(sm) {
     .control-item {
       display: none;
@@ -60,11 +87,18 @@
       border: none;
       padding: 0;
     }
+    nb-user ::ng-deep .user-name {
+      // Ocultar o nome em telas pequenas, se desejado, para economizar espaço
+      // display: none;
+    }
   }
 
   @include media-breakpoint-down(is) {
     nb-select {
       display: none;
+    }
+    .logo {
+      font-size: 1.3rem;
     }
   }
 }

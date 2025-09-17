@@ -28,7 +28,7 @@ export class UsuariosIudComponent implements OnInit {
 
   empresas: Empresa[] = []; // Lista de empresas para o select
   perfis: Perfil[] = [];     // Lista de perfis para seleção
-  selectedPerfis: number[] = []; // IDs dos perfis selecionados
+  //selectedPerfis: number[] = []; // IDs dos perfis selecionados
 
   loggedUserCompanyId: number | null = null;
   loggedUserCompanyName: string | null = null;
@@ -73,19 +73,17 @@ export class UsuariosIudComponent implements OnInit {
       }
 
       // Preencher os perfis do usuário para o controle de seleção
-      // *** AQUI ESTÁ A CORREÇÃO PRINCIPAL ***
+      // Preencher os perfis do usuário para o controle de seleção
       if (this.usuario.perfis && this.usuario.perfis.length > 0 && this.perfis.length > 0) {
-        this.selectedPerfis = []; // Limpa o array antes de preencher
-        // Itera sobre os nomes de perfis do usuário
+        const perfisIdsExistentes: number[] = [];
         (this.usuario.perfis as unknown as string[]).forEach(perfilNomeUsuario => {
-          // Encontra o objeto Perfil correspondente na lista completa de perfis
           const perfilEncontrado = this.perfis.find(p => p.nome === perfilNomeUsuario);
           if (perfilEncontrado && perfilEncontrado.id) {
-            this.selectedPerfis.push(perfilEncontrado.id);
+            perfisIdsExistentes.push(perfilEncontrado.id);
           }
         });
-        // Define o valor do formControl `perfisIds` com os IDs mapeados
-        this.usuarioForm.get('perfisIds')?.setValue(this.selectedPerfis);
+        // ATUALIZA O FORMCONTROL 'perfisIds' COM OS IDs ENCONTRADOS
+        this.usuarioForm.get('perfisIds')?.setValue(perfisIdsExistentes);
       }
 
       // Remover validadores da senha no modo de edição, já que o campo não será exibido.
@@ -125,50 +123,51 @@ export class UsuariosIudComponent implements OnInit {
       senha: [null, [Validators.required, Validators.minLength(6)]],
       nome: [null, [Validators.required]],
       ativo: [true],
-      perfisIds: [[]]
+       perfisIds: [[], [Validators.required]]
     });
   }
 
-  onPerfilChange(event: any, perfilId: number | undefined) {
+  onPerfilChange(event: any, perfilId: number | undefined) { 
+
     if (perfilId === undefined || perfilId === null) {
       console.warn('ID do perfil é inválido.', perfilId);
       return;
     }
 
+    const currentPerfisIds = this.usuarioForm.get('perfisIds')?.value as number[] || [];
+    const isChecked: boolean = event.target ? event.target.checked : event;
+
     const idAsNumber = perfilId as number;
-    if (event.checked) {
-      if (!this.selectedPerfis.includes(idAsNumber)) {
-        this.selectedPerfis.push(idAsNumber);
+    let newPerfisIds: number[] = [...currentPerfisIds]; // Cria uma cópia para modificação
+
+    if (isChecked) { // <--- Use 'isChecked' diretamente
+      if (!newPerfisIds.includes(idAsNumber)) {
+        newPerfisIds.push(idAsNumber);
       }
     } else {
-      this.selectedPerfis = this.selectedPerfis.filter(id => id !== idAsNumber);
+      newPerfisIds = newPerfisIds.filter(id => id !== idAsNumber);
     }
-    // Sempre atualiza o valor do formControl `perfisIds` para refletir a seleção
-    this.usuarioForm.get('perfisIds')?.setValue(this.selectedPerfis);
+    // ATUALIZA O VALOR DO FORMCONTROL 'perfisIds'
+    this.usuarioForm.get('perfisIds')?.setValue(newPerfisIds);
   }
+
 
   onSubmit() {
     const formRawValue = this.usuarioForm.getRawValue();
 
-    console.log('formRawValue ', formRawValue);
-
-    // No modo de edição, removemos a senha do payload SE E SOMENTE SE
-    // o campo de senha não foi preenchido/alterado pelo usuário.
     if (this.mode === 'edit' && !formRawValue.senha) {
       delete formRawValue.senha;
     }
 
-    // Se o formulário for inválido (e não for um campo desabilitado ou senha vazia em edit),
-    // marca os campos como tocados e exibe a mensagem.
-    if (!this.usuarioForm.valid && (this.mode === 'add' || (this.mode === 'edit' && formRawValue.senha))) {
+    if (!this.usuarioForm.valid) {
       this.markFormGroupTouched(this.usuarioForm);
       this.showToast('Por favor, preencha todos os campos obrigatórios corretamente.', 'warning');
-      return; // Impede o envio do formulário inválido
+      return;
     }
 
     const usuarioParaSalvar: Usuario = {
       ...formRawValue,
-      perfisIds: this.selectedPerfis
+      perfisIds: this.usuarioForm.get('perfisIds')?.value
     };
 
     if (this.mode === 'add') {

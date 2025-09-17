@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { NbDialogService, NbToastrService, NbWindowControlButtonsConfig, NbWindowService, NbToastrConfig } from '@nebular/theme';
+import { HttpParams } from '@angular/common/http';
 
 import { Filters } from '../../../shared/filters/filters';
 import { UsuariosService } from '../usuarios.service';
 import { UsuariosIudComponent } from '../usuarios-iud/usuarios-iud.component';
 import { Usuario } from '../../../shared/models/usuario';
 import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-delete-modal.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-usuarios-pesquisa',
@@ -70,6 +72,19 @@ export class UsuariosPesquisaComponent implements OnInit {
         filter: true,
       },
 
+      /*empresa: {
+        title: 'Empresa',
+        type: 'string', // Ainda pode ser 'string' pois você exibirá uma string
+        filter: false,
+        valuePrepareFunction: (empresa: any) => {
+          // Verifica se 'empresa' é um objeto e se tem a propriedade 'razaoSocial'
+          if (empresa && typeof empresa === 'object' && empresa.razaoSocial) {
+            return empresa.razaoSocial;
+          }
+          return 'N/A'; // Ou qualquer valor padrão para casos onde a empresa não tem razaoSocial
+        },
+      },*/
+
       ativo: {
         title: 'Ativo',
         type: 'string',
@@ -90,16 +105,28 @@ export class UsuariosPesquisaComponent implements OnInit {
     private dialogService: NbDialogService,
     private toastrService: NbToastrService,
     private windowService: NbWindowService,
+    private authService: AuthService,
   ) {
 
-  }
+  } 
 
   listar() {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+
+    if (empresaId) {
+      // Se já existe um HttpParams no filtro, adicione o empresaId
+      if (!this.filtro.params) {
+        this.filtro.params = new HttpParams();
+      }
+      this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+    } 
+
     this.usuariosService.pesquisar(this.filtro)
       .then(response => {
         const usuarios = response.usuarios;
         this.source.load(usuarios);
-      });
+    });
   }
 
   onCreateConfirm() {
@@ -134,8 +161,6 @@ export class UsuariosPesquisaComponent implements OnInit {
       try {
         const usuarioCompleto: Usuario = await this.usuariosService.getUsuarioById(id);
 
-        console.log('usuario completa ', usuarioCompleto)
-
         const buttonsConfig: NbWindowControlButtonsConfig = {
           minimize: false,
           maximize: false,
@@ -148,10 +173,7 @@ export class UsuariosPesquisaComponent implements OnInit {
           buttons: buttonsConfig,
           context: { usuario: usuarioCompleto, mode: 'edit' }
         }).onClose.subscribe((reason: string | undefined) => {
-          if (reason === 'atualizado' || reason === 'save') {
             this.listar();
-            this.showToast('uUuario alterada com sucesso!', 'success');
-          }
         });
       } catch (error) {
         this.showToast('ERRO ao tentar alterar usuario!', 'danger');
