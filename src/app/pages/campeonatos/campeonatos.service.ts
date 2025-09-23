@@ -4,9 +4,9 @@ import { Observable, from } from 'rxjs';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
 import { environment } from '../../../environments/environment';
 import { Campeonato } from '../../shared/models/campeonato';
-import { CampeonatosFiltro } from './campeonatos-filter';
 import { Filters } from '../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +15,16 @@ import { HttpParams } from '@angular/common/http';
 @Injectable()
 export class CampeonatosService extends BaseResourceService<Campeonato>{
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'campeonatos', injector, Campeonato.fromJson);
+    
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let params = new HttpParams();
+    let params = new HttpParams(); 
 
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
@@ -34,28 +38,37 @@ export class CampeonatosService extends BaseResourceService<Campeonato>{
       .then((response) => {
         const campeonatos = response.content;
         const resultado = {
-          campeonatos
+          campeonatos,
+          total: response.totalElements,
         };
-        console.table('Resultado: ', resultado.campeonatos)
+        console.table('Resultado: ', campeonatos)
         return resultado;
     });
-  }
+  }  
 
   listAll(): Promise<Campeonato[]> {
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+
     return this.http
-      .get<Campeonato[]>(this.apiPath)
+      .get<Campeonato[]>(this.apiPath , { params: params }) // Passa os parâmetros na requisição GET
       .toPromise();
   }
 
   listAllList(): Promise<Campeonato[]> {
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+
     return this.http
-      .get<Campeonato[]>(this.apiPath + '/list')
+      .get<Campeonato[]>(this.apiPath + '/list', { params: params }) // Passa os parâmetros na requisição GET
       .toPromise();
   }
 
-  create(modalidade: Campeonato): Observable<Campeonato> {
+  create(campeonato: Campeonato): Observable<Campeonato> {
     return from(this.http
-      .post<Campeonato>(this.apiPath, modalidade)
+      .post<Campeonato>(this.apiPath, campeonato)
       .toPromise()
       .then(response => {
         // Lidar com a resposta da API

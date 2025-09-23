@@ -6,24 +6,30 @@ import { Etapa } from '../../shared/models/etapa';
 import { Filters } from '../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
 import EtapaOutput from '../../shared/models/etapaOutput';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
-})
+}) 
 
 @Injectable()
 export class EtapasService extends BaseResourceService<Etapa>{
   // etapa por id.
   private etapaEventHendlerId: EventEmitter<Etapa>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'etapas', injector, Etapa.fromJson);
     this.etapaEventHendlerId = new EventEmitter<Etapa>();
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let params = filtro.params;
-
+    let params = new HttpParams();
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+    
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
         params = params.set(key, filtro.params.get(key));
@@ -44,32 +50,13 @@ export class EtapasService extends BaseResourceService<Etapa>{
     });
   }
 
-  /*pesquisar(filtro: Filters): Promise<any> {
-    let params = new HttpParams();
-
-    params = params 
-      .append('page', filtro.pagina.toString())
-      .append('size', filtro.itensPorPagina.toString());
-    
-
-    return this.http
-    .get<any>(this.apiPath +'/filter', { })
-      .toPromise()
-      .then((response) => {
-        const etapas = response.content;
-        const resultado = {
-          etapas,
-          total: response.totalElements,
-        };
-        console.table('Resultado: ', etapas)
-        return resultado;
-        //return etapas
-    });
-  }*/
-
   listAll(): Promise<Etapa[]> {
+    let params = new HttpParams();
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+
     return this.http
-      .get<Etapa[]>(this.apiPath + '/list')
+      .get<Etapa[]>(this.apiPath , { params: params }) // Passa os parâmetros na requisição GET
       .toPromise();
   }
 
@@ -83,7 +70,7 @@ export class EtapasService extends BaseResourceService<Etapa>{
   }
 
   create(etapa: Etapa): Observable<Etapa> {
-    console.log('chegou n service :', etapa);
+    //console.log('chegou n service :', etapa);
     return from(this.http
       .post<Etapa>(this.apiPath, etapa)
       .toPromise()

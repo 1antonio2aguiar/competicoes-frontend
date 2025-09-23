@@ -58,9 +58,6 @@ export class EquipesService extends BaseResourceService<Equipe>{
   }
 
   create(equipe: Equipe): Observable<Equipe> {
-    equipe.empresaId = 1;
-
-    console.log('ta no create ', equipe)
     return from(this.http
       .post<Equipe>(this.apiPath, equipe)
       .toPromise()
@@ -73,8 +70,6 @@ export class EquipesService extends BaseResourceService<Equipe>{
 
   update(equipe: Equipe): Observable<Equipe> {
     
-    equipe.empresaId = 1;
-
     return from(this.http
       .put<Equipe>(`${this.apiPath}/${equipe.id}`, equipe)
       .toPromise()

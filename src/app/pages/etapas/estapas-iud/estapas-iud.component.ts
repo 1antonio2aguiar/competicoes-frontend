@@ -9,6 +9,7 @@ import { LocaisCompeticoesSelectService } from '../../locais-competicoes-bkp/loc
 import { EtapasService } from '../etapas.service';
 import { Etapa } from '../../../shared/models/etapa';
 import EtapaOutput from '../../../shared/models/etapaOutput';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-estapas-iud',
@@ -36,13 +37,14 @@ export class EstapasIudComponent implements OnInit{
     private campeonatosService: CampeonatosSelectService,
     private locaisCompeticoesService: LocaisCompeticoesSelectService,
     private etapasService: EtapasService,
+    private authService: AuthService,
     private formBuilder: FormBuilder
-  ) { }
+  ) { } 
 
   criarFormulario() {
     this.etapaForm = this.formBuilder.group({
       id: [null],
-      empresa: [1],
+      empresa: [this.authService.getEmpresaId()],
       nome: [null, [Validators.required, Validators.minLength(5)]],
       campeonato: [null, Validators.required],
       localCompeticao: [null, Validators.required],

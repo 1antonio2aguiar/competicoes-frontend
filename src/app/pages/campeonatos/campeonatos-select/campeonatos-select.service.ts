@@ -1,6 +1,6 @@
 import { Injectable, Injector, EventEmitter } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, from } from 'rxjs';
+import { AuthService } from '../../../shared/services/auth.service';
+import { HttpParams } from '@angular/common/http';
 
 import { environment } from '../../../../environments/environment';
 import { BaseResourceService } from '../../../shared/services/base-resource.service';
@@ -16,7 +16,10 @@ export class CampeonatosSelectService extends BaseResourceService<Campeonato>{
 
   private campeonatoEventHendlerId: EventEmitter<Campeonato>;
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'campeonatos', injector, Campeonato.fromJson);
     this.campeonatoEventHendlerId = new EventEmitter<Campeonato>;
   }
@@ -24,9 +27,12 @@ export class CampeonatosSelectService extends BaseResourceService<Campeonato>{
   
   // 1. Listar todos os registros (READ)
   listAll(): Promise<Campeonato[]> {
-    //console.log('Chegou no service! ',this.apiPath + '/list' )
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+
     return this.http
-      .get<Campeonato[]>(this.apiPath + '/list')
+      .get<Campeonato[]>(this.apiPath + '/list', { params: params }) // Passa os parâmetros na requisição GET
       .toPromise();
   }
 
@@ -36,7 +42,7 @@ export class CampeonatosSelectService extends BaseResourceService<Campeonato>{
   }
 
   onCampeonatoChangeId(callBack:(campeonato: Campeonato) => void){
-    console.log('Campeonato select buscou valor');
+    //console.log('Campeonato select buscou valor');
     this.campeonatoEventHendlerId.subscribe(callBack);
   }
 }

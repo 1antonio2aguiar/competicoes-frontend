@@ -13,7 +13,8 @@ import { Campeonato } from '../../../shared/models/campeonato';
 import { CampeonatosService } from '../../campeonatos/campeonatos.service';
 import { Etapa } from '../../../shared/models/etapa';
 import { EtapasService } from '../../etapas/etapas.service';
-
+import { AuthService } from '../../../shared/services/auth.service';
+ 
 @Component({
   selector: 'ngx-provas-pesquisa',
   templateUrl: './provas-pesquisa.component.html',
@@ -144,6 +145,7 @@ export class ProvasPesquisaComponent implements OnInit{
     private router: Router,
     private routeActive: ActivatedRoute,
     private dialogService: NbDialogService,
+    private authService: AuthService,
     private toastrService: NbToastrService
     ) {
     // Inicializar o filtro com valores padrões
@@ -166,6 +168,10 @@ export class ProvasPesquisaComponent implements OnInit{
   listar() {
     this.filtro.pagina = 0;
     this.filtro.params = new HttpParams();
+
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
 
     this.provaService.pesquisar(this.filtro)
 
@@ -323,7 +329,6 @@ export class ProvasPesquisaComponent implements OnInit{
 
   onEtapaChange(etapaId: number) {
     this.selectedEtapaId = etapaId;
-    console.log
     this.filtrarPorEtapa(); // Chama a função para atualizar a tabela após a seleção
   }
 
@@ -332,13 +337,10 @@ export class ProvasPesquisaComponent implements OnInit{
 
       this.filtro.pagina = pagiana;
   
-//      this.filtro.params = new HttpParams();
-  //    this.filtro.params = this.filtro.params.append('etapaFilter.id', this.selectedEtapaId)
-      
       // Aqui busca a lista de provas por etapaId
       let paramsProvas = new HttpParams();
       paramsProvas = paramsProvas.append('etapaFilter.id', this.selectedEtapaId);
-
+      
       this.provaService.pesquisar({...this.filtro, params: paramsProvas})
         .then(response => {
           const provas = response.provas;

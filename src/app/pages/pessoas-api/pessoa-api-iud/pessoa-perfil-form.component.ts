@@ -29,8 +29,9 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
   @ViewChild('cpfInput')  cpfInputRef!:  ElementRef<HTMLInputElement>;
   @ViewChild('cnpjInput') cnpjInputRef!: ElementRef<HTMLInputElement>;
-  @ViewChild('dataNascimentoInput') dataNascimentoInputRef!: ElementRef<HTMLInputElement>;
 
+  @ViewChild('dataNascimentoInput') dataNascimentoInputRef!: ElementRef<HTMLInputElement>;
+  
   modoEdicao = false;
   pessoaId: number | null = null;
   pessoaNome: string | null = null;
@@ -172,11 +173,19 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
             const dataFormatadaParaTela = `${parts[2]}/${parts[1]}/${parts[0]}`; // Formato "DD/MM/YYYY"
             
             // Usa o @ViewChild para setar o valor diretamente no elemento
-            setTimeout(() => {
-              if (this.dataNascimentoInputRef && this.dataNascimentoInputRef.nativeElement) {
-                this.dataNascimentoInputRef.nativeElement.value = dataFormatadaParaTela;
+            if (pessoa.dataNascimento) {
+              const parts = pessoa.dataNascimento.split('-');
+              if (parts.length === 3) {
+                const dataFormatadaParaTela = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                setTimeout(() => {
+                  // Adicione esta verificação aqui
+                  if (this.dataNascimentoInputRef && this.dataNascimentoInputRef.nativeElement) {
+                    this.dataNascimentoInputRef.nativeElement.value = dataFormatadaParaTela;
+                  }
+                }, 0);
               }
-            }, 0);
+            }
+
           }
         }
         } else {
@@ -231,17 +240,19 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
     // --- CAPTURA E FORMATAÇÃO MANUAL DA DATA ---
     let dataNascimentoParaApi: string | null = null;
-    
-    // 1. Pega o valor em string diretamente do input (ex: "13/05/1973")
-    const dataStringDaTela = this.dataNascimentoInputRef.nativeElement.value;
 
-    // 2. Verifica se a string tem o formato esperado e a converte para o formato da API (YYYY-MM-DD)
-    if (dataStringDaTela && dataStringDaTela.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-      const parts = dataStringDaTela.split('/'); // ["13", "05", "1973"]
-      // Remonta a data no formato que a API espera
-      dataNascimentoParaApi = `${parts[2]}-${parts[1]}-${parts[0]}`; // "1973-05-13"
+    // SÓ TENTA ACESSAR dataNascimentoInputRef SE FOR PESSOA FÍSICA E O ELEMENTO EXISTIR
+    if (this.isPessoaFisica() && this.dataNascimentoInputRef && this.dataNascimentoInputRef.nativeElement) {
+      // 1. Pega o valor em string diretamente do input (ex: "13/05/1973")
+      const dataStringDaTela = this.dataNascimentoInputRef.nativeElement.value;
+
+      // 2. Verifica se a string tem o formato esperado e a converte para o formato da API (YYYY-MM-DD)
+      if (dataStringDaTela && dataStringDaTela.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const parts = dataStringDaTela.split('/'); // ["13", "05", "1973"]
+        // Remonta a data no formato que a API espera
+        dataNascimentoParaApi = `${parts[2]}-${parts[1]}-${parts[0]}`; // "1973-05-13"
+      }
     }
-    // ---------------------------------------------
 
     const pessoaParaSalvar: PessoaApiIn = {
       // 1. Base do formulário
@@ -255,7 +266,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       estadoCivil: dadosFormulario.estadoCivil ? +dadosFormulario.estadoCivil : null, // <<< EVITA O PRÓXIMO ERRO
 
       // 3. SOBRESCREVE a data do formulário com a nossa data formatada manualmente
-      dataNascimento: dataNascimentoParaApi,
+      dataNascimento: this.isPessoaFisica() ? dataNascimentoParaApi : null,
 
       // 3. Sua lógica original
       ...(this.isPessoaFisica() && {
@@ -266,7 +277,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       }),
     };
 
-    //console.log('OBJETO FINAL CORRIGIDO SENDO ENVIADO PARA A API:', pessoaParaSalvar);
+    console.log('OBJETO FINAL CORRIGIDO SENDO ENVIADO PARA A API:', pessoaParaSalvar);
 
     if (this.modoEdicao && this.pessoaId) {
       // ATUALIZAR
@@ -307,7 +318,6 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
               }
             }, 0);
           }
-
 
           this.showToast('Pessoa atualizada com sucesso!', 'Sucesso', 'success');
         },
@@ -418,8 +428,8 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
         this.pessoaForm.get(campo)?.setValue(null);
       });
       // Limpa também o valor do input de data manualmente
-      if (this.dataNascimentoInputRef) {
-        this.dataNascimentoInputRef.nativeElement.value = '';
+      if (this.dataNascimentoInputRef && this.dataNascimentoInputRef.nativeElement) { 
+          this.dataNascimentoInputRef.nativeElement.value = '';
       }
 
       // 3. Aplica validadores para PJ

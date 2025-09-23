@@ -15,6 +15,7 @@ export class Filters {
   pagina = 0;
   itensPorPagina = 5;
   totalRegistros = 0;
+  id: number | null = null;
   nome = '';
   cpf: string | null = null; 
   cnpj: string | null = null;
@@ -37,7 +38,6 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
 
   private cpfPipeInstance = new CpfPipe();
   private cnpjPipeInstance = new CnpjPipe();
-
 
   settings = {
     mode: 'external',
@@ -182,14 +182,17 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
     this.listarPessoas();
 
     this.source.onChanged().subscribe((change) => {
-      const qtdLinhas = change.filter.filters.length
-      const searchValue = change?.filter?.filters?.[qtdLinhas - 1]?.search ;
-      
-      if (change.filter.filters.length === 0 || searchValue === "") {
-        return; 
-      }
-      
+      const activeFilters = change.filter?.filters || [];
+      const ultimoFiltro = activeFilters.length > 0 ? activeFilters[activeFilters.length - 1] : null;
+      const searchValue = ultimoFiltro ? ultimoFiltro.search : "";
+
       if (change.action === 'filter') {
+        // Se a ação é 'filter' e não há filtros ativos ou o termo de busca é vazio,
+        // isso significa que os filtros foram limpos.
+        if (activeFilters.length === 0 || (searchValue === "" && ultimoFiltro?.field !== 'id')) {
+          this.listarPessoas(); // Recarrega todas as pessoas quando o filtro é limpo
+          return;
+        }
         this.onTableFilter(change.filter);
       }
     });
@@ -279,56 +282,83 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
     // Resetar o objeto de filtro
     this.filtro = new Filters();
     let termoDeBusca = '';
+    let isFilteringById = false; // Flag para saber se estamos filtrando por ID
 
     const activeFilters = filterEvent?.filters || [];
 
-    // ng2-smart-table permite múltiplos filtros, mas sua lógica atual
-    // usa um único "termo". Vamos pegar o último filtro aplicado.
     if (activeFilters.length > 0) {
         const ultimoFiltro = activeFilters[activeFilters.length - 1];
         const field = ultimoFiltro.field;
         const search = ultimoFiltro.search;
 
-        if (search && search.trim().length >= 3) {
-            // Preenche o objeto de filtro
-            if (field === 'nome') {
+        if (search && search.trim().length > 0) { // O filtro de ID pode ser de 1 dígito
+            if (field === 'id') {
+                const idNumerico = parseInt(search.trim(), 10);
+                if (!isNaN(idNumerico)) {
+                    this.filtro.id = idNumerico;
+                    isFilteringById = true;
+                } else {
+                    // Se o valor digitado não é um número, limpa a tabela
+                    this.source.load([]);
+                    return; 
+                }
+            } else if (field === 'nome') {
                 this.filtro.nome = search.trim();
                 termoDeBusca = this.filtro.nome;
-            } else if (field === 'cpfCnpj') { // << Usando o campo combinado
-                // Removemos formatação para enviar apenas números, se houver
+            } else if (field === 'cpfCnpj') {
                 const valorNumerico = search.trim().replace(/\D/g, '');
-                // O backend pode diferenciar por tamanho, mas o serviço atual combina em 'termo'
-                this.filtro.cpf = valorNumerico;  // Preenche tanto cpf quanto cnpj
-                this.filtro.cnpj = valorNumerico; // com o mesmo valor numérico
+                this.filtro.cpf = valorNumerico;
+                this.filtro.cnpj = valorNumerico;
                 termoDeBusca = valorNumerico;
             }
-            // Adicionar outros campos como 'id' ou 'dataNascimento' aqui se necessário
         }
-    }
-
-    // Se não há um termo de busca válido, mas a ação foi limpar os filtros,
-    // a busca será feita com termo vazio, trazendo todos os resultados.
-    if (!termoDeBusca && activeFilters.length > 0) {
-        console.log("Termo de busca muito curto. Não buscando.");
-        return; // Não faz a chamada à API se o termo for muito curto
     }
 
     this.isLoading = true;
 
-    // A chamada ao serviço agora usa o `termoDeBusca` montado.
-    // O seu serviço `pesquisar` já lida com a lógica de enviar o `termo`.
-    this.pessoaApiService.pesquisar(this.filtro,true) // Passamos o objeto filtro que contém nome/cpf/cnpj
-      .then(response => {
-        const pessoas = response.pessoas || [];
-        this.source.load(pessoas);
-      })
-      .catch(error => {
-        console.error("Erro ao pesquisar pessoas com filtro:", error);
-        this.source.load([]);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+    if (isFilteringById && this.filtro.id !== null) {
+        // Lógica para buscar por ID específico
+        this.pessoaApiService.getPessoaById(this.filtro.id)
+            .then(pessoa => {
+                // getPessoaById retorna uma única PessoaApiOut ou null/undefined se não encontrar.
+                // Precisamos transformá-lo em um array para o source.load.
+                this.source.load(pessoa ? [pessoa] : []);
+            })
+            .catch(error => {
+                console.error("Erro ao pesquisar pessoa por ID:", error);
+                this.source.load([]);
+                this.toastrService.danger('Erro ao buscar pessoa por ID.', 'Falha na Busca');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    } else if (termoDeBusca || activeFilters.length === 0) { 
+        if (termoDeBusca === '' && activeFilters.length === 0) {
+            this.listarPessoas(); // Chama listarPessoas para recarregar tudo
+            this.isLoading = false;
+            return;
+        }
+        
+        // Se há um termo de busca para nome/cpfCnpj, ou se queremos pesquisar com um termo vazio para listar tudo
+        this.pessoaApiService.pesquisar(this.filtro, true)
+            .then(response => {
+                const pessoas = response.pessoas || [];
+                this.source.load(pessoas);
+            })
+            .catch(error => {
+                console.error("Erro ao pesquisar pessoas com filtro:", error);
+                this.source.load([]);
+                this.toastrService.danger('Erro ao pesquisar pessoas.', 'Falha na Busca');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    } else {
+      // Se não há filtro ativo nem termo de busca, ou termo muito curto para cpf/cnpj/nome,
+      // podemos decidir não fazer nada ou limpar a tabela.
+      this.source.load([]);
+      this.isLoading = false;
+    }
   }
 
   // Limpa o filtro anterior, só e possivel filtrar por uma coluna.
@@ -366,5 +396,4 @@ export class PessoaApiPesquisaComponent implements OnInit, OnDestroy{
       }
     }
   }
- 
 }

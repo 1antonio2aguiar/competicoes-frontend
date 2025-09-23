@@ -1,6 +1,7 @@
 import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { HttpParams, HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { AuthService } from '../../../shared/services/auth.service';
 import { catchError, map } from 'rxjs/operators';
 
 import { BaseResourceService } from '../../../shared/services/base-resource.service';
@@ -19,18 +20,27 @@ export class EquipesService extends BaseResourceService<Equipe> {
   // etapa por id.
   private equipeEventHendlerId: EventEmitter<Equipe>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'equipe', injector, Equipe.fromJson);
     this.equipeEventHendlerId = new EventEmitter<Equipe>();
-  }
+  } 
 
   getEquipes(): Observable<Equipe[]> {
-    return this.http.get<Equipe[]>(this.apiPath + '/filter');
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+
+    return this.http.get<Equipe[]>(this.apiPath + '/filter', { params });
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let params = filtro.params
-
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+    
     params = params
       .append('page', filtro.pagina.toString())
       .append('size', filtro.itensPorPagina.toString());

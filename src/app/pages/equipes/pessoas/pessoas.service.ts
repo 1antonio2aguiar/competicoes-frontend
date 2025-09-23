@@ -50,7 +50,7 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       .catch(error => {
         console.error('Erro na requisição:', error);
         throw error; // Re-lance o erro para ser tratado em outro lugar
-      });
+    });
   }
 
 }

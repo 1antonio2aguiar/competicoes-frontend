@@ -31,7 +31,7 @@ export class Filters {
 
 export class PessoasComponent implements OnInit, OnDestroy {
   //width = 700;
-  @Input() telaOrigem;
+  @Input() telaOrigem; 
 
   private searchTerms = new Subject<string>();
   private searchSubscription: Subscription;
@@ -91,7 +91,7 @@ export class PessoasComponent implements OnInit, OnDestroy {
       },
     },
 
-    dataNascimento: {
+    /*dataNascimento: {
         title: 'Data Nascimento',
         type: 'date',
         width: '200px',
@@ -110,7 +110,7 @@ export class PessoasComponent implements OnInit, OnDestroy {
           type: 'custom',
           component: PorDataNascimentoComponent,
         },
-      },
+      },*/
     },
 
     actions: { add: false, edit: false, delete: false },

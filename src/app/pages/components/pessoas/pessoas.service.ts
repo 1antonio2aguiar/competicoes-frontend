@@ -5,6 +5,7 @@ import { HttpParams } from '@angular/common/http';
 import { BaseResourceService } from '../../../shared/services/base-resource.service';
 import { environment } from '../../../../environments/environment';
 import { Pessoa } from '../../../shared/models/pessoa';
+import { AuthService } from '../../../shared/services/auth.service';
 
 export class Filters {
   pagina = 0;
@@ -25,7 +26,10 @@ export class PessoasService extends BaseResourceService<Pessoa> {
   // pessoa por id.
   private pessoaEventHendlerId: EventEmitter<Pessoa>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'pessoas', injector, Pessoa.fromJson);
     this.pessoaEventHendlerId = new EventEmitter<Pessoa>();
   } 
@@ -48,7 +52,7 @@ export class PessoasService extends BaseResourceService<Pessoa> {
       .set('termo', termoDeBusca)
 
     return this.http
-      .get<any>(this.apiPath = 'http://localhost:8080/pessoas/pesquisarPorNomeCpfCnpj', { params })
+      .get<any>(this.apiPath = 'http://localhost:8080/pessoas/pesquisar', { params })
       .toPromise()
       .then((response) => {
         const pessoas = response; // A API retorna a lista diretamente
@@ -64,16 +68,20 @@ export class PessoasService extends BaseResourceService<Pessoa> {
         throw error;
       }
     );
-  }
+  } 
   
   pessoaDisponiveisParaCadastro(filtro: Filters): Promise<any> {
-    let params = filtro.params
+    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
+    let params = new HttpParams();
+    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
 
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
         params = params.set(key, filtro.params.get(key));
       });
     }
+
+    console.log('params >>>>>>>>>>>>>>>>>>> ', params)
 
     return this.http
       .get<any>(this.apiPath = 'http://localhost:8080/atleta/disponiveis-para-cadastro', { params }) 

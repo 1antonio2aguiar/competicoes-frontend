@@ -77,7 +77,7 @@ export class EquipesPesquisaComponent implements OnInit {
       nome: {
         title: 'Nome',
         type: 'string',
-        width: '200px',
+        width: '300px',
       },
 
       sigla: {

@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { Filters } from '../../shared/filters/filters';
 
 import { Prova } from '../../shared/models/prova';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,13 @@ export class ProvasService extends BaseResourceService<Prova>{
   // prova por id.
   private provaEventHendlerId: EventEmitter<Prova>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
     super(environment.apiUrl + 'prova', injector, Prova.fromJson);
     this.provaEventHendlerId = new EventEmitter<Prova>();
-  }
+  } 
 
   pesquisar(filtro: Filters): Promise<any> {
     let params = filtro.params;
@@ -51,7 +55,7 @@ export class ProvasService extends BaseResourceService<Prova>{
   }
 
   create(prova: Prova): Observable<Prova> {
-    prova.empresaId = 1;
+    prova.empresaId = this.authService.getEmpresaId();
 
     //console.log('ta no create ', prova)
     return from(this.http
@@ -66,7 +70,7 @@ export class ProvasService extends BaseResourceService<Prova>{
 
   update(prova: Prova): Observable<Prova> {
 
-    prova.empresaId = 1;
+    prova.empresaId = this.authService.getEmpresaId();
 
     return from(this.http
       .put<Prova>(`${this.apiPath}/${prova.id}`, prova)

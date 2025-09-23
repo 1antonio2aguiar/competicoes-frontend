@@ -4,15 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbWindowRef, NbWindowService } from '@nebular/theme';
 
 import { Atleta } from '../../../shared/models/atleta';
-import { PessoasService } from '../../equipes/pessoas/pessoas.service';
-import { EquipesService } from '../../equipes/equipes.service';
 import { CategoriasService } from '../../categorias/categorias.service';
 import { Categoria } from '../../../shared/models/categoria';
 import { AtletasService } from '../atletas.service';
-//import { PessoasBuscaComponent } from '../../equipes/pessoas/pessoas-busca.component';
-
-import { ModalidadesService } from '../../modalidades/modalidade-select/modalidades-select.service';
-import { Modalidade } from '../../../shared/models/modalidade';
 import { PessoasComponent } from '../../components/pessoas/pessoas-busca/pessoas.component';
 import { EquipesBuscaComponent } from '../../components/equipes/equipes-busca/equipes-busca.component';
 
@@ -22,7 +16,7 @@ import { EquipesBuscaComponent } from '../../components/equipes/equipes-busca/eq
   styleUrls: ['./atletas-iud.component.scss'],
     encapsulation: ViewEncapsulation.None,
     providers: [NbDialogService]
-})
+}) 
 
 export class AtletasIudComponent implements OnInit {
   atletaId: number = 0;
@@ -40,13 +34,9 @@ export class AtletasIudComponent implements OnInit {
 
   constructor(
     private atletaService: AtletasService,
-    private pessoaService: PessoasService,
-    private equipeService: EquipesService,
     private categoriaService: CategoriasService,
-    private modalidadesService: ModalidadesService,
     private formBuilder: FormBuilder,
     private windowService: NbWindowService,
-    private dialogService: NbDialogService,
     private ref1: NbWindowRef,
   ) { }
 

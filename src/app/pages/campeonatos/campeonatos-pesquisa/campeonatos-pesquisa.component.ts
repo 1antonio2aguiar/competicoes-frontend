@@ -7,6 +7,7 @@ import { ModalidadeSelectComponent } from '../../modalidades/modalidade-select/M
 import { Filters } from '../../../shared/filters/filters';
 import { HttpParams } from '@angular/common/http';
 import { ConfirmationDialogComponent } from '../../components/confirm-delete/confirmation-dialog/confirmation-dialog.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-campeonatos-pesquisa',
@@ -103,21 +104,27 @@ export class CampeonatosPesquisaComponent implements OnInit {
   constructor(
     private service: CampeonatosService,
     private dialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private authService: AuthService,
   ) {
 
   }
 
   listar() {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    // Passa o codigo da empresa como parametro
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+
     this.service.pesquisar(this.filtro)
       .then(response => {
         const campeonatos = response.campeonatos;
         this.source.load(campeonatos);
-      });
+    });
   }
 
   onCreateConfirm(event) {
-    event.newData.empresa = 1;
+    event.newData.empresa = this.authService.getEmpresaId();
 
     this.service.create(event.newData)
       .subscribe(
@@ -138,23 +145,23 @@ export class CampeonatosPesquisaComponent implements OnInit {
 
   onSaveConfirm(event) {
     this.service.update(event.newData)
-      .subscribe(
-        () => {
-          // Atualiza a tabela e fecha o modal de edição
-          this.listar();
-          event.confirm.resolve();
-          // O ng2-smart-table gerencia a atualização do estado de edição
+    .subscribe(
+      () => {
+        // Atualiza a tabela e fecha o modal de edição
+        this.listar();
+        event.confirm.resolve();
+        // O ng2-smart-table gerencia a atualização do estado de edição
 
-          // <<< TOAST DE SUCESSO PARA ATUALIZAÇÃO >>>
-          this.toastrService.show(
-            `Campeonato "${event.newData.nome}" foi atualizado com sucesso!`,
-            'Atualização Realizada',
-            { status: 'success', icon: 'edit-outline' }
-          );
+        // <<< TOAST DE SUCESSO PARA ATUALIZAÇÃO >>>
+        this.toastrService.show(
+          `Campeonato "${event.newData.nome}" foi atualizado com sucesso!`,
+          'Atualização Realizada',
+          { status: 'success', icon: 'edit-outline' }
+        );
 
-        },
-        error => console.error('Erro ao editar campeonato:', error)
-      );
+      },
+      error => console.error('Erro ao editar campeonato:', error)
+    );
   }
 
   onDeleteConfirm(event): void {

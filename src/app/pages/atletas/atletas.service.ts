@@ -5,7 +5,7 @@ import { Observable, from } from 'rxjs';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
 import { environment } from '../../../environments/environment';
 import { Filters } from '../../shared/filters/filters';
-
+import { AuthService } from '../../shared/services/auth.service';
 import { Atleta } from '../../shared/models/atleta';
 
 @Injectable({
@@ -17,7 +17,10 @@ export class AtletasService extends BaseResourceService<Atleta>{
   // etapa por id.
   private atletaEventHendlerId: EventEmitter<Atleta>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+    private authService: AuthService,
+  ) {
       super(environment.apiUrl + 'atleta', injector, Atleta.fromJson);
       this.atletaEventHendlerId = new EventEmitter<Atleta>();
   }
@@ -54,7 +57,7 @@ export class AtletasService extends BaseResourceService<Atleta>{
   }
 
   create(atleta: Atleta): Observable<Atleta> {
-    atleta.empresaId = 1;
+    atleta.empresaId = this.authService.getEmpresaId();
 
     return from(this.http
       .post<Atleta>(this.apiPath, atleta)
@@ -67,8 +70,6 @@ export class AtletasService extends BaseResourceService<Atleta>{
   }
   
   update(atleta: Atleta): Observable<Atleta> {
-
-    atleta.empresaId = 1;
 
     return from(this.http
       .put<Atleta>(`${this.apiPath}/${atleta.id}`, atleta)

@@ -43,7 +43,6 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
   }
 
   create(inscricao: Inscricao): Observable<Inscricao> {
-    inscricao.empresaId = 1;
 
     return from(this.http
       .post<Inscricao>(this.apiPath, inscricao)
@@ -56,7 +55,6 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
   }
 
   update(inscricao: Inscricao): Observable<Inscricao> {
-    inscricao.empresaId = 1;
 
     return from(this.http
       .put<Inscricao>(`${this.apiPath}/${inscricao.id}`, inscricao)

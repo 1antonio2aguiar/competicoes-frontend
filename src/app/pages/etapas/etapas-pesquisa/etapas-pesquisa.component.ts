@@ -16,6 +16,7 @@ import { EstapasIudComponent } from '../estapas-iud/estapas-iud.component';
 import { title } from 'process';
 import { Etapa } from '../../../shared/models/etapa';
 import { ConfirmationDialogComponent } from '../../components/confirm-delete/confirmation-dialog/confirmation-dialog.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-etapas-pesquisa',
@@ -137,6 +138,7 @@ export class EtapasPesquisaComponent implements OnInit {
       private campeonatosService: CampeonatosService,   
       private windowService: NbWindowService,
       private dialogService: NbDialogService,
+      private authService: AuthService,
       private toastrService: NbToastrService
   ) {
   }
@@ -275,6 +277,10 @@ export class EtapasPesquisaComponent implements OnInit {
   }
 
   listar(pagiana = 0) {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+    
     this.filtro.pagina = pagiana;
 
     // Se selecionado um campeonato, filtrar a lista de etapas do campeonato.
@@ -283,6 +289,7 @@ export class EtapasPesquisaComponent implements OnInit {
 
       this.filtro.params = new HttpParams();
       this.filtro.params = this.filtro.params.append('campeonatoFilter.id', this.selectedCampeonatoId)
+      this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
 
       //console.log('Parametro ', this.filtro.params)
       this.etapasService.pesquisar({...this.filtro})

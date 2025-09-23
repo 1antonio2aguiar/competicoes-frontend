@@ -31,7 +31,6 @@ export class EquipesIudComponent implements OnInit{
 
   @Output() equipeSalvaOuAtualizada = new EventEmitter<any>();
   @Input() equipe: Equipe | undefined;
-  empresaId = 0;
 
   editingField: 'agremiacao' | 'tecnico' | 'assistenteTecnico' | null = null; // Adicionado
 
@@ -46,8 +45,7 @@ export class EquipesIudComponent implements OnInit{
   ) { }
 
   ngOnInit() {
-    // Obter o ID da empresa do usuário logado
-    this.empresaId = this.authService.getEmpresaId();
+    
 
     this.carregarModalidades();
     this.criarFormulario();
@@ -60,7 +58,8 @@ export class EquipesIudComponent implements OnInit{
   criarFormulario() {
     this.equipeForm = this.formBuilder.group({
       id: [null],
-      empresa: [this.empresaId],
+      empresaId: [this.authService.getEmpresaId()],
+      empresa: [],
       nome: [null, [Validators.required, Validators.minLength(5)]],
       sigla: [null, [Validators.required, Validators.minLength(3)]],
       
@@ -107,16 +106,13 @@ export class EquipesIudComponent implements OnInit{
   salvarEquipe() {
     
     if (this.equipeForm.valid) {
-      const equipeData = this.equipeForm.getRawValue();
+      const equipeData = { ...this.equipeForm.getRawValue() }; // Usando spread para copiar
 
-      console.log('equipeData ', equipeData)
-
-      equipeData.modalidadeId = equipeData.modalidade; // Aqui extraímos o valor da modalidade selecionada
-      delete equipeData.modalidade; // Removemos a propriedade modalidade, pois é um objeto desnecessário na requisição
+      equipeData.modalidadeId = equipeData.modalidade;
+      delete equipeData.modalidade;
       equipeData.agremiacaoId = equipeData.agremiacao.id;
       equipeData.tecnicoId = equipeData.tecnico.id;
       equipeData.assistenteTecnicoId = equipeData.assistenteTecnico.id;
-      equipeData.empresaId = this.empresaId;
 
       // Se tiver ID, atualiza, senão salva
       const equipeObservable = equipeData.id
