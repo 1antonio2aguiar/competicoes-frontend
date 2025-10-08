@@ -3,7 +3,8 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-admin-demo": {
+
+    "competicoes-ui": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -12,7 +13,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "preserveSymlinks": true,
-            "outputPath": "dist",
+            "outputPath": "dist/competicoes-ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
@@ -94,18 +95,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ngx-admin-demo:build"
+            "browserTarget": "competicoes-ui:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ngx-admin-demo:build:production"
+              "browserTarget": "competicoes-ui:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ngx-admin-demo:build"
+            "browserTarget": "competicoes-ui:build"
           }
         },
         "test": {

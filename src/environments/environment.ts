@@ -12,9 +12,8 @@ export const environment = {
   version: '1.0',
   production: false,
   //apiUrlKripton: 'https://app3.codiub.com.br/kripton-api/',
-  pessoasApiUrl: 'http://localhost:8081/',
   apiUrl: 'http://localhost:8080/',
+  pessoasApiUrl: 'http://localhost:8081/',
   sistemaId: '1',
- 
 
-};
+}; 

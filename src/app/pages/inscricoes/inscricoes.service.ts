@@ -2,10 +2,10 @@ import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { Observable, from } from 'rxjs';
 
 import { Inscricao } from '../../shared/models/inscricao';
-
 import { environment } from '../../../environments/environment';
 import { BaseResourceService } from '../../shared/services/base-resource.service';
 import { Filters } from '../../shared/filters/filters';
+import { AuthService } from '../../shared/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,9 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
   // prova por id.
   private provaEventHendlerId: EventEmitter<Inscricao>
 
-  constructor(protected injector: Injector) {
+  constructor(
+    protected injector: Injector,
+  private authService: AuthService,) {
     super(environment.apiUrl + 'inscricao', injector, Inscricao.fromJson);
     this.provaEventHendlerId = new EventEmitter<Inscricao>();
   }
@@ -43,6 +45,7 @@ export class InscricoesService extends BaseResourceService<Inscricao>{
   }
 
   create(inscricao: Inscricao): Observable<Inscricao> {
+    inscricao.empresaId = this.authService.getEmpresaId();
 
     return from(this.http
       .post<Inscricao>(this.apiPath, inscricao)
