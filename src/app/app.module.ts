@@ -25,6 +25,9 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
+  NbLayoutModule,
+  NbThemeModule
+
 } from '@nebular/theme';
 import { LoginComponent } from './auth/login.component';
 import { AuthModule } from './auth/auth.module';
@@ -46,6 +49,10 @@ import { AuthModule } from './auth/auth.module';
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
+
+    NbLayoutModule,
+    NbThemeModule,
+
     NbChatModule.forRoot({
       messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
     }),

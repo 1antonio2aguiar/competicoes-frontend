@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "competicoes-ui": {
+    "ngx-admin-demo": {  
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -94,18 +94,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "competicoes-ui:build"
+            "browserTarget": "ngx-admin-demo:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "competicoes-ui:build:production"
+              "browserTarget": "ngx-admin-demo:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "competicoes-ui:build"
+            "browserTarget": "ngx-admin-demo:build"
           }
         },
         "test": {
@@ -162,7 +162,7 @@
         }
       }
     },
-    "competicoes-ui-e2e": {
+    "ngx-admin-demo-e2e": {
       "root": "e2e",
       "sourceRoot": "",
       "projectType": "application",
@@ -171,7 +171,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "competicoes-ui:serve"
+            "devServerTarget": "ngx-admin-demo:serve"
           }
         }
       }
@@ -194,6 +194,5 @@
   },
   "cli": {
     "analytics": "8d72fc97-16e2-485b-b85c-dc59fde314ed"
-  },
-  "defaultProject": "competicoes-ui"
+  }
 }

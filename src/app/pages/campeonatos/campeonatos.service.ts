@@ -54,7 +54,7 @@ export class CampeonatosService extends BaseResourceService<Campeonato>{
     return this.http
       .get<Campeonato[]>(this.apiPath , { params: params }) // Passa os parâmetros na requisição GET
       .toPromise();
-  }
+  } 
 
   listAllList(): Promise<Campeonato[]> {
     const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação

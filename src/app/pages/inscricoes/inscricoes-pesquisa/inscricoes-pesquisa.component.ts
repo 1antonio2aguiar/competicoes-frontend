@@ -15,6 +15,7 @@ import { Prova } from '../../../shared/models/prova';
 import { InscricoesIudComponent } from '../inscricoes-iud/inscricoes-iud.component';
 import { Inscricao } from '../../../shared/models/inscricao';
 import { ConfirmDeleteComponent } from '../../components/confirm-delete/confirm-delete-modal.component';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-inscricoes-pesquisa',
@@ -167,7 +168,7 @@ export class InscricoesPesquisaComponent implements OnInit{
       private windowService: NbWindowService,
       private dialogService: NbDialogService,
       private toastrService: NbToastrService,
-
+      private authService: AuthService,
       private renderer: Renderer2,
       private el: ElementRef
     ) {
@@ -399,6 +400,9 @@ export class InscricoesPesquisaComponent implements OnInit{
   }
 
   listar() {
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
     this.filtro.pagina = 0;
       
     this.filtro.params = new HttpParams();

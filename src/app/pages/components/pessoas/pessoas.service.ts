@@ -39,66 +39,55 @@ export class PessoasService extends BaseResourceService<Pessoa> {
   }
 
   pesquisar(filtro: Filters): Promise<any> {
-    let termoDeBusca = '';
+    let termo = filtro.nome?.trim() || filtro.cpf?.trim() || '';
 
-    // Prioriza o que foi digitado no campo de nome
-    if (filtro.nome && filtro.nome.trim() !== '') {
-        termoDeBusca = filtro.nome;
-    } else if (filtro.cpf && filtro.cpf.trim() !== '') {
-        termoDeBusca = filtro.cpf;
-    }
+    const params = new HttpParams().set('termo', termo);
 
-    let params = new HttpParams()
-      .set('termo', termoDeBusca)
+    const url = environment.apiUrl + 'pessoas/pesquisar';
 
     return this.http
-      .get<any>(this.apiPath = 'http://localhost:8080/pessoas/pesquisar', { params })
+      .get<any>(url, { params })
       .toPromise()
       .then((response) => {
-        const pessoas = response; // A API retorna a lista diretamente
-
-        const resultado = {
-          pessoas: pessoas,
-          total: pessoas.length
+        return {
+          pessoas: response,
+          total: response.length
         };
-        return resultado;
       })
       .catch(error => {
         console.error('Erro na requisição:', error);
         throw error;
-      }
-    );
-  } 
-  
+      });
+  }
+
   pessoaDisponiveisParaCadastro(filtro: Filters): Promise<any> {
-    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
-    let params = new HttpParams();
-    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+    const empresaId = this.authService.getEmpresaId();
+
+    let params = new HttpParams()
+      .set('empresaId', empresaId!.toString());
 
     if (filtro.params) {
       filtro.params.keys().forEach(key => {
-        params = params.set(key, filtro.params.get(key));
+        params = params.set(key, filtro.params.get(key)!);
       });
     }
 
-    console.log('params >>>>>>>>>>>>>>>>>>> ', params)
+    const url = environment.apiUrl + 'atleta/disponiveis-para-cadastro';
 
     return this.http
-      .get<any>(this.apiPath = 'http://localhost:8080/atleta/disponiveis-para-cadastro', { params }) 
+      .get<any>(url, { params })
       .toPromise()
-      .then((response) => {
-        // Ajuste conforme a estrutura da sua resposta da API
-        const pessoas = response.content
-        const resultado = {
+      .then(response => {
+        const pessoas = response.content;
+        return {
           pessoas,
           total: response.totalElements
         };
-        return resultado;
       })
       .catch(error => {
         console.error('Erro na requisição:', error);
-        throw error; // Re-lance o erro para ser tratado em outro lugar
-      }
-    );
+        throw error;
+      });
   }
+
 }

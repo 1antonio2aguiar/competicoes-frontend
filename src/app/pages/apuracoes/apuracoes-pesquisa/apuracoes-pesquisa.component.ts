@@ -17,6 +17,7 @@ import { ApuracoesService } from '../apuracoes.service';
 import { InscricoesService } from '../../inscricoes/inscricoes.service';
 import { ResultadoEditorComponent } from './components/resultado-editor.component';
 import { Apuracao } from '../../../shared/models/apuracao';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-apuracoes-pesquisa',
@@ -163,7 +164,8 @@ export class ApuracoesPesquisaComponent implements OnInit{
     private etapaService: EtapasService,
     private windowService: NbWindowService,
     private dialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private authService: AuthService,
   ) {
     // Inicializar o filtro com valores padrões
     this.filtro.pagina = 1;
@@ -267,7 +269,11 @@ export class ApuracoesPesquisaComponent implements OnInit{
     }  
   }
 
-  listar() {
+  listar() { 
+    // Obter o ID da empresa do usuário logado
+    const empresaId = this.authService.getEmpresaId();
+    this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
+
     this.filtro.pagina = 0;
 
     this.filtro.params = new HttpParams();

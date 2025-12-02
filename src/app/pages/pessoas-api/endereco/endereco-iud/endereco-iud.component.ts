@@ -329,7 +329,7 @@ export class EnderecoIudComponent implements OnInit {
         enderecoPayload.id = this.enderecoParaEdicao.id; // Garante que o ID original da edição seja usado
       }
 
-      console.log('VALORES UPD ', enderecoPayload)
+      //console.log('VALORES UPD ', enderecoPayload)
 
       this.enderecoService.update(enderecoPayload).subscribe({
         next: (enderecoAtualizado: EnderecoOut) => {

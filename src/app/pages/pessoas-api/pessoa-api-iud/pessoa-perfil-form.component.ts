@@ -149,7 +149,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
     this.pessoaApiService.getPessoaCompletaById(id)
     .then((pessoa: PessoaApiOut) => {
-      //console.log('Dados da API para edição:', pessoa);
+      console.log('Dados da API para edição:', pessoa);
 
       const tipoPessoaApi = pessoa.fisicaJuridica;
       this.pessoaForm.get('fisicaJuridica')?.setValue(tipoPessoaApi);
@@ -197,7 +197,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
 
       this.pessoaForm.patchValue(dataParaFormulario);
 
-      console.log('Estado do formulário após patchValue:', tipoPessoaApi,' ',pessoa.cpf);
+      //console.log('Estado do formulário após patchValue:', tipoPessoaApi,' ',pessoa);
 
       if (tipoPessoaApi === 'F' && pessoa.cpf) {
         setTimeout(() => {
@@ -205,7 +205,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
         }, 0);
       } else {
         setTimeout(() => {
-          console.log('ENTROU NO ELSE :', tipoPessoaApi,' ',pessoa.cnpj);
+          //console.log('ENTROU NO ELSE :', tipoPessoaApi,' ',pessoa.cnpj);
           this.cnpjInputRef.nativeElement.value = this.formatarCnpjParaDisplay(pessoa.cnpj);
         }, 0);
       }
@@ -230,7 +230,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       .catch(error => {
         console.error("Erro ao carregar tipos pessoas:", error);
     });
-  }
+  } 
 
   isPessoaFisica(): boolean { return this.pessoaForm.get('fisicaJuridica')?.value === 'F'; }
   isPessoaJuridica(): boolean { return this.pessoaForm.get('fisicaJuridica')?.value === 'J'; }

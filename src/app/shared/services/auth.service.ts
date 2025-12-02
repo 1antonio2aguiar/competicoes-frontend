@@ -23,7 +23,8 @@ export class AuthService {
   /**
    * Pega o token do localStorage.
    */
-  public getToken(): string | null {
+  // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  /*public getToken(): string | null {
     // O Nebular salva o token com uma chave específica. Verifique no seu localStorage qual é.
     // Geralmente é algo como 'auth_app_token' ou um nome que você configurou.
     // Para este exemplo, vamos usar a chave do Nebular.
@@ -33,7 +34,28 @@ export class AuthService {
       return tokenObject.value; // O token JWT fica dentro de 'value'
     }
     return null;
+  }*/
+
+  public getToken(): string | null {
+    const stored = localStorage.getItem('auth_app_token');
+    if (!stored) return null;
+
+    try {
+      // O Nebular SEMPRE salva como JSON string
+      const obj = JSON.parse(stored);
+
+      // O token JWT fica no campo "value" do objeto
+      if (obj && obj.value) {
+        return obj.value;
+      }
+
+      return null;
+    } catch (e) {
+      console.error('Erro ao parsear token do Nebular:', e);
+      return null;
+    }
   }
+
 
   /**
    * Verifica se o usuário está autenticado (se existe um token válido).

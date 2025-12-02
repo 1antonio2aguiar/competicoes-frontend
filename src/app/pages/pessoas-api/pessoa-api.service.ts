@@ -18,7 +18,7 @@ export class Filters {
 
 @Injectable({
   providedIn: 'root'
-})
+}) 
 
 export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
   // pessoa por id.
@@ -60,45 +60,41 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
   pesquisar(filtro: Filters, completo: boolean = false): Promise<{ pessoas: any[], total: number }> {
     let termoDeBusca = '';
 
-    // Monta o termo de busca a partir do filtro.
-    // A lógica de prioridade é: nome > cpf > cnpj
     if (filtro.nome && filtro.nome.trim() !== '') {
-        termoDeBusca = filtro.nome.trim();
+      termoDeBusca = filtro.nome.trim();
     } else if (filtro.cpf && filtro.cpf.trim() !== '') {
-        termoDeBusca = filtro.cpf.trim();
+      termoDeBusca = filtro.cpf.trim();
     } else if (filtro.cnpj && filtro.cnpj.trim() !== '') {
-        termoDeBusca = filtro.cnpj.trim();
+      termoDeBusca = filtro.cnpj.trim();
     }
 
-    // Se não há termo de busca, não faz a chamada.
     if (termoDeBusca === '') {
-        return Promise.resolve({ pessoas: [], total: 0 }); // Retorna um resultado vazio
+      return Promise.resolve({ pessoas: [], total: 0 });
     }
 
     let params = new HttpParams()
       .set('termo', termoDeBusca)
       .set('completo', completo.toString());
 
-    const url = `${environment.apiUrl}pessoas/pesquisar`;
+    // CORREÇÃO AQUI 🔥🔥🔥
+    const url = `${environment.pessoasApiUrl}pessoa/pesquisar`;
 
     return this.http
-      .get<any[]>(url, { params }) // A resposta será um array (List<?>)
+      .get<any[]>(url, { params })
       .toPromise()
       .then((response: any[]) => {
         const pessoas = response || [];
-        const resultado = {
-          pessoas: pessoas,
-          total: pessoas.length // A busca por termo não é paginada, então o total é o tamanho da lista
+        return {
+          pessoas,
+          total: pessoas.length
         };
-        console.log(`Retorno da busca por termo '${termoDeBusca}' (completo=${completo}):`, pessoas);
-        return resultado;
       })
       .catch(error => {
         console.error('Erro na requisição de pesquisa:', error);
-        // Retornar um resultado vazio em caso de erro para não quebrar o componente
         return { pessoas: [], total: 0 };
     });
   }
+
 
   public createPessoa(pessoa: PessoaApiIn): Observable<PessoaApiOut> {
     const targetPath = this.getTargetPath(pessoa.fisicaJuridica);

@@ -1,0 +1,86 @@
+# ==========================
+# 🏗️ Etapa 1 — Build do Angular
+# ==========================
+FROM node:18-alpine AS build
+WORKDIR /app
+
+# Copia apenas os arquivos de dependências primeiro (melhor aproveitamento de cache)
+COPY package*.json ./
+
+# Instala dependências (com cache)
+#RUN npm ci --force
+RUN npm install --legacy-peer-deps
+
+# Copia o restante do projeto
+COPY . .
+
+# 🔧 Garante que a pasta dist exista (corrige o erro do COPY no estágio seguinte)
+RUN mkdir -p /app/dist
+
+# Compila o Angular em modo produção
+RUN npm run build -- --configuration=production
+
+# ==========================
+# 🚀 Etapa 2 — Servidor Nginx
+# ==========================
+FROM nginx:stable-alpine
+
+# Copia os artefatos do build Angular para o diretório padrão do Nginx
+COPY --from=build /app/dist/competicoes-ui /usr/share/nginx/html
+
+# Copia a configuração customizada (ajustando portas e backend)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Define a porta esperada pelo Cloud Run
+ENV PORT=8080
+EXPOSE 8080
+
+# Comando padrão do Nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+
+##*********************************************************************************
+
+# ==========================
+# 🏗️ Etapa 1 — Build do Angular
+# ==========================
+FROM node:18-alpine AS build
+WORKDIR /app
+
+# Copia apenas os arquivos de dependências primeiro (melhor aproveitamento de cache)
+COPY package*.json ./
+
+# Instala dependências (com cache)
+#RUN npm ci --force
+RUN npm install --legacy-peer-deps
+
+# Copia o restante do projeto
+COPY . .
+
+# === NOVOS PASSOS PARA GARANTIR O AMBIENTE DE PRODUÇÃO ===
+# Opcional, mas pode ajudar a garantir que o cache de npm não esteja causando problemas
+RUN npm cache clean --force
+
+# Cria o arquivo de ambiente de produção temporariamente
+# Garante que o Angular use este ambiente com o '/'
+# IMPORTANTE: Substitua o conteúdo pela sua configuração EXATA de environment.prd.ts
+RUN echo "export const environment = { production: true, version: '1.0.0', apiUrl: '/', pessoasApiUrl: '/', sistemaId: 'competicoes-ui' };" > src/environments/environment.ts
+# (Este passo sobrescreve o environment.ts de desenvolvimento com o de produção antes da build)
+# ou, uma forma mais limpa é garantir que o Angular CLI use o --prod
+# ou, ainda melhor, copiar o .prd.ts para .ts
+
+# Melhor abordagem: Copiar o ambiente de produção para o padrão antes da build
+RUN cp src/environments/environment.prod.ts src/environments/environment.ts
+# =========================================================
+
+#C:\projetos\competicoes\competicoes-ui\src\environments
+
+# 🔧 Garante que a pasta dist exista (corrige o erro do COPY no estágio seguinte)
+RUN mkdir -p /app/dist
+
+# Compila o Angular em modo produção
+RUN npm run build -- --configuration=production
+# ^^^ Este comando já deve usar environment.prd.ts, mas o cp acima garante.
+# Outra alternativa seria usar npm run build --prod ou ng build --prod, dependendo do package.json
+
+# ... restante do Dockerfile

@@ -6,24 +6,8 @@
 
 export const environment = {
   production: true,
-  version: '1.0',
-  apiUrl: '/api/',
-  pessoasApiUrl: '/pessoas-api/',
-  sistemaId: '1',
-};
-
-/*export const environment = {
-  production: true,
-  version: '1.0',
-  apiUrl: 'http://competicoes-api:8080/',
-  pessoasApiUrl: 'http://pessoas-api:8080/',
-  sistemaId: '1',
-};*/
-
-/*export const environment = {
-  production: true,
-  version: '1.0',
-  apiUrl: 'http://competicoes-api:8080/',
-  pessoasApiUrl: 'http://pessoas-api:8081/',
-  sistemaId: '1',
-};*/
+  version: '1.0.0',
+  apiUrl: '/api/',             // usa o proxy do nginx
+  pessoasApiUrl: '/pessoas-api/', // idem
+  sistemaId: 'competicoes-ui'
+}; 

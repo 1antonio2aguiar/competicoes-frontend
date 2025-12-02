@@ -51,14 +51,25 @@ export class EtapasService extends BaseResourceService<Etapa>{
   }
 
   listAll(): Promise<Etapa[]> {
+    const empresaId = this.authService.getEmpresaId();
     let params = new HttpParams();
-    const empresaId = this.authService.getEmpresaId(); // Obtém o ID da empresa do serviço de autenticação
-    params = params.set('empresaId', empresaId.toString()); // Adiciona o empresaId como parâmetro de consulta
+    params = params.set('empresaId', empresaId.toString());
 
     return this.http
-      .get<Etapa[]>(this.apiPath , { params: params }) // Passa os parâmetros na requisição GET
-      .toPromise();
+      .get<Etapa[]>(this.apiPath + '/list', { params })
+      .toPromise()
+      .then(response => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response && (response as any).content) {
+          return (response as any).content;
+        }
+        //console.warn('listAll retornou formato inesperado:', response);
+        return [];
+    });
   }
+
 
   getEtapaById(etapaId): Promise<Etapa> { // Retorna Promise<Etapa>
     return this.http.get<Etapa>(this.apiPath + '/' + etapaId)

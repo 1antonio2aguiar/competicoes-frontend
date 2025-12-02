@@ -9,7 +9,7 @@ import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
-})
+}) 
 
 export class EnderecoService extends BaseResourceService<EnderecoOut>{
     
@@ -19,6 +19,7 @@ export class EnderecoService extends BaseResourceService<EnderecoOut>{
 
     getEnderecoByPessoaId(pessoaId: number): Observable<EnderecoOut[]> {
         const url = `${this.apiPath}/por-pessoa/${pessoaId}`;
+
         return this.http.get<any[]>(url).pipe(
             map(responseArray => {
                 //console.log('API Response Array:', JSON.stringify(responseArray, null, 2)); // << DEBUG
@@ -36,7 +37,10 @@ export class EnderecoService extends BaseResourceService<EnderecoOut>{
     }
 
     create(enderecoData: EnderecoIn): Observable<EnderecoOut> {
-        return this.http.post<EnderecoOut>(this.apiPath, enderecoData).pipe(
+
+        const url = `${this.apiPath}`;
+
+        return this.http.post<EnderecoOut>(url, enderecoData).pipe(
             map(response => {
                 console.log('Endereço criado com sucesso (API retornou EnderecoOut):', response);
                 return this.jsonDataToResource(response); // Converte para instância de EnderecoOut
@@ -73,10 +77,6 @@ export class EnderecoService extends BaseResourceService<EnderecoOut>{
         
         // Se pessoaId for um query parameter:
         let params = new HttpParams().set('pessoaId', pessoaId.toString());
-
-        // Se pessoaId fizer parte do path (ex: /api/pessoas/{pessoaId}/enderecos/{enderecoId}/definir-como-principal)
-        // const url = `${environment.pessoasApiUrl}pessoas/${pessoaId}/endereco/${enderecoId}/definir-como-principal`;
-        // params = new HttpParams(); // Nenhum parâmetro de consulta neste caso
 
         return this.http.put<void>(url, {}, { params: params }).pipe( // Enviamos um corpo vazio {} para o PUT, se o backend não esperar nada
             catchError(this.handleError)

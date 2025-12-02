@@ -13,6 +13,7 @@ import { InscricoesService } from '../inscricoes.service';
 import { FormatarTempoService } from '../../../shared/services/formatar-tempo.service';
 import { AtletasBuscaComponent } from '../../components/atletas/atletas-busca/atletas-busca.component';
 import { HttpParams } from '@angular/common/http';
+import { AuthService } from '../../../shared/services/auth.service';
 
 @Component({
   selector: 'ngx-inscricoes-iud',
@@ -48,7 +49,6 @@ export class InscricoesIudComponent implements OnInit{
   @Input() atleta: Atleta | undefined;
   @Output() inscricaoSalvaOuAtualizada = new EventEmitter<any>();
   editingField: 'atleta' | 'equipe' | null = null; // Adicionado
-
   
   @Input() numeroTotalBalizas: number = 0;
   balizasDisponiveis: { value: number; label: number }[] = [];
@@ -74,6 +74,7 @@ export class InscricoesIudComponent implements OnInit{
       private formBuilder: FormBuilder,
       private ref1: NbWindowRef,
       private windowService: NbWindowService,
+      private authService: AuthService,
     ) { 
       this.filtro.pagina = 1;
       this.filtro.itensPorPagina = 10;
@@ -193,7 +194,7 @@ export class InscricoesIudComponent implements OnInit{
   criarFormulario() {
     this.inscricaoForm = this.formBuilder.group({
       id: [null],
-      empresa: [1], // Valor padrão ou pegar de algum lugar?
+      empresa: [this.authService.getEmpresaId(),Validators.required], // Valor padrão ou pegar de algum lugar?
       observacao: [null],
       provaId: [this.prova, [Validators.required]], // Garanta que this.prova tem valor
       
@@ -219,11 +220,14 @@ export class InscricoesIudComponent implements OnInit{
     if (this.inscricaoForm.valid) {
       const inscricaoData = this.inscricaoForm.getRawValue();
 
+      const empresaId = this.authService.getEmpresaId();
+      this.filtro.params = this.filtro.params.set('empresaId', empresaId.toString());
       
       //inscricaoData.atletaId = inscricaoData.atleta; // Aqui extraímos o valor da categoria selecionada
       //delete inscricaoData.atleta; // Removemos a propriedade categoria, pois é um objeto desnecessário na requisição
       inscricaoData.atletaId = inscricaoData.atleta.id;
       inscricaoData.provaId  = this.prova;
+      inscricaoData.empresaId  = empresaId;
 
       // Se tiver ID, atualiza, senão salva
       const inscricaoObservable = inscricaoData.id
