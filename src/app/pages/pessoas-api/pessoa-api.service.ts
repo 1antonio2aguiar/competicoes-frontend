@@ -120,10 +120,10 @@ export class PessoaApiService extends BaseResourceService<PessoaApiOut>{
 
   private getTargetPath(tipoPessoa?: 'F' | 'J'): string {
     if (tipoPessoa === 'F') {
-      return `${environment.apiUrl}pessoaFisica`;
+      return `${environment.pessoasApiUrl}pessoaFisica`;
     }
     if (tipoPessoa === 'J') {
-      return `${environment.apiUrl}pessoaJuridica`;
+      return `${environment.pessoasApiUrl}pessoaJuridica`;
     }
     return '';
   }

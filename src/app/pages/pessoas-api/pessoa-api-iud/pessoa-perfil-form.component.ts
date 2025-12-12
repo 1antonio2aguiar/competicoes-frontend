@@ -277,7 +277,7 @@ export class PessoaPerfilFormComponent implements OnInit, OnDestroy {
       }),
     };
 
-    console.log('OBJETO FINAL CORRIGIDO SENDO ENVIADO PARA A API:', pessoaParaSalvar);
+    //console.log('OBJETO FINAL CORRIGIDO SENDO ENVIADO PARA A API:', pessoaParaSalvar);
 
     if (this.modoEdicao && this.pessoaId) {
       // ATUALIZAR

@@ -33,6 +33,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
           },
         ],
       },
+
       // =================================================================
 
       // =================================================================
@@ -78,11 +79,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
 
       {
-      title: 'Pessoas',
-          link: '/pages/pessoas-api/pessoa-api-pesquisa',
-      },
-      
-      {
         title: 'Provas',
         link: '/pages/provas/provas-pesquisa',
       },
@@ -93,9 +89,22 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
         ],
       },
-      // =================================================================
 
-      
+      // =================================================================
+      // <<< NOVO SUB-MENU DE PESSOAS ADICIONADO AQUI
+      // =================================================================
+      {
+        title: 'Pessoas',
+        // icon: 'lock-outline', // Você pode adicionar um ícone se quiser
+        children: [
+          {
+            title: 'Pessoas',
+                link: '/pages/pessoas-api/pessoa-api-pesquisa',
+            },
+        ],
+      },
+
+      // =================================================================
      
     ],
   },
